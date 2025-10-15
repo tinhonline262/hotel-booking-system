@@ -1,0 +1,6 @@
+# Storage Directory
+
+This directory is used for application storage including cache, logs, sessions, and compiled views.
+
+All subdirectories should be writable by the web server.
+
