@@ -39,23 +39,10 @@
     <section class="features">
         <h2>Why Choose Us</h2>
         <div class="feature-grid">
-            @component('components.feature-card', [
-                'icon' => '🏨',
-                'title' => 'Luxury Rooms',
-                'description' => 'Comfortable and well-equipped rooms'
-            ])
-            @component('components.feature-card', [
-                'icon' => '🍽️',
-                'title' => 'Fine Dining',
-                'description' => 'Delicious cuisine from around the world'
-            ])
-            @component('components.feature-card', [
-                'icon' => '🏊',
-                'title' => 'Amenities',
-                'description' => 'Pool, gym, spa and more'
-            ])
+            @component('components.feature-card', ['icon' => '🏨', 'title' => 'Luxury Rooms', 'description' => 'Comfortable and well-equipped rooms'])
+            @component('components.feature-card', ['icon' => '🍽️', 'title' => 'Fine Dining', 'description' => 'Delicious cuisine from around the world'])
+            @component('components.feature-card', ['icon' => '🏊', 'title' => 'Amenities', 'description' => 'Pool, gym, spa and more'])
         </div>
     </section>
 </div>
 @endsection
-
