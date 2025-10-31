@@ -2,6 +2,8 @@
 
 namespace App\Core\Router;
 
+use App\Core\Container\Container;
+
 /**
  * Router with support for dynamic parameters and middleware
  */
@@ -11,6 +13,15 @@ class Router
     private array $middlewares = [];
     private array $groupMiddlewares = [];
     private string $prefix = '';
+    private ?Container $container = null;
+
+    /**
+     * Set the container instance
+     */
+    public function setContainer(Container $container): void
+    {
+        $this->container = $container;
+    }
 
     /**
      * Add a GET route
@@ -154,7 +165,17 @@ class Router
                 throw new \Exception("Controller not found: {$controllerClass}");
             }
 
-            $controllerInstance = new $controllerClass();
+            // Use container to resolve controller with dependencies
+            if ($this->container !== null) {
+                try {
+                    $controllerInstance = $this->container->make($controllerClass);
+                } catch (\Exception $e) {
+                    throw new \Exception("Failed to resolve controller {$controllerClass}: " . $e->getMessage());
+                }
+            } else {
+                // Fallback to direct instantiation (no DI)
+                $controllerInstance = new $controllerClass();
+            }
 
             if (!method_exists($controllerInstance, $method)) {
                 throw new \Exception("Method not found: {$controllerClass}@{$method}");
@@ -191,4 +212,3 @@ class Router
         }
     }
 }
-

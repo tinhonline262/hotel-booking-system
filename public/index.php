@@ -23,20 +23,24 @@ if ($appConfig['debug']) {
 date_default_timezone_set($appConfig['timezone']);
 
 // Initialize core components
-use App\Core\Router\Router;
-use App\Core\Database\Database;
 use App\Core\Container\Container;
+use App\Core\Router\Router;
+use App\Infrastructure\DIContainer\AppServiceProvider;
 
 // Initialize container
 $container = Container::getInstance();
 
-// Bind database instance
-$container->singleton(Database::class, function() use ($dbConfig) {
-    return Database::getInstance($dbConfig);
-});
+// Register all service providers through AppServiceProvider
+AppServiceProvider::register($container);
+
+// Boot providers (for any post-registration logic)
+AppServiceProvider::boot($container);
 
 // Initialize router
 $router = new Router();
+
+// Set container on router for dependency injection
+$router->setContainer($container);
 
 // Load routes
 $router->loadRoutes($routesConfig['routes']);
@@ -60,4 +64,3 @@ try {
         echo "<p>Please try again later.</p>";
     }
 }
-
