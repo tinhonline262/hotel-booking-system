@@ -2,11 +2,11 @@
 
 return [
     'driver' => 'mysql', // mysql, pgsql, sqlite
-    'host' => 'localhost',
+    'host' => 'yamabiko.proxy.rlwy.net:15242',
     'port' => '3306',
     'database' => 'hotel_booking',
     'username' => 'root',
-    'password' => 'password',
+    'password' => 'meXceRwzglYiFRtopuXukOPfzrbtdblT',
     'charset' => 'utf8mb4',
     'collation' => 'utf8mb4_unicode_ci',
     'prefix' => '',

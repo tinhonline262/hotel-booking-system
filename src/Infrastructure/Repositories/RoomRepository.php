@@ -106,41 +106,33 @@ class RoomRepository implements RoomRepositoryInterface
 
     public function save(Room $room): bool
     {
-        $sql = "INSERT INTO rooms (room_number, type, description, price_per_night, capacity, floor, amenities, status, images, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
+        $sql = "INSERT INTO rooms (room_number,room_type_id, status, created_at, updated_at)
+                VALUES (?, ?, ?, NOW(), NOW())";
 
         $this->database->query($sql, [
             $room->getRoomNumber(),
-            $room->getType(),
-            $room->getDescription(),
-            $room->getPricePerNight(),
-            $room->getCapacity(),
-            $room->getFloor(),
-            json_encode($room->getAmenities()),
-            $room->getStatus(),
-            json_encode($room->getImages())
+            $room->getRoomTypeId(),
+            $room->getCreatedAt(),
+            $room->getUpdatedAt(),
+            $room->getId(),
+            $room->getStatus()
         ]);
 
         return true;
     }
 
-    public function update(Room $room): bool
+    public function update(Room $room, int $id): bool
     {
         $sql = "UPDATE rooms SET 
-                room_number = ?, type = ?, description = ?, price_per_night = ?,
-                capacity = ?, floor = ?, amenities = ?, status = ?, images = ?, updated_at = NOW()
+                room_number = ?, room_type_id = ?,  status = ?, images = ?, updated_at = NOW()
                 WHERE id = ?";
 
         $this->database->query($sql, [
             $room->getRoomNumber(),
-            $room->getType(),
-            $room->getDescription(),
-            $room->getPricePerNight(),
-            $room->getCapacity(),
-            $room->getFloor(),
-            json_encode($room->getAmenities()),
+            $room->getRoomTypeId(),
+            $room->getCreatedAt(),
+            $room->getUpdatedAt(),
             $room->getStatus(),
-            json_encode($room->getImages()),
             $room->getId()
         ]);
 
@@ -165,14 +157,10 @@ class RoomRepository implements RoomRepositoryInterface
         return new Room(
             (int)$data['id'],
             $data['room_number'],
-            $data['type'],
-            $data['description'],
-            (float)$data['price_per_night'],
-            (int)$data['capacity'],
-            (int)$data['floor'],
-            json_decode($data['amenities'] ?? '[]', true),
+            (int)$data['room_type_id'],
             $data['status'],
-            json_decode($data['images'] ?? '[]', true)
+            $data['created_at'],
+            $data['updated_at']
         );
     }
 }

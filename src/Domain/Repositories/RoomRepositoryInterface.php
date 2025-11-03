@@ -15,7 +15,7 @@ interface RoomRepositoryInterface
     public function findByType(string $type): array;
     public function findAvailableByDateRange(\DateTime $checkIn, \DateTime $checkOut): array;
     public function save(Room $room): bool;
-    public function update(Room $room): bool;
+    public function update(Room $room, int $id): bool;
     public function delete(int $id): bool;
     public function exists(int $id): bool;
 }
