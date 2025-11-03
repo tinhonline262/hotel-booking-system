@@ -17,7 +17,9 @@ class RoomTypeController extends BaseRestController
 
     public function __construct(RoomTypeService $service)
     {
+        parent::__construct();
         $this->service = $service;
+
     }
 
     /**

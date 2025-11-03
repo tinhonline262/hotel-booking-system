@@ -12,6 +12,8 @@ use App\Application\UseCases\DeleteRoomTypeUseCase;
 use App\Application\UseCases\FilterRoomTypesByCapacityUseCase;
 use App\Application\UseCases\FilterRoomTypesByPriceRangeUseCase;
 use App\Domain\Entities\RoomType;
+use App\Domain\Exceptions\InvalidRoomTypeDataException;
+use App\Domain\Exceptions\RoomTypeNotFoundException;
 
 class RoomTypeService implements RoomTypeServiceInterface
 {
@@ -41,11 +43,17 @@ class RoomTypeService implements RoomTypeServiceInterface
         $this->filterByPriceRangeUseCase = $filterByPriceRangeUseCase;
     }
 
+    /**
+     * @throws InvalidRoomTypeDataException
+     */
     public function createRoomType(RoomTypeDTO $dto): bool
     {
         return $this->createUseCase->execute($dto);
     }
 
+    /**
+     * @throws RoomTypeNotFoundException
+     */
     public function getRoomType(int $id): RoomType
     {
         return $this->getUseCase->execute($id);
@@ -56,11 +64,18 @@ class RoomTypeService implements RoomTypeServiceInterface
         return $this->getAllUseCase->execute();
     }
 
+    /**
+     * @throws RoomTypeNotFoundException
+     * @throws InvalidRoomTypeDataException
+     */
     public function updateRoomType(int $id, RoomTypeDTO $dto): bool
     {
         return $this->updateUseCase->execute($id, $dto);
     }
 
+    /**
+     * @throws RoomTypeNotFoundException
+     */
     public function deleteRoomType(int $id): bool
     {
         return $this->deleteUseCase->execute($id);

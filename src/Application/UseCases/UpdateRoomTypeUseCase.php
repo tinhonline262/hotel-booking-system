@@ -22,6 +22,10 @@ class UpdateRoomTypeUseCase
         $this->validator = $validator;
     }
 
+    /**
+     * @throws RoomTypeNotFoundException
+     * @throws InvalidRoomTypeDataException
+     */
     public function execute(int $id, RoomTypeDTO $dto): bool
     {
         // Check if exists
