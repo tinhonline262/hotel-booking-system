@@ -8,6 +8,35 @@ namespace App\Presentation\Controllers\Api;
  */
 abstract class BaseRestController
 {
+
+    public function __construct()
+    {
+        $this->handleCors();
+    }
+
+    /**
+     * Handle CORS preflight
+     */
+    protected function handleCors(): void
+    {
+        try {
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, PATCH, OPTIONS');
+            header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+
+            if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+                header('Access-Control-Max-Age: 86400');
+                http_response_code(204);
+                exit;
+            }
+        } catch (\Throwable $e) {
+            error_log('CORS error: ' . $e->getMessage());
+            http_response_code(204);
+            exit;
+        }
+    }
+
+
     /**
      * Send JSON response
      */

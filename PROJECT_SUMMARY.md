@@ -135,8 +135,6 @@ D:\PHPCode\hotel\
 - ✓ `public/.htaccess` - Apache configuration
 - ✓ `public/css/main.css` - Main stylesheet (responsive)
 - ✓ `public/css/components.css` - Component styles
-- ✓ `public/js/main.js` - Main JavaScript application
-- ✓ `public/js/modules/booking.js` - Booking module
 
 ### Database
 - ✓ `database/schema.sql` - Complete database schema with sample data

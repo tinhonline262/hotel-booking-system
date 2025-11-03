@@ -15,6 +15,9 @@ class GetRoomTypeUseCase
         $this->repository = $repository;
     }
 
+    /**
+     * @throws RoomTypeNotFoundException
+     */
     public function execute(int $id): RoomType
     {
         $roomType = $this->repository->findById($id);
