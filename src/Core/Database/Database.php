@@ -14,6 +14,9 @@ class Database
     private ?PDO $connection = null;
     private array $config;
 
+    /**
+     * @throws \Exception
+     */
     private function __construct(array $config)
     {
         $this->config = $config;

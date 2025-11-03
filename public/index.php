@@ -1,5 +1,15 @@
 <?php
 
+// Handle CORS preflight BEFORE anything else
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, PATCH, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+    header('Access-Control-Max-Age: 86400');
+    http_response_code(204);
+    exit;
+}
+
 require_once __DIR__ . '/../vendor/autoload.php';
 
 // Start session
@@ -23,20 +33,24 @@ if ($appConfig['debug']) {
 date_default_timezone_set($appConfig['timezone']);
 
 // Initialize core components
-use App\Core\Router\Router;
-use App\Core\Database\Database;
 use App\Core\Container\Container;
+use App\Core\Router\Router;
+use App\Infrastructure\DIContainer\AppServiceProvider;
 
 // Initialize container
 $container = Container::getInstance();
 
-// Bind database instance
-$container->singleton(Database::class, function() use ($dbConfig) {
-    return Database::getInstance($dbConfig);
-});
+// Register all service providers through AppServiceProvider
+AppServiceProvider::register($container);
+
+// Boot providers (for any post-registration logic)
+AppServiceProvider::boot($container);
 
 // Initialize router
 $router = new Router();
+
+// Set container on router for dependency injection
+$router->setContainer($container);
 
 // Load routes
 $router->loadRoutes($routesConfig['routes']);
@@ -60,4 +74,3 @@ try {
         echo "<p>Please try again later.</p>";
     }
 }
-
