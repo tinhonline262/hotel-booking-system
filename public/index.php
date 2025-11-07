@@ -1,6 +1,7 @@
 <?php
-
-// Handle CORS preflight BEFORE anything else
+// =====================================================
+// 1️⃣ Xử lý CORS trước tiên (Preflight request)
+// =====================================================
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     header('Access-Control-Allow-Origin: *');
     header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, PATCH, OPTIONS');
@@ -10,17 +11,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
+// =====================================================
+// 2️⃣ Autoload Composer
+// =====================================================
 require_once __DIR__ . '/../vendor/autoload.php';
 
-// Start session
+// =====================================================
+// 3️⃣ Khởi tạo Session & Load Config
+// =====================================================
 session_start();
 
-// Load configuration
 $appConfig = require __DIR__ . '/../config/app.php';
 $dbConfig = require __DIR__ . '/../config/database.php';
 $routesConfig = require __DIR__ . '/../config/routes.php';
 
-// Error handling based on environment
+// =====================================================
+// 4️⃣ Xử lý lỗi theo môi trường
+// =====================================================
 if ($appConfig['debug']) {
     ini_set('display_errors', 1);
     error_reporting(E_ALL);
@@ -29,45 +36,66 @@ if ($appConfig['debug']) {
     error_reporting(0);
 }
 
-// Set timezone
-date_default_timezone_set($appConfig['timezone']);
+// =====================================================
+// 5️⃣ Thiết lập múi giờ
+// =====================================================
+date_default_timezone_set($appConfig['timezone'] ?? 'UTC');
 
-// Initialize core components
-use App\Core\Container\Container;
-use App\Core\Router\Router;
-use App\Infrastructure\DIContainer\AppServiceProvider;
+// =====================================================
+// 6️⃣ Khởi tạo Container & Đăng ký Provider
+// =====================================================
+use Hotel\Core\Container\Container;
+use Hotel\Core\Router\Router;
+use Hotel\Infrastructure\DIContainer\RepositoryProvider;
+use Hotel\Infrastructure\DIContainer\UseCaseProvider;
+use Hotel\Infrastructure\DIContainer\ValidatorProvider;
+use Hotel\Infrastructure\DIContainer\DatabaseProvider;
+use Hotel\Infrastructure\DIContainer\DashboardServiceProvider;
 
-// Initialize container
-$container = Container::getInstance();
+// --- Tạo container ---
+$container = new Container();
 
-// Register all service providers through AppServiceProvider
-AppServiceProvider::register($container);
+// --- Đăng ký config vào container (để provider có thể dùng) ---
+$container->bind('config', function() use ($appConfig) {
+    return $appConfig;
+});
 
-// Boot providers (for any post-registration logic)
-AppServiceProvider::boot($container);
+$container->bind('db.config', function() use ($dbConfig) {
+    return $dbConfig;
+});
 
-// Initialize router
+// --- Đăng ký các service provider của ứng dụng ---
+$container->register(new RepositoryProvider());
+$container->register(new UseCaseProvider());
+$container->register(new ValidatorProvider());
+$container->register(new DatabaseProvider());
+
+// 💡 ===>>> THÊM MỚI Ở ĐÂY: Dashboard Provider <<<===
+$container->register(new DashboardServiceProvider());
+// =====================================================
+
+// =====================================================
+// 7️⃣ Khởi tạo Router và nạp routes
+// =====================================================
 $router = new Router();
-
-// Set container on router for dependency injection
 $router->setContainer($container);
-
-// Load routes
 $router->loadRoutes($routesConfig['routes']);
 
-// Dispatch request
+// =====================================================
+// 8️⃣ Dispatch Request
+// =====================================================
 try {
     $method = $_SERVER['REQUEST_METHOD'];
-    $uri = $_SERVER['REQUEST_URI'];
+    $uri = strtok($_SERVER['REQUEST_URI'], '?'); // Bỏ query string
 
     $router->dispatch($method, $uri);
+
 } catch (Exception $e) {
-    // Handle errors
     http_response_code(500);
 
     if ($appConfig['debug']) {
         echo "<h1>Error</h1>";
-        echo "<p>" . $e->getMessage() . "</p>";
+        echo "<p>" . htmlspecialchars($e->getMessage()) . "</p>";
         echo "<pre>" . $e->getTraceAsString() . "</pre>";
     } else {
         echo "<h1>Something went wrong</h1>";
