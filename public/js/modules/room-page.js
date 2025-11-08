@@ -16,10 +16,16 @@ class RoomPageManager {
     }
 
     init() {
-        this.setupEventListeners();
-        this.loadRoomTypes();
-        this.loadRooms();
-    }
+    this.setActiveSidebar();
+    this.setupEventListeners();
+    this.loadRoomTypes();
+    this.loadRooms();
+}
+setActiveSidebar() {
+    const currentPage = window.location.pathname.split('/').pop() || 'rooms.html';
+    $('.sidebar__link').removeClass('sidebar__link--active');
+    $(`.sidebar__link[href="${currentPage}"]`).addClass('sidebar__link--active');
+}
 
     setupEventListeners() {
         $("#toggle_btn").on("click", () => $("#sidebar").toggleClass("opened"));

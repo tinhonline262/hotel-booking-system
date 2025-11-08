@@ -5,6 +5,9 @@ return [
         // ============================================
         // REST API ROUTES - JSON Responses
         // ============================================
+        
+        // Dashboard API
+        ['GET', '/api/dashboard/stats', 'Api\DashboardController@getStats'],
 
         // Room Types API
         ['GET', '/api/room-types', 'Api\RoomTypeController@index'],
