@@ -13,16 +13,16 @@ class Room
     private string $room_number;
     private ?int $room_type_id;
     private string $status;
-    private DateTime $createdAt;
-    private DateTime $updatedAt;
+    private ?string $createdAt;
+    private ?string $updatedAt;
 
     public function __construct(
         ?int $id,
         string $room_number,
         ?int $room_type_id,
-        DateTime $createdAt,
-        DateTime $updatedAt,
-        string $status = 'available'
+        string $status = 'available',
+        ?string $createdAt = null,
+        ?string $updatedAt = null
     ) {
         $this->id = $id;
         $this->room_number = $room_number;
@@ -37,8 +37,8 @@ class Room
     public function getRoomNumber(): string { return $this->room_number; }
     public function getRoomTypeId(): ?int { return $this->room_type_id; }
     public function getStatus(): string { return $this->status; }
-    public function getCreatedAt(): DateTime { return $this->createdAt; }
-    public function getUpdatedAt(): DateTime { return $this->updatedAt; }
+    public function getCreatedAt(): ?string { return $this->createdAt; }
+    public function getUpdatedAt(): ?string { return $this->updatedAt; }
 
     public function toArray(): array
     {
@@ -47,8 +47,8 @@ class Room
             'room_number' => $this->room_number,
             'room_type_id' => $this->room_type_id,
             'status' => $this->status,
-            'created_at' => $this->createdAt->format('Y-m-d H:i:s'),
-            'updated_at' => $this->updatedAt->format('Y-m-d H:i:s'),
+            'created_at' => $this->createdAt,
+            'updated_at' => $this->updatedAt,
         ];
     }
 }

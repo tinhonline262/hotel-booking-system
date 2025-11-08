@@ -4,7 +4,9 @@ namespace App\Infrastructure\DIContainer;
 
 use App\Core\Container\Container;
 use App\Core\Database\Database;
+use App\Domain\Interfaces\Repositories\RoomRepositoryInterface;
 use App\Domain\Interfaces\Repositories\RoomTypeRepositoryInterface;
+use App\Infrastructure\Persistence\Repositories\RoomRepository;
 use App\Infrastructure\Persistence\Repositories\RoomTypeRepository;
 
 /**
@@ -23,5 +25,9 @@ class RepositoryProvider
         // UserRepositoryInterface => UserRepository
         // BookingRepositoryInterface => BookingRepository
         // RoomRepositoryInterface => RoomRepository
+
+        $container->singleton(RoomRepositoryInterface::class, function (Container $c) {
+            return new RoomRepository($c->make(Database::class));
+        });
     }
 }

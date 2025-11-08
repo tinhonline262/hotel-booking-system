@@ -24,11 +24,9 @@ class RoomDTO
     {
         return new self(
             $data['id'] ?? null,
-            $data['name'] ?? '',
-            $data['description'] ?? '',
-            (int)($data['capacity'] ?? 0),
-            (float)($data['pricePerNight'] ?? 0),
-            $data['amenities'] ?? []
+            $data['room_number'] ?? '',
+            $data['room_type_id'] ?? null,
+            $data['status'] ?? ''
         );
     }
 
@@ -36,11 +34,9 @@ class RoomDTO
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
-            'description' => $this->description,
-            'capacity' => $this->capacity,
-            'pricePerNight' => $this->pricePerNight,
-            'amenities' => $this->amenities,
+            'room_number' => $this->room_number,
+            'room_type_id' => $this->room_type_id,
+            'status' => $this->status
         ];
     }
 }
