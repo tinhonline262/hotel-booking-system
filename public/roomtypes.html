@@ -76,10 +76,10 @@
         </header>
 
         <!-- Sidebar -->
-        <aside
-            class="sidebar"
-            id="sidebar"
-        >
+        <!-- ... (giữ nguyên từ <head> đến trước phần sidebar) -->
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar__inner">
                 <nav class="sidebar__menu">
                     <ul class="sidebar__list">
@@ -87,36 +87,29 @@
                             <span class="sidebar__text">Chính</span>
                         </li>
                         <li class="sidebar__item">
-                            <a
-                                href="index.html"
-                                class="sidebar__link sidebar__link--active"
-                            >
+                            <a href="index.html" class="sidebar__link">
                                 <span class="sidebar__icon">📊</span>
                                 <span class="sidebar__text">Bảng điều khiển</span>
                             </a>
                         </li>
-                        <li class="sidebar__item sidebar__item--submenu">
-                            <a
-                                href="#"
-                                class="sidebar__link"
-                            >
-                                <span class="sidebar__icon">📦</span>
-                                <span class="sidebar__text">Phòng</span>
-                                <span class="sidebar__arrow"></span>
+                        <li class="sidebar__item">
+                            <a href="roomtypes.html" class="sidebar__link">
+                                <span class="sidebar__icon">🛏️</span>
+                                <span class="sidebar__text">Loại phòng</span>
                             </a>
-                            <ul class="sidebar__submenu">
-                                <li class="sidebar__submenu-item">
-                                    <a
-                                        href="roomtypes.html"
-                                        class="sidebar__submenu-link"
-                                    >Loại phòng</a>
-                                </li>
-                            </ul>
+                        </li>
+                        <li class="sidebar__item">
+                            <a href="rooms.html" class="sidebar__link sidebar__link--active">
+                                <span class="sidebar__icon">🚪</span>
+                                <span class="sidebar__text">Phòng</span>
+                            </a>
                         </li>
                     </ul>
                 </nav>
             </div>
         </aside>
+
+
 
         <!-- Main Content -->
         <main class="page">

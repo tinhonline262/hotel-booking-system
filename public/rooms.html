@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room Management</title>
+    <link rel="stylesheet" href="css/room-types.css">
+    <link rel="stylesheet" href="css/rooms.css">
+</head>
+
+<body>
+<div class="app">
+    <!-- Header -->
+    <header class="header">
+        <div class="header__left">
+            <a href="index.html" class="header__logo">
+                <img src="assets/img/cmc_logo.png" alt="Hotel Management Logo" class="header__logo-img">
+            </a>
+        </div>
+        <button class="header__toggle" id="toggle_btn">
+            <span class="header__toggle-bar"></span>
+            <span class="header__toggle-bar"></span>
+            <span class="header__toggle-bar"></span>
+        </button>
+        <div class="header__title">
+            <h3 class="header__title-text">Hotel</h3>
+        </div>
+        <nav class="header__nav">
+            <ul class="header__menu">
+                <li class="header__menu-item header__menu-item--dropdown">
+                    <a href="#" class="header__menu-link">
+                        <img src="assets/img/user-circle-o.png" alt="User" class="header__user-avatar">
+                        <span class="header__user-status header__user-status--online"></span>
+                        <span class="header__user-name">Admin</span>
+                    </a>
+                    <div class="header__dropdown">
+                        <a href="profile.html" class="header__dropdown-item">Hồ sơ của tôi</a>
+                        <a href="settings.html" class="header__dropdown-item">Cài đặt</a>
+                        <a href="login.html" class="header__dropdown-item">Đăng xuất</a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Sidebar -->
+    <!-- ... (giữ nguyên từ <head> đến trước phần sidebar) -->
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar__inner">
+            <nav class="sidebar__menu">
+                <ul class="sidebar__list">
+                    <li class="sidebar__item sidebar__item--title">
+                        <span class="sidebar__text">Chính</span>
+                    </li>
+                    <li class="sidebar__item">
+                        <a href="index.html" class="sidebar__link">
+                            <span class="sidebar__icon">📊</span>
+                            <span class="sidebar__text">Bảng điều khiển</span>
+                        </a>
+                    </li>
+                    <li class="sidebar__item">
+                        <a href="roomtypes.html" class="sidebar__link">
+                            <span class="sidebar__icon">🛏️</span>
+                            <span class="sidebar__text">Loại phòng</span>
+                        </a>
+                    </li>
+                    <li class="sidebar__item">
+                        <a href="rooms.html" class="sidebar__link sidebar__link--active">
+                            <span class="sidebar__icon">🚪</span>
+                            <span class="sidebar__text">Phòng</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </aside>
+
+
+
+    <!-- Main Content -->
+    <main class="page">
+        <div class="page__content">
+            <header class="page__header">
+                <div class="page__header-container">
+                    <div class="page__header-left">
+                        <h3 class="page__title">Quản lý Phòng</h3>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb__item">
+                                <a href="index.html" class="breadcrumb__link">Bảng điều khiển</a>
+                            </li>
+                            <li class="breadcrumb__item breadcrumb__item--active">Phòng</li>
+                        </ul>
+                    </div>
+                    <div class="page__header-right">
+                        <button class="btn btn--primary btn--add" data-action="open-add">
+                            <span class="btn__icon">+</span>
+                            <span class="btn__text">Thêm Phòng Mới</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="filter-bar">
+                <form id="filterForm" class="filter-form">
+                    <div class="form__group">
+                        <label for="filterStatus" class="form__label">Trạng thái:</label>
+                        <select id="filterStatus" class="form__input">
+                            <option value="">Tất cả</option>
+                            <option value="available">Còn trống</option>
+                            <option value="occupied">Đã thuê</option>
+                            <option value="cleaning">Đang dọn</option>
+                            <option value="maintenance">Bảo trì</option>
+                        </select>
+                    </div>
+                    <div class="form__group">
+                        <label for="filterRoomNumber" class="form__label">Số phòng:</label>
+                        <input type="text" id="filterRoomNumber" class="form__input" placeholder="Nhập số phòng">
+                    </div>
+                    <button type="submit" class="btn btn--secondary">Lọc</button>
+                </form>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="table">
+                    <thead class="table__head">
+                    <tr class="table__row">
+                        <th class="table__header">#</th>
+                        <th class="table__header">Số phòng</th>
+                        <th class="table__header">Loại phòng</th>
+                        <th class="table__header">Trạng thái</th>
+                        <th class="table__header table__header--action">Hành động</th>
+                    </tr>
+                    </thead>
+                    <tbody class="table__body" id="roomTableBody">
+                    <!-- Data will be loaded here via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Modal Add -->
+        <div class="modal modal--add" id="add_room">
+            <div class="modal__dialog">
+                <div class="modal__content">
+                    <header class="modal__header">
+                        <h5 class="modal__title">Thêm phòng mới</h5>
+                        <button class="modal__close">&times;</button>
+                    </header>
+                    <div class="modal__body">
+                        <form class="form" id="addRoomForm">
+                            <div class="form__group">
+                                <label class="form__label">Số phòng <span class="form__required">*</span></label>
+                                <input type="text" class="form__input" id="add_room_number" required maxlength="20">
+                            </div>
+                            <div class="form__group">
+                                <label class="form__label">Loại phòng <span class="form__required">*</span></label>
+                                <select class="form__input" id="add_room_type_id" required>
+                                    <!-- Room type options loaded via JS -->
+                                </select>
+                            </div>
+                            <div class="form__group">
+                                <label class="form__label">Trạng thái <span class="form__required">*</span></label>
+                                <select class="form__input" id="add_status" required>
+                                    <option value="available">Còn trống</option>
+                                    <option value="occupied">Đã thuê</option>
+                                    <option value="cleaning">Đang dọn</option>
+                                    <option value="maintenance">Bảo trì</option>
+                                </select>
+                            </div>
+                            <div class="form__submit">
+                                <button type="submit" class="btn btn--primary">Lưu</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Edit -->
+        <div class="modal modal--edit" id="edit_room">
+            <div class="modal__dialog">
+                <div class="modal__content">
+                    <header class="modal__header">
+                        <h5 class="modal__title">Sửa phòng</h5>
+                        <button class="modal__close">&times;</button>
+                    </header>
+                    <div class="modal__body">
+                        <form class="form" id="editRoomForm">
+                            <input type="hidden" id="edit_id">
+                            <div class="form__group">
+                                <label class="form__label">Số phòng <span class="form__required">*</span></label>
+                                <input type="text" class="form__input" id="edit_room_number" required maxlength="20">
+                            </div>
+                            <div class="form__group">
+                                <label class="form__label">Loại phòng <span class="form__required">*</span></label>
+                                <select class="form__input" id="edit_room_type_id" required>
+                                    <!-- Room type options loaded via JS -->
+                                </select>
+                            </div>
+                            <div class="form__group">
+                                <label class="form__label">Trạng thái <span class="form__required">*</span></label>
+                                <select class="form__input" id="edit_status" required>
+                                    <option value="available">Còn trống</option>
+                                    <option value="occupied">Đã thuê</option>
+                                    <option value="cleaning">Đang dọn</option>
+                                    <option value="maintenance">Bảo trì</option>
+                                </select>
+                            </div>
+                            <div class="form__submit">
+                                <button type="submit" class="btn btn--primary">Lưu</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Delete -->
+        <div class="modal modal--delete" id="delete_room">
+            <div class="modal__dialog">
+                <div class="modal__content">
+                    <div class="modal__body">
+                        <header class="modal__confirm-header">
+                            <h3 class="modal__confirm-title">Xóa phòng</h3>
+                            <p class="modal__confirm-text">Bạn có chắc chắn muốn xóa phòng này?</p>
+                        </header>
+                        <div class="modal__actions">
+                            <button class="btn btn--danger" data-action="confirm-delete">Xóa</button>
+                            <button class="btn btn--secondary" data-action="cancel-delete">Hủy</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="js/utils/api-service.js"></script>
+<script src="js/modules/room-page.js"></script>
+
+<script>
+    $(document).ready(function () {
+        new RoomPageManager('http://localhost:8000/api');
+    });
+</script>
+</body>
+</html>
