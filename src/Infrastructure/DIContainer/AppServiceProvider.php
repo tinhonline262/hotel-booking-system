@@ -45,3 +45,20 @@ class AppServiceProvider
     }
 }
 
+/**
+ * Minimal ControllerProvider stub to satisfy references from AppServiceProvider.
+ * Implement the actual registration logic in the real provider when available.
+ */
+class ControllerProvider
+{
+    /**
+     * Register controller dependencies into the container.
+     *
+     * @param Container $container
+     */
+    public static function register(Container $container): void
+    {
+        // Intentionally left blank as a stub; replace with real registrations.
+    }
+}
+
