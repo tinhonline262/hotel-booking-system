@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room Management Dashboard</title>
+    <link rel="stylesheet" href="css/rooms.css">
+    <link rel="stylesheet" href="css/room-types.css">
+    <style>
+        :root {
+            --bg-primary: #fafafa;
+            --bg-card: #ffffff;
+            --text-primary: #0a0a0a;
+            --text-secondary: #737373;
+            --text-tertiary: #a3a3a3;
+            --accent-blue: #0066ff;
+            --accent-green: #00c853;
+            --accent-orange: #ff6b35;
+            --accent-purple: #7c3aed;
+            --border: #e5e5e5;
+            --shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --radius: 16px
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #fafafa 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Display', system-ui, sans-serif;
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            padding: 40px;
+            min-height: 100vh
+        }
+
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 28px;
+            margin-bottom: 48px;
+            perspective: 1000px
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+            /* transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); */
+            /* transform-style: preserve-3d */
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, var(--card-accent), transparent 70%);
+            opacity: 0.1;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none
+        }
+
+        .stat-card:hover {
+            border-color: var(--card-accent);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+            transform: translateY(-8px) scale(1.02)
+        }
+
+        .stat-card:hover::before {
+            width: 200px;
+            height: 200px;
+            opacity: 0.15
+        }
+
+        .stat-card__content {
+            position: relative;
+            z-index: 1
+        }
+
+        .stat-card__label {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: var(--text-tertiary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .stat-card__label::before {
+            content: '';
+            width: 3px;
+            height: 12px;
+            background: var(--card-accent);
+            border-radius: 2px
+        }
+
+        .stat-card__value-wrapper {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 24px
+        }
+
+        .stat-card__value {
+            font-size: 56px;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: var(--text-primary);
+            line-height: 1;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--card-accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text
+        }
+
+        .stat-card__unit {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            opacity: 0.7
+        }
+
+        .stat-card__footer {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border)
+        }
+
+        .stat-card__icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--card-accent), var(--card-accent-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1)
+        }
+
+        .stat-card__icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: #ffffff;
+            stroke-width: 2.5;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))
+        }
+
+        .stat-card__meta {
+            flex: 1;
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500
+        }
+
+        .stat-card--blue {
+            --card-accent: #0066ff;
+            --card-accent-dark: #0052cc
+        }
+
+        .stat-card--green {
+            --card-accent: #00c853;
+            --card-accent-dark: #00a843
+        }
+
+        .stat-card--orange {
+            --card-accent: #ff6b35;
+            --card-accent-dark: #e65525
+        }
+
+        .stat-card--purple {
+            --card-accent: #7c3aed;
+            --card-accent-dark: #6929d4
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 28px
+        }
+
+        .dashboard-card {
+            background: var(--bg-card);
+            padding: 48px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            /* transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); */
+            position: relative;
+            overflow: hidden
+        }
+
+
+
+        .dashboard-card:hover {
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1)
+        }
+
+        .dashboard-card:hover::before {
+            transform: scaleX(1)
+        }
+
+        .dashboard-card__title {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .dashboard-card__title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: linear-gradient(180deg, var(--accent-blue), var(--accent-purple));
+            border-radius: 2px
+        }
+
+        .progress-item {
+            margin-bottom: 36px
+        }
+
+        .progress-item:last-child {
+            margin-bottom: 0
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px
+        }
+
+        .progress-label span:first-child {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary)
+        }
+
+        .progress-value {
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--text-primary)
+        }
+
+        .progress {
+            height: 16px;
+            background: var(--border);
+            border-radius: 24px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05)
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 24px;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15)
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: shimmer 2.5s infinite
+        }
+
+        .progress-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.3), transparent);
+            border-radius: 24px 24px 0 0
+        }
+
+        /* @keyframes shimmer {
+            0% {
+                transform: translateX(-100%)
+            }
+
+            100% {
+                transform: translateX(100%)
+            }
+        } */
+
+        .room-distribution {
+            display: grid;
+            gap: 24px
+        }
+
+        .room-type-card {
+            background: linear-gradient(135deg, var(--bg-card) 0%, rgba(255, 255, 255, 0.5) 100%);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer
+        }
+
+        .room-type-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, transparent, var(--type-color));
+            opacity: 0;
+            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none
+        }
+
+        .room-type-card:hover {
+            border-color: var(--type-color);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+            /* transform: translateX(8px) scale(1.02); */
+        }
+
+        .room-type-card:hover::before {
+            opacity: 0.05
+        }
+
+        .room-type-card__visual {
+            position: relative;
+            width: 88px;
+            height: 88px;
+            flex-shrink: 0
+        }
+
+        .room-type-card__circle {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(var(--type-color) 0deg, var(--type-color) var(--percentage), var(--border) var(--percentage), var(--border) 360deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            /* transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1) */
+        }
+
+        .room-type-card:hover .room-type-card__circle {
+            transform: rotate(10deg) scale(1.1)
+        }
+
+        .room-type-card__circle::after {
+            content: '';
+            width: 70%;
+            height: 70%;
+            background: var(--bg-card);
+            border-radius: 50%;
+            position: absolute;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.1)
+        }
+
+        .room-type-card__count {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-primary);
+            z-index: 1
+        }
+
+        .room-type-card__info {
+            flex: 1;
+            min-width: 0
+        }
+
+        .room-type-card__name {
+            font-weight: 800;
+            font-size: 19px;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            letter-spacing: -0.02em
+        }
+
+        .room-type-card__meta {
+            display: flex;
+            gap: 16px;
+            font-size: 15px;
+            color: var(--text-secondary);
+            font-weight: 600
+        }
+
+        .room-type-card__percentage {
+            font-weight: 900;
+            font-size: 40px;
+            color: var(--text-primary);
+            min-width: 100px;
+            text-align: right;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--type-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text
+        }
+
+        @media (max-width:768px) {
+            body {
+                padding: 20px
+            }
+
+            .dashboard-stats {
+                grid-template-columns: 1fr;
+                gap: 20px
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr
+            }
+
+            .stat-card {
+                padding: 32px
+            }
+
+            .dashboard-card {
+                padding: 32px
+            }
+
+            .stat-card__value {
+                font-size: 48px
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <header class="header">
+            <div class="header__left">
+                <a href="index.html" class="header__logo">
+                    <img src="assets/img/cmc_logo.png" alt="Hotel Management Logo" class="header__logo-img">
+                </a>
+            </div>
+            <button class="header__toggle" id="toggle_btn">
+                <span class="header__toggle-bar"></span>
+                <span class="header__toggle-bar"></span>
+                <span class="header__toggle-bar"></span>
+            </button>
+            <div class="header__title">
+                <h3 class="header__title-text">Hotel</h3>
+            </div>
+            <nav class="header__nav">
+                <ul class="header__menu">
+                    <li class="header__menu-item header__menu-item--dropdown">
+                        <a href="#" class="header__menu-link">
+                            <img src="assets/img/user-circle-o.png" alt="User" class="header__user-avatar">
+                            <span class="header__user-status header__user-status--online"></span>
+                            <span class="header__user-name">Admin</span>
+                        </a>
+                        <div class="header__dropdown">
+                            <a href="profile.html" class="header__dropdown-item">Hồ sơ của tôi</a>
+                            <a href="settings.html" class="header__dropdown-item">Cài đặt</a>
+                            <a href="login.html" class="header__dropdown-item">Đăng xuất</a>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+
+        <!-- Sidebar -->
+        <!-- ... (giữ nguyên từ <head> đến trước phần sidebar) -->
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar__inner">
+                <nav class="sidebar__menu">
+                    <ul class="sidebar__list">
+                        <li class="sidebar__item sidebar__item--title">
+                            <span class="sidebar__text">Chính</span>
+                        </li>
+                        <li class="sidebar__item">
+                            <a href="dashboard.html" class="sidebar__link">
+                                <span class="sidebar__icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <rect width="7" height="9" x="3" y="3" rx="1" />
+                                        <rect width="7" height="5" x="14" y="3" rx="1" />
+                                        <rect width="7" height="9" x="14" y="12" rx="1" />
+                                        <rect width="7" height="5" x="3" y="16" rx="1" />
+                                    </svg>
+                                </span>
+                                <span class="sidebar__text">Bảng điều khiển</span>
+                            </a>
+                        </li>
+                        <li class="sidebar__item">
+                            <a href="roomtypes.html" class="sidebar__link">
+                                <span class="sidebar__icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path
+                                            d="M13.172 2a2 2 0 0 1 1.414.586l6.71 6.71a2.4 2.4 0 0 1 0 3.408l-4.592 4.592a2.4 2.4 0 0 1-3.408 0l-6.71-6.71A2 2 0 0 1 6 9.172V3a1 1 0 0 1 1-1z" />
+                                        <path d="M2 7v6.172a2 2 0 0 0 .586 1.414l6.71 6.71a2.4 2.4 0 0 0 3.191.193" />
+                                        <circle cx="10.5" cy="6.5" r=".5" fill="currentColor" />
+                                    </svg>
+                                </span>
+                                <span class="sidebar__text">Loại phòng</span>
+                            </a>
+                        </li>
+                        <li class="sidebar__item">
+                            <a href="rooms.html" class="sidebar__link ">
+                                <span class="sidebar__icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M3 20v-8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v8" />
+                                        <path d="M5 10V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4" />
+                                        <path d="M3 18h18" />
+                                    </svg>
+                                </span>
+                                <span class="sidebar__text">Phòng</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+        <main class="page">
+            <div class="page__content">
+                <header class="page__header">
+                    <div class="page__header-container">
+                        <div class="page__header-left">
+                            <h3 class="page__title">Thống kê phòng</h3>
+                            <ul class="breadcrumb">
+                                <li class="breadcrumb__item">Trang chủ</li>
+                            </ul>
+                        </div>
+                        <div class="page__header-right"><button class="btn btn--primary" data-action="refresh-data"
+                                id="refreshBtn"><span class="btn__icon"><svg xmlns="http://www.w3.org/2000/svg"
+                                        width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                                        <path d="M3 3v5h5" />
+                                        <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+                                        <path d="M16 16h5v5" />
+                                    </svg></span><span class="btn__text">Làm mới</span></button></div>
+                    </div>
+                </header>
+                <section class="dashboard-stats">
+                    <div class="stat-card stat-card--blue">
+                        <div class="stat-card__content">
+                            <div class="stat-card__label">Tổng số phòng</div>
+                            <div class="stat-card__value-wrapper"><span class="stat-card__value"
+                                    id="totalRooms">-</span><span class="stat-card__unit">phòng</span></div>
+                            <div class="stat-card__footer">
+                                <div class="stat-card__icon"><svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                        height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" />
+                                        <path
+                                            d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                                    </svg></div>
+                                <div class="stat-card__meta">Tổng số phòng hiện có</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-card--green">
+                        <div class="stat-card__content">
+                            <div class="stat-card__label">Phòng trống</div>
+                            <div class="stat-card__value-wrapper"><span class="stat-card__value"
+                                    id="availableRooms">-</span><span class="stat-card__unit">phòng</span></div>
+                            <div class="stat-card__footer">
+                                <div class="stat-card__icon"><svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                        height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M2 4v16" />
+                                        <path d="M2 8h18a2 2 0 0 1 2 2v10" />
+                                        <path d="M2 17h20" />
+                                        <path d="M6 8v9" />
+                                    </svg></div>
+                                <div class="stat-card__meta">Sẵn sàng cho thuê</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-card--orange">
+                        <div class="stat-card__content">
+                            <div class="stat-card__label">Phòng đã thuê</div>
+                            <div class="stat-card__value-wrapper"><span class="stat-card__value"
+                                    id="occupiedRooms">-</span><span class="stat-card__unit">phòng</span></div>
+                            <div class="stat-card__footer">
+                                <div class="stat-card__icon"><svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                        height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M10 12h.01" />
+                                        <path d="M18 9V6a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v14" />
+                                        <path d="M2 20h8" />
+                                        <path d="M20 17v-2a2 2 0 1 0-4 0v2" />
+                                        <rect x="14" y="17" width="8" height="5" rx="1" />
+                                    </svg></div>
+                                <div class="stat-card__meta">Đang có khách</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-card--purple">
+                        <div class="stat-card__content">
+                            <div class="stat-card__label">Tỷ lệ lấp đầy</div>
+                            <div class="stat-card__value-wrapper"><span class="stat-card__value"
+                                    id="occupancyRate">-</span><span class="stat-card__unit">%</span></div>
+                            <div class="stat-card__footer">
+                                <div class="stat-card__icon"><svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                        height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M3 3v16a2 2 0 0 0 2 2h16" />
+                                        <rect x="15" y="5" width="4" height="12" rx="1" />
+                                        <rect x="7" y="8" width="4" height="9" rx="1" />
+                                    </svg></div>
+                                <div class="stat-card__meta">Hiệu suất khai thác</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <h2 class="dashboard-card__title">Trạng thái phòng</h2>
+                        <div class="progress-grid">
+                            <div class="progress-item">
+                                <div class="progress-label"><span>Còn trống</span><span class="progress-value"
+                                        id="availablePercentage">-%</span></div>
+                                <div class="progress">
+                                    <div class="progress-bar" id="availableBar"
+                                        style="background:linear-gradient(90deg,#00c853,#00e676)"></div>
+                                </div>
+                            </div>
+                            <div class="progress-item">
+                                <div class="progress-label"><span>Đã thuê</span><span class="progress-value"
+                                        id="occupiedPercentage">-%</span></div>
+                                <div class="progress">
+                                    <div class="progress-bar" id="occupiedBar"
+                                        style="background:linear-gradient(90deg,#ff6b35,#ff8a65)"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dashboard-card dashboard-card--modern">
+                        <h2 class="dashboard-card__title">Phân bố loại phòng</h2>
+                        <div id="roomTypeDistribution" class="room-distribution"></div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="js/utils/api-service.js"></script>
+    <script src="js/modules/room-dashboard.js"></script>
+    <script>$(document).ready(function () { const originalManager = new RoomDashboardManager('http://localhost:8000/api'); window.renderRoomTypeDistribution = function (data) { const container = $('#roomTypeDistribution'); container.empty(); if (!data || data.length === 0) { container.html('<div style="color:rgba(255,255,255,0.7);text-align:center;padding:20px;">Chưa có dữ liệu</div>'); return } const total = data.reduce((sum, item) => sum + item.count, 0); const colors = ['#0066ff', '#00c853', '#ff6b35', '#7c3aed', '#00bcd4', '#ff5722']; data.forEach((item, index) => { const percentage = total > 0 ? Math.round((item.count / total) * 100) : 0; const percentageDeg = (percentage / 100) * 360; const color = colors[index % colors.length]; const card = $(`<div class="room-type-card" style="--type-color:${color}"><div class="room-type-card__visual"><div class="room-type-card__circle" style="--percentage:${percentageDeg}deg;--type-color:${color}"></div><div class="room-type-card__count">${item.count}</div></div><div class="room-type-card__info"><div class="room-type-card__name">${item.name || 'N/A'}</div><div class="room-type-card__meta"><span>${item.count} phòng</span><span>•</span><span>${total} tổng</span></div></div><div class="room-type-card__percentage" style="--type-color:${color}">${percentage}%</div></div>`); container.append(card) }) } });</script>
+</body>
+
+</html>

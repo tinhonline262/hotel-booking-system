@@ -21,8 +21,15 @@ class RoomTypePageManager {
    * Initialize the page manager
    */
   init() {
+    this.setActiveSidebar();
     this.setupEventListeners();
     this.loadRoomTypes();
+    this.loadRooms();
+  }
+  setActiveSidebar() {
+    const currentPage = window.location.pathname.split('/').pop() || 'room-type.html';
+    $('.sidebar__link').removeClass('sidebar__link--active');
+    $(`.sidebar__link[href="${currentPage}"]`).addClass('sidebar__link--active');
   }
 
   /**
@@ -127,23 +134,21 @@ class RoomTypePageManager {
                     <td class="table__cell">${index + 1}</td>
                     <td class="table__cell">${this.escapeHtml(room.name)}</td>
                     <td class="table__cell">${this.escapeHtml(
-                      room.description || "-"
-                    )}</td>
+          room.description || "-"
+        )}</td>
                     <td class="table__cell">${room.capacity}</td>
                     <td class="table__cell">${this.formatPrice(
-                      room.pricePerNight
-                    )}</td>
+          room.pricePerNight
+        )}</td>
                     <td class="table__cell">${this.escapeHtml(amenities)}</td>
                     <td class="table__cell table__cell--action">
                         <div class="action-dropdown">
                             <button class="action-dropdown__toggle">⋮</button>
                             <div class="action-dropdown__menu">
-                                <a href="#" class="action-dropdown__item" data-action="edit" data-id="${
-                                  room.id
-                                }">Edit</a>
-                                <a href="#" class="action-dropdown__item" data-action="delete" data-id="${
-                                  room.id
-                                }">Delete</a>
+                                <a href="#" class="action-dropdown__item" data-action="edit" data-id="${room.id
+          }">Edit</a>
+                                <a href="#" class="action-dropdown__item" data-action="delete" data-id="${room.id
+          }">Delete</a>
                             </div>
                         </div>
                     </td>

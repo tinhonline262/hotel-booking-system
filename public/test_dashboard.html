@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Dashboard API</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        button { padding: 10px 20px; margin: 10px; }
+        pre { background: #f4f4f4; padding: 15px; border-radius: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Dashboard API Tester</h1>
+    
+    <button onclick="testAPI()">Test API</button>
+    <button onclick="testWithParams()">Test với Parameters</button>
+    <button onclick="clearResults()">Clear</button>
+    
+    <div id="status"></div>
+    <pre id="results"></pre>
+
+    <script>
+        async function testAPI() {
+            const statusDiv = document.getElementById('status');
+            const resultsDiv = document.getElementById('results');
+            
+            statusDiv.innerHTML = 'Loading...';
+            
+            try {
+                const response = await fetch('/api/dashboard/stats');
+                const data = await response.json();
+                
+                statusDiv.innerHTML = `<span class="success">✓ Success! HTTP ${response.status}</span>`;
+                resultsDiv.textContent = JSON.stringify(data, null, 2);
+                
+                // Log key stats
+                console.log('Total Rooms:', data.data.rooms.total);
+                console.log('Occupancy Rate:', data.data.rooms.occupancy_rate + '%');
+                console.log('Monthly Revenue:', data.data.revenue.monthly);
+                
+            } catch (error) {
+                statusDiv.innerHTML = `<span class="error">✗ Error: ${error.message}</span>`;
+                resultsDiv.textContent = error.stack;
+            }
+        }
+        
+        async function testWithParams() {
+            const statusDiv = document.getElementById('status');
+            const resultsDiv = document.getElementById('results');
+            
+            statusDiv.innerHTML = 'Loading...';
+            
+            try {
+                const url = '/api/dashboard/stats?upcoming_days=14&recent_limit=20';
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                statusDiv.innerHTML = `<span class="success">✓ Success with params! HTTP ${response.status}</span>`;
+                resultsDiv.textContent = JSON.stringify(data, null, 2);
+                
+            } catch (error) {
+                statusDiv.innerHTML = `<span class="error">✗ Error: ${error.message}</span>`;
+                resultsDiv.textContent = error.stack;
+            }
+        }
+        
+        function clearResults() {
+            document.getElementById('status').innerHTML = '';
+            document.getElementById('results').textContent = '';
+        }
+    </script>
+</body>
+</html>

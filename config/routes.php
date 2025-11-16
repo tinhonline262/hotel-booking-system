@@ -15,6 +15,15 @@ return [
         ['PUT', '/api/room-types/{id}', 'Api\RoomTypeController@update'],
         ['DELETE', '/api/room-types/{id}', 'Api\RoomTypeController@delete'],
 
+        // Room API
+        ['GET', '/api/rooms', 'Api\RoomController@index'],
+        ['GET', '/api/rooms/filter/status', 'Api\RoomController@filterByStatus'],
+        ['GET', '/api/rooms/filter/room-number', 'Api\RoomController@filterByRoomNumber'],
+        ['GET', '/api/rooms/{id}', 'Api\RoomController@show'],
+        ['POST', '/api/rooms', 'Api\RoomController@create'],
+        ['PUT', '/api/rooms/{id}', 'Api\RoomController@update'],
+        ['DELETE', '/api/rooms/{id}', 'Api\RoomController@delete'],
+
         // Room Images API
         ['POST', '/api/rooms/{id}/images', 'Api\RoomImageController@upload'],
         ['PUT', '/api/rooms/{roomId}/images/{imageId}/primary', 'Api\RoomImageController@setPrimary'],

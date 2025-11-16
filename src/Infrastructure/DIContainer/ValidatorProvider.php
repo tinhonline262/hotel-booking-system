@@ -2,8 +2,11 @@
 
 namespace App\Infrastructure\DIContainer;
 
+use App\Application\Services\RoomTypeService;
 use App\Application\Validators\ImageUploadValidator;
 use App\Application\Validators\RoomTypeValidator;
+use App\Application\Validators\RoomValidator;
+use App\Application\Services\RoomService;
 use App\Core\Container\Container;
 use App\Domain\Interfaces\Services\StorageConfigInterface;
 
@@ -30,5 +33,8 @@ class ValidatorProvider
 
         // Add more validators here
         // UserValidator, BookingValidator, etc.
+        $container->singleton(RoomService::class, function () {
+            return new RoomValidator();
+        });
     }
 }
