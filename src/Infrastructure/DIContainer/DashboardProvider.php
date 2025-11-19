@@ -3,6 +3,7 @@ namespace App\Infrastructure\DIContainer;
 
 use App\Application\Interfaces\DashboardServiceInterface;
 use App\Application\Services\DashboardService;
+use App\Domain\Interfaces\Repositories\BookingRepositoryInterface;
 use App\Domain\Interfaces\Repositories\RoomRepositoryInterface;
 use App\Domain\Interfaces\Repositories\RoomTypeRepositoryInterface;
 

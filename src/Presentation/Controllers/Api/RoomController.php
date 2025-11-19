@@ -16,7 +16,6 @@ class RoomController extends BaseRestController
         $this->service = $service;
     }
 
-
     /**
      * GET /api/rooms
      * Get all rooms

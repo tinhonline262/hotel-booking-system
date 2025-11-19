@@ -5,6 +5,7 @@ namespace App\Infrastructure\DIContainer;
 use App\Application\Services\RoomTypeService;
 use App\Application\Validators\RoomTypeValidator;
 use App\Application\Validators\RoomValidator;
+use App\Application\Validators\BookingValidator;
 use App\Application\Services\RoomService;
 use App\Core\Container\Container;
 
@@ -23,6 +24,9 @@ class ValidatorProvider
         // UserValidator, BookingValidator, etc.
         $container->singleton(RoomService::class, function () {
             return new RoomValidator();
+        });
+        $container->singleton(BookingValidator::class, function () {
+            return new BookingValidator();
         });
     }
 }

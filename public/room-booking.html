@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Đặt phòng</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/room-types.css">
+    <link rel="stylesheet" href="css/rooms.css">
+    <style>
+        main { max-width:520px; margin: 48px auto; background: #fff; border-radius:12px; box-shadow:0 0 20px #0001; padding:36px 36px 28px 36px; }
+        h2, h3 { color: var(--color-primary);}
+        .booking-summary { padding:14px 0 18px 0; border-bottom:1px solid #e3e4ee; margin-bottom:18px;}
+        .booking-form label { font-weight:500; margin-top:14px; font-size:15px;}
+        .booking-form input, .booking-form textarea { width:100%; padding:9px 11px; margin-top:7px; border:1px solid #c3cee0; border-radius:6px; font-size:15px;}
+        .flex-row { display:flex; gap:12px;}
+        .flex-row > div { flex:1;}
+        .booking-action-btns { display:flex; gap:24px; margin-top:25px;}
+        .booking-action-btns button { flex:1; }
+        .booking-confirm { background:#ddf8de;border:1px solid #bdf1bb;padding:15px 18px;border-radius:8px;margin:15px 0;}
+        .text-danger { color: var(--color-danger);}
+        .booking-form button[disabled] { background: var(--color-gray-500);}
+        .booking-form button { width:100%; margin-top:24px; height:44px;}
+    </style>
+</head>
+<body>
+<main>
+    <h2>Đặt phòng</h2>
+    <div class="booking-summary" id="room-info"></div>
+    <form class="booking-form" id="booking-form" autocomplete="off" style="display:block;">
+        <label for="customer_name">Tên khách hàng*</label>
+        <input required id="customer_name" name="customer_name" type="text" autocomplete="name">
+        <label for="customer_email">Email*</label>
+        <input required id="customer_email" name="customer_email" type="email" autocomplete="email">
+        <label for="customer_phone">Số điện thoại*</label>
+        <input required id="customer_phone" name="customer_phone" type="tel">
+        <div class="flex-row">
+            <div>
+                <label for="check_in">Check-in*</label>
+                <input required id="check_in" name="check_in" type="date" min="">
+            </div>
+            <div>
+                <label for="check_out">Check-out*</label>
+                <input required id="check_out" name="check_out" type="date" min="">
+            </div>
+        </div>
+        <label for="num_guests">Số khách*</label>
+        <input required id="num_guests" name="num_guests" type="number" min="1" max="20" value="1">
+        <label for="special_requests">Yêu cầu đặc biệt</label>
+        <textarea id="special_requests" name="special_requests" rows="2"></textarea>
+        <button type="submit" id="bookingSubmit" disabled>Đặt phòng</button>
+    </form>
+    <div id="confirmation" style="display:none;"></div>
+</main>
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const roomId = params.get('id');
+    let roomData = null;
+    let roomTypeData = null;
+    function viMoney(x) { if (!x) return '-'; return Number(x).toLocaleString('vi-VN') + ' đ'; }
+    if (!roomId) {
+        document.getElementById('room-info').innerHTML = "<b class='text-danger'>Không tìm thấy thông tin phòng!</b>";
+        document.getElementById('booking-form').style.display = 'none';
+    } else {
+        // Lấy chi tiết phòng trước, sau đó lấy chi tiết loại phòng (dựa vào room_type_id)
+        fetch('/api/rooms/' + roomId)
+            .then(res => res.json())
+            .then(roomRes => {
+                if (!roomRes.success || !roomRes.data) {
+                    document.getElementById('room-info').innerHTML = "<b class='text-danger'>Không tìm thấy thông tin phòng!</b>";
+                    document.getElementById('booking-form').style.display = 'none';
+                } else {
+                    roomData = roomRes.data;
+                    fetch('/api/room-types/' + roomData.room_type_id)
+                        .then(res => res.json())
+                        .then(typeRes => {
+                            roomTypeData = typeRes && typeRes.success && typeRes.data ? typeRes.data : {};
+                            renderRoom(roomData, roomTypeData);
+                        });
+                }
+            });
+    }
+    function renderRoom(room, type) {
+        document.getElementById('room-info').innerHTML = `
+        <b>Phòng ${room.room_number}</b> (${type.name || room.room_type_id || '-'})<br>
+        Giá/đêm: <span style="color:green"><b>${viMoney(type.pricePerNight)}</b></span><br>
+        Sức chứa: ${type.capacity || '-'} khách<br>
+        Tiện nghi: ${type.amenities || '-'}<br>
+        Trạng thái: <span>${ room.status === 'available'
+            ? '<span style="color:#059669">Còn trống</span>'
+            : room.status === 'occupied'
+                ? '<span style="color:#b91c1c">Đã thuê</span>'
+                : room.status === 'cleaning'
+                    ? '<span style="color:#c2410c">Đang dọn</span>'
+                    : room.status === 'maintenance'
+                        ? '<span style="color:#6d28d9">Bảo trì</span>'
+                        : room.status || '-' }</span>
+    `;
+        let today = (new Date()).toISOString().split('T')[0];
+        document.getElementById('check_in').setAttribute('min', today);
+        document.getElementById('check_out').setAttribute('min', today);
+    }
+    const allFields = [
+        'customer_name', 'customer_email', 'customer_phone', 'check_in', 'check_out', 'num_guests'
+    ];
+    function validateForm() {
+        let ok = true;
+        for (const id of allFields) {
+            const val = (document.getElementById(id).value || '').trim();
+            if (!val) ok = false;
+        }
+        let check_in = document.getElementById('check_in').value;
+        let check_out = document.getElementById('check_out').value;
+        if (check_in && check_out) ok = ok && (new Date(check_out) > new Date(check_in));
+        return ok;
+    }
+    document.getElementById('booking-form').addEventListener('input', function() {
+        document.getElementById('bookingSubmit').disabled = !validateForm();
+    });
+    document.getElementById('booking-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (!validateForm()) return;
+        const form = e.target;
+        const formData = {
+            customer_name: form.customer_name.value,
+            customer_email: form.customer_email.value,
+            customer_phone: form.customer_phone.value,
+            check_in_date: form.check_in.value,
+            check_out_date: form.check_out.value,
+            num_guests: parseInt(form.num_guests.value),
+            special_requests: form.special_requests.value || null
+        };
+        let type = roomTypeData || {};
+        let price = type.pricePerNight ? parseFloat(type.pricePerNight) : 0;
+        let days = Math.ceil((new Date(formData.check_out_date) - new Date(formData.check_in_date)) / (1000 * 60 * 60 * 24));
+        days = days > 0 ? days : 1;
+        let totalPrice = price * days;
+        let todayStr = (new Date()).toISOString().split('T')[0].replaceAll('-','');
+        let bookingCode = `BK-${roomData.id}-${todayStr}`;
+        document.getElementById('booking-form').style.display = 'none';
+        document.getElementById('confirmation').style.display = 'block';
+        document.getElementById('confirmation').innerHTML = `
+        <div class="booking-confirm">
+            <h3>Xác nhận đặt phòng</h3>
+            <div><b>Phòng:</b> ${roomData.room_number} (${type.name || ''})<br>
+            Giá/đêm: <b>${viMoney(price)}</b> | Số ngày: ${days} | Tổng tiền: <span style="color:#187700">${viMoney(totalPrice)}</span><br>
+            Booking code: <b>${bookingCode}</b></div>
+            <hr>
+            <div>Khách: <b>${formData.customer_name}</b>, Email: ${formData.customer_email}, ĐT: ${formData.customer_phone}</div>
+            <div>Check-in: <b>${formData.check_in_date}</b> | Check-out: <b>${formData.check_out_date}</b> | Số khách: ${formData.num_guests}</div>
+            <div>Yêu cầu: ${formData.special_requests ? formData.special_requests : '-'}</div>
+            <div class="booking-action-btns">
+                <button onclick="window.location.reload()">Huỷ</button>
+                <button onclick="submitFinalBooking()">Xác nhận</button>
+            </div>
+            <div id="loading-update-room"></div>
+        </div>
+    `;
+        window._finalBooking = {
+            room_id: roomData.id,
+            booking_code: bookingCode,
+            ...formData,
+            total_price: totalPrice
+        };
+    });
+    function submitFinalBooking() {
+        let data = window._finalBooking;
+        document.getElementById('loading-update-room').innerHTML = "Đang xử lý, vui lòng chờ...";
+        fetch('/api/rooms/' + data.room_id, {
+            method: 'PUT',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({
+                room_number: roomData.room_number,
+                room_type_id: roomData.room_type_id,
+                status: 'occupied'
+            })
+        })
+            // Sau khi update trạng thái phòng thành công, gửi booking (nếu muốn đổi thứ tự thì đổi lại)
+            .then(()=> {
+                fetch('/api/booking/rooms/' + data.room_id, {
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify(data)
+                })
+                    .then(async res => {
+                        let ret = await res.json();
+                        if (ret.success) {
+                            document.getElementById('confirmation').innerHTML = `<div class="booking-confirm">
+                    <h2>🎉 Đặt phòng thành công!</h2>
+                    Mã booking: <b>${data.booking_code}</b>
+                    <div style="margin-top:12px;"><a href="rooms-list.html" style="color:#0057ff;">← Xem danh sách phòng</a></div>
+                </div>`;
+                        } else {
+                            document.getElementById('confirmation').innerHTML =
+                                `<div class="booking-confirm text-danger"><b>Đặt phòng thất bại!</b><br>${ret.message||''}</div>`;
+                        }
+                    }).catch(()=>{
+                    document.getElementById('confirmation').innerHTML =
+                        `<div class="booking-confirm text-danger"><b>Lỗi kết nối server!</b></div>`;
+                });
+            }).catch(() => {
+            document.getElementById('confirmation').innerHTML = `<div class="booking-confirm text-danger"><b>Lỗi cập nhật trạng thái phòng!</b></div>`;
+        });
+    }
+</script>
+</body>
+</html>

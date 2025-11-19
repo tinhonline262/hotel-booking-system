@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'app_name' => 'Hotel Booking System',
+    'app_name' => 'Hotel BookingController System',
     'app_url' => 'http://localhost',
     'environment' => 'development', // development, production
     'debug' => true,
