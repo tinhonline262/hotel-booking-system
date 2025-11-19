@@ -3,6 +3,21 @@
 namespace App\Infrastructure\DIContainer;
 
 use App\Application\Interfaces\RoomTypeServiceInterface;
+use App\Application\Services\BookingService;
+use App\Application\UseCases\CreateBookingUseCase;
+use App\Application\UseCases\DeleteBookingUseCase;
+use App\Application\UseCases\FilterBookingByCheckInDateUseCase;
+use App\Application\UseCases\FilterBookingByCheckOutDateUseCase;
+use App\Application\UseCases\FilterBookingByCodeUseCase;
+use App\Application\UseCases\FilterBookingByDayByDayUseCase;
+use App\Application\UseCases\FilterBookingByEmailUseCase;
+use App\Application\UseCases\FilterBookingByName;
+use App\Application\UseCases\FilterBookingByPhoneUseCase;
+use App\Application\UseCases\FilterBookingByStatus;
+use App\Application\UseCases\GetAllBookingUseCase;
+use App\Application\UseCases\GetBookingUseCase;
+use App\Application\UseCases\UpdateBookingUseCase;
+use App\Domain\Interfaces\Repositories\BookingRepositoryInterface;
 use App\Domain\Interfaces\Repositories\RoomRepositoryInterface;
 use App\Application\Services\RoomTypeService;
 use App\Application\Services\RoomService;
@@ -21,6 +36,7 @@ use App\Application\UseCases\GetAllRoomUseCase;
 use App\Application\UseCases\FilterRoomByRoomNumberUseCase;
 use App\Application\UseCases\FilterRoomByStatusUseCase;
 use App\Core\Container\Container;
+use App\Infrastructure\Persistence\Repositories\BookingRepository;
 use App\Infrastructure\Persistence\Repositories\RoomRepository;
 
 /**
@@ -74,6 +90,31 @@ class ServiceProvider
         });
         $container->bind(RoomRepositoryInterface::class, function (Container $c) {
             return $c->make(RoomRepository::class);
+        });
+    }
+
+
+    private static function registerBookingService(Container $container): void{
+        $container->singleton(BookingService::class, function (Container $c) {
+            return new BookingService(
+                $c->make(CreateBookingUseCase::class),
+                $c->make(UpdateBookingUseCase::class),
+                $c->make(DeleteBookingUseCase::class),
+                $c->make(GetBookingUseCase::class),
+                $c->make(GetAllBookingUseCase::class),
+                $c->make(FilterBookingByCheckInDateUseCase::class),
+                $c->make(FilterBookingByCheckOutDateUseCase::class),
+                $c->make(FilterBookingByCodeUseCase::class),
+                $c->make(FilterBookingByDayByDayUseCase::class),
+                $c->make(FilterBookingByEmailUseCase::class),
+                $c->make(FilterBookingByPhoneUseCase::class),
+                $c->make(FilterBookingByName::class),
+                $c->make(FilterBookingByStatus::class)
+
+            );
+        });
+        $container->bind(BookingRepositoryInterface::class, function (Container $c) {
+            return $c->make(BookingRepository::class);
         });
     }
 }

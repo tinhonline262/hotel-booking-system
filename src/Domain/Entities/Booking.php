@@ -3,7 +3,7 @@
 namespace App\Domain\Entities;
 
 /**
- * Booking Entity
+ * BookingController Entity
  */
 class Booking
 {
