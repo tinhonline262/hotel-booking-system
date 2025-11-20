@@ -9,7 +9,7 @@ class FilterBookingByPhoneUseCase
     public function __construct(BookingRepositoryInterface $repository){
         $this->repository = $repository;
     }
-    public function execute(string $phone): Booking{
+    public function execute(string $phone): array{
         return $this->repository->findByPhone($phone);
     }
 }

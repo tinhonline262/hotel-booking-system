@@ -135,7 +135,7 @@ class BookingRepository implements BookingRepositoryInterface
         return $bookings;
     }
 
-    public function findByCode(string $code): ?Booking
+    public function findByCode(string $code): array
     {
         // TODO: Implement findByCode() method.
         $stmt = $this->database->query(
@@ -143,9 +143,13 @@ class BookingRepository implements BookingRepositoryInterface
             [$code]
         );
 
-        $data = $stmt->fetch();
-        return $data ? $this->mapToEntity($data) : null;
+        $bookings = [];
 
+        while ($data = $stmt->fetch()) {
+            $bookings[] = $this->mapToEntity($data);
+        }
+
+        return $bookings;
     }
 
     public function exists(int $id): bool
@@ -189,7 +193,7 @@ class BookingRepository implements BookingRepositoryInterface
 
         return $bookings;
     }
-    public function findByPhone(string $phone): ?Booking
+    public function findByPhone(string $phone): array
     {
         // TODO: Implement findByPhone() method.
         $stmt = $this->database->query(
@@ -197,12 +201,16 @@ class BookingRepository implements BookingRepositoryInterface
             [$phone]
         );
 
-        $data = $stmt->fetch();
-        return $data ? $this->mapToEntity($data) : null;
+        $bookings = [];
 
+        while ($data = $stmt->fetch()) {
+            $bookings[] = $this->mapToEntity($data);
+        }
+
+        return $bookings;
     }
 
-    public function findByEmail(string $email): ?Booking
+    public function findByEmail(string $email): array
     {
         // TODO: Implement findByEmail() method.
         $stmt = $this->database->query(
@@ -210,9 +218,13 @@ class BookingRepository implements BookingRepositoryInterface
             [$email]
         );
 
-        $data = $stmt->fetch();
-        return $data ? $this->mapToEntity($data) : null;
+        $bookings = [];
 
+        while ($data = $stmt->fetch()) {
+            $bookings[] = $this->mapToEntity($data);
+        }
+
+        return $bookings;
     }
 
     public function findByName(string $name): array
