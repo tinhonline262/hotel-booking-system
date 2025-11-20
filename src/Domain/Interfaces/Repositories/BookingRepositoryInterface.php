@@ -21,15 +21,15 @@ interface BookingRepositoryInterface
 
     public function findByStatus(string $status): array;
 
-    public function findByCode(string $code): ?Booking;
+    public function findByCode(string $code): array;
 
     public function exists(int $id): bool;
 
     public function filterDayByDay(string $start, string $end): array;
 
-    public function findByPhone(string $phone): ?Booking;
+    public function findByPhone(string $phone): array;
 
-    public function findByEmail(string $email): ?Booking;
+    public function findByEmail(string $email): array;
 
     public function findByName(string $name): array;
 }

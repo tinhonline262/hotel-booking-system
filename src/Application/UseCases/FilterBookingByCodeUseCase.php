@@ -9,7 +9,7 @@ class FilterBookingByCodeUseCase
     public function __construct(BookingRepositoryInterface $repository){
         $this->repository = $repository;
     }
-    public function execute(string $code):Booking{
+    public function execute(string $code):array{
        return $this->repository->findByCode($code);
     }
 }

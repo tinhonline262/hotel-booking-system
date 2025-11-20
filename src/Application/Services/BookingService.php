@@ -94,7 +94,7 @@ class BookingService implements BookingServiceInterface
         return $this->filterBookingByCheckOutDateUseCase->Execute($checkOutDate);
     }
 
-    public function FilterBookingByCode(string $code): Booking
+    public function FilterBookingByCode(string $code): array
     {
         // TODO: Implement FilterBookingByCode() method.
         return $this->filterBookingByCodeUseCase->Execute($code);
@@ -106,7 +106,7 @@ class BookingService implements BookingServiceInterface
         return $this->filterBookingByDayUseCase->Execute($start, $end);
     }
 
-    public function FilterBookingByEmail(string $email): Booking
+    public function FilterBookingByEmail(string $email): array
     {
         // TODO: Implement FilterBookingByEmail() method.
         return $this->filterBookingByEmailUseCase->Execute($email);
@@ -118,7 +118,7 @@ class BookingService implements BookingServiceInterface
         return $this->filterBookingByName->Execute($name);
     }
 
-    public function FilterBookingByPhone(string $phone): Booking
+    public function FilterBookingByPhone(string $phone): array
     {
         // TODO: Implement FilterBookingByPhone() method.
         return $this->filterBookingByPhoneUseCase->Execute($phone);

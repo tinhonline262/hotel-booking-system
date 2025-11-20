@@ -9,7 +9,7 @@ class FilterBookingByEmailUseCase
     public function __construct(BookingRepositoryInterface $repository){
         $this->repository = $repository;
     }
-    public function execute(string $email): Booking{
+    public function execute(string $email): array{
         return $this->repository->findByEmail($email);
     }
 }
