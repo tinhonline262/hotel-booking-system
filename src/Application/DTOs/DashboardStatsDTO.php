@@ -12,6 +12,11 @@ class DashboardStatsDTO
     public int $totalRoomTypes;
     public float $occupancyRate;
     public array $roomTypeDistribution;
+    public array $recentBookings;
+    public array $todayCheckIns;
+    public array $todayCheckOuts;
+    public int $todayCheckInsCount;
+    public int $pendingBookingsCount;
 
     public function __construct(
         int $totalRooms,
@@ -21,7 +26,12 @@ class DashboardStatsDTO
         int $maintenanceRooms,
         int $totalRoomTypes,
         float $occupancyRate,
-        array $roomTypeDistribution
+        array $roomTypeDistribution,
+        array $recentBookings = [],
+        array $todayCheckIns = [],
+        array $todayCheckOuts = [],
+        int $todayCheckInsCount = 0,
+        int $pendingBookingsCount = 0
     ) {
         $this->totalRooms = $totalRooms;
         $this->availableRooms = $availableRooms;
@@ -31,6 +41,11 @@ class DashboardStatsDTO
         $this->totalRoomTypes = $totalRoomTypes;
         $this->occupancyRate = $occupancyRate;
         $this->roomTypeDistribution = $roomTypeDistribution;
+        $this->recentBookings = $recentBookings;
+        $this->todayCheckIns = $todayCheckIns;
+        $this->todayCheckOuts = $todayCheckOuts;
+        $this->todayCheckInsCount = $todayCheckInsCount;
+        $this->pendingBookingsCount = $pendingBookingsCount;
     }
 
     public function toArray(): array
@@ -43,7 +58,12 @@ class DashboardStatsDTO
             'maintenance_rooms' => $this->maintenanceRooms,
             'total_room_types' => $this->totalRoomTypes,
             'occupancy_rate' => $this->occupancyRate,
-            'room_type_distribution' => $this->roomTypeDistribution
+            'room_type_distribution' => $this->roomTypeDistribution,
+            'recent_bookings' => $this->recentBookings,
+            'today_check_ins' => $this->todayCheckIns,
+            'today_check_outs' => $this->todayCheckOuts,
+            'today_check_ins_count' => $this->todayCheckInsCount,
+            'pending_bookings_count' => $this->pendingBookingsCount
         ];
     }
 }

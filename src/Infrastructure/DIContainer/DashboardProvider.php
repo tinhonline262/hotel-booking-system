@@ -14,7 +14,8 @@ class DashboardProvider
         $container->singleton(DashboardServiceInterface::class, function($container) {
             return new DashboardService(
                 $container->make(RoomRepositoryInterface::class),
-                $container->make(RoomTypeRepositoryInterface::class)
+                $container->make(RoomTypeRepositoryInterface::class),
+                $container->make(BookingRepositoryInterface::class)
             );
         });
     }
