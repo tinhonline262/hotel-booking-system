@@ -26,5 +26,7 @@ return [
         ['POST', '/api/rooms', 'Api\RoomController@create'],
         ['PUT', '/api/rooms/{id}', 'Api\RoomController@update'],
         ['DELETE', '/api/rooms/{id}', 'Api\RoomController@delete'],
+        ['GET', '/booking-lookup', 'BookingLookupController@index'],
+        ['GET', '/booking-lookup/search', 'BookingLookupController@search'],
     ],
 ];
