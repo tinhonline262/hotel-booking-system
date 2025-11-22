@@ -145,7 +145,7 @@ class RoomController extends BaseRestController
 
             $this->success(
                 ['success' => $result],
-                'Room type deleted successfully'
+                'Room deleted successfully'
             );
         } catch (RoomNotFoundException $e) {
             $this->notFound($e->getMessage());
