@@ -20,6 +20,10 @@ class RoomPageManager {
     this.setupEventListeners();
     this.loadRoomTypes();
     this.loadRooms();
+
+    // Initialize room details manager
+    this.detailsManager = new RoomDetailsManager(this.api.baseUrl);
+    window.roomPageManager = this; // Make available for notifications
 }
 setActiveSidebar() {
     const currentPage = window.location.pathname.split('/').pop() || 'rooms.html';
@@ -104,7 +108,7 @@ setActiveSidebar() {
         const $tbody = $("#roomTableBody");
         if (!rooms || rooms.length === 0) {
             $tbody.html(`<tr>
-        <td colspan="5" style="text-align:center;padding:28px;color:#999;">
+        <td colspan="6" style="text-align:center;padding:28px;color:#999;">
           Không có phòng nào.
         </td>
       </tr>`);
@@ -115,42 +119,102 @@ setActiveSidebar() {
                 const typeName = this.roomTypes.find(rt => Number(rt.id) === Number(room.room_type_id))
                     ? this.roomTypes.find(rt => Number(rt.id) === Number(room.room_type_id)).name
                     : room.room_type_id || "-";
-                return `<tr class="table__row">
-          <td class="table__cell">${idx + 1}</td>
-          <td class="table__cell">${this.escapeHtml(room.room_number)}</td>
-          <td class="table__cell">${this.escapeHtml(typeName)}</td>
-          <td class="table__cell">${this.formatStatus(room.status)}</td>
-          <td class="table__cell table__cell--action">
-            <div class="action-dropdown">
-                <button class="action-dropdown__toggle">⋮</button>
-                <div class="action-dropdown__menu">
-                  <a href="#" class="action-dropdown__item" data-action="edit" data-id="${room.id}">Sửa</a>
-                  <a href="#" class="action-dropdown__item" data-action="delete" data-id="${room.id}">Xóa</a>
-                </div>
-            </div>
-          </td>
-        </tr>`;
+                return `
+                <tr class="table__row" data-room-id="${room.id}">
+                  <td class="table__cell">
+                    <button class="btn-expand" data-action="toggle-details" data-id="${room.id}">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                      </svg>
+                    </button>
+                  </td>
+                  <td class="table__cell">${idx + 1}</td>
+                  <td class="table__cell">${this.escapeHtml(room.room_number)}</td>
+                  <td class="table__cell">${this.escapeHtml(typeName)}</td>
+                  <td class="table__cell">${this.formatStatus(room.status)}</td>
+                  <td class="table__cell table__cell--action">
+                    <div class="action-dropdown">
+                        <button class="action-dropdown__toggle">⋮</button>
+                        <div class="action-dropdown__menu">
+                          <a href="#" class="action-dropdown__item" data-action="manage-images" data-id="${room.id}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                              <polyline points="21 15 16 10 5 21"></polyline>
+                            </svg>
+                            Quản lý ảnh
+                          </a>
+                          <a href="#" class="action-dropdown__item" data-action="edit" data-id="${room.id}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                            Sửa
+                          </a>
+                          <a href="#" class="action-dropdown__item action-dropdown__item--danger" data-action="delete" data-id="${room.id}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <path d="M3 6h18"></path>
+                              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                            </svg>
+                            Xóa
+                          </a>
+                        </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr class="table__row--details" id="details-${room.id}" style="display: none;">
+                  <td colspan="6">
+                    <div class="room-details-container">
+                      <div class="room-details-loading">
+                        <div class="spinner"></div>
+                        Đang tải...
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                `;
             }).join("");
         $tbody.html(rows);
         this.attachActionListeners();
     }
 
     attachActionListeners() {
-        $('[data-action="edit"]').on("click", (e) => {
+        // Toggle room details
+        $('[data-action="toggle-details"]').off('click').on("click", async (e) => {
+            e.preventDefault();
+            const id = $(e.currentTarget).data("id");
+            await this.toggleRoomDetails(id);
+        });
+
+        // Manage images
+        $('[data-action="manage-images"]').off('click').on("click", (e) => {
+            e.preventDefault();
+            const id = $(e.currentTarget).data("id");
+            this.detailsManager.openImageManager(id);
+        });
+
+        // Edit room
+        $('[data-action="edit"]').off('click').on("click", (e) => {
             e.preventDefault();
             const id = $(e.currentTarget).data("id");
             this.openEditModal(id);
         });
-        $('[data-action="delete"]').on("click", (e) => {
+
+        // Delete room
+        $('[data-action="delete"]').off('click').on("click", (e) => {
             e.preventDefault();
             const id = $(e.currentTarget).data("id");
             this.openDeleteModal(id);
         });
-        $(".action-dropdown__toggle").on("click", function (e) {
+
+        // Dropdown toggle
+        $(".action-dropdown__toggle").off('click').on("click", function (e) {
             e.stopPropagation();
             $(".action-dropdown__menu").hide();
             $(this).next(".action-dropdown__menu").toggle();
         });
+
         $(document).on("click", function () {
             $(".action-dropdown__menu").hide();
         });
@@ -329,6 +393,133 @@ setActiveSidebar() {
             default: return this.escapeHtml(status || "-");
         }
     }
+
+    async toggleRoomDetails(roomId) {
+        const $detailsRow = $(`#details-${roomId}`);
+        const $button = $(`[data-action="toggle-details"][data-id="${roomId}"]`);
+        
+        if ($detailsRow.is(':visible')) {
+            // Close details
+            $detailsRow.slideUp(300);
+            $button.removeClass('expanded');
+        } else {
+            // Close other open details
+            $('.table__row--details').slideUp(300);
+            $('.btn-expand').removeClass('expanded');
+            
+            // Open this details
+            $button.addClass('expanded');
+            $detailsRow.slideDown(300);
+            
+            // Load details if not already loaded
+            if (!$detailsRow.data('loaded')) {
+                await this.loadRoomDetails(roomId);
+                $detailsRow.data('loaded', true);
+            }
+        }
+    }
+
+    async loadRoomDetails(roomId) {
+        const $container = $(`#details-${roomId} .room-details-container`);
+        
+        try {
+            const result = await this.api.get(`/rooms/${roomId}/details`);
+            
+            if (result.success && result.data) {
+                const room = result.data;
+                this.renderRoomDetails(roomId, room);
+            } else {
+                $container.html('<p class="error-message">Không tải được thông tin chi tiết</p>');
+            }
+        } catch (error) {
+            console.error('Error loading room details:', error);
+            $container.html('<p class="error-message">Lỗi: ' + this.escapeHtml(error.message) + '</p>');
+        }
+    }
+
+    renderRoomDetails(roomId, room) {
+        const $container = $(`#details-${roomId} .room-details-container`);
+        
+        const amenitiesHtml = room.amenities && room.amenities.length > 0
+            ? room.amenities.map(a => `<span class="amenity-tag">${this.escapeHtml(a)}</span>`).join('')
+            : '<span class="text-muted">Không có</span>';
+        
+        const imagesHtml = room.images && room.images.length > 0
+            ? room.images
+                .sort((a, b) => a.displayOrder - b.displayOrder)
+                .map(img => `
+                    <div class="room-image-item ${img.isPrimary ? 'primary' : ''}">
+                        <img src="${this.escapeHtml(img.imageUrl)}" alt="Room image" loading="lazy">
+                        ${img.isPrimary ? '<span class="primary-badge">Chính</span>' : ''}
+                    </div>
+                `).join('')
+            : '<p class="text-muted">Chưa có hình ảnh</p>';
+        
+        const detailsHtml = `
+            <div class="room-details">
+                <div class="room-details__section">
+                    <h4 class="room-details__title">Thông tin phòng</h4>
+                    <div class="room-details__grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Số phòng:</span>
+                            <span class="detail-value">${this.escapeHtml(room.roomNumber)}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Loại phòng:</span>
+                            <span class="detail-value">${this.escapeHtml(room.roomType)}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Sức chứa:</span>
+                            <span class="detail-value">${room.capacity} người</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Giá/đêm:</span>
+                            <span class="detail-value">${this.formatPrice(room.pricePerNight)}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Trạng thái:</span>
+                            <span class="detail-value">${this.formatStatus(room.status)}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="room-details__section">
+                    <h4 class="room-details__title">Tiện nghi</h4>
+                    <div class="amenities-list">
+                        ${amenitiesHtml}
+                    </div>
+                </div>
+
+                <div class="room-details__section">
+                    <div class="room-details__header">
+                        <h4 class="room-details__title">Hình ảnh (${room.images ? room.images.length : 0})</h4>
+                        <button class="btn btn--sm btn--primary" onclick="window.roomPageManager.detailsManager.openImageManager(${roomId})">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                            Quản lý ảnh
+                        </button>
+                    </div>
+                    <div class="room-images-preview">
+                        ${imagesHtml}
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        $container.html(detailsHtml);
+    }
+
+    formatPrice(price) {
+        return new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND'
+        }).format(price);
+    }
+
+    // ...existing code...
 }
 
 if ($("#notification-animations").length === 0) {

@@ -14,6 +14,8 @@ use App\Application\UseCases\GetRoomUseCase;
 use App\Application\UseCases\GetAllRoomUseCase;
 use App\Application\UseCases\FilterRoomByRoomNumberUseCase;
 use App\Application\UseCases\FilterRoomByStatusUseCase;
+use App\Application\UseCases\GetAllRoomsWithDetailsUseCase;
+use App\Application\UseCases\GetRoomWithDetailsUseCase;
 
 class RoomService implements RoomServiceInterface
 {
@@ -24,10 +26,20 @@ class RoomService implements RoomServiceInterface
     private GetRoomUseCase $getRoomUseCase;
     private FilterRoomByRoomNumberUseCase $filterRoomByRoomNumberUseCase;
     private FilterRoomByStatusUseCase $filterRoomByStatusUseCase;
+    private GetAllRoomsWithDetailsUseCase $getAllRoomsWithDetailsUseCase;
+    private GetRoomWithDetailsUseCase $getRoomWithDetailsUseCase;
 
-    public function __construct(CreateRoomUseCase $createRoomUseCase, UpdateRoomUseCase $updateRoomUseCase, DeleteRoomUseCase $deleteRoomUseCase,
-    GetAllRoomUseCase $getAllRoomUseCase, GetRoomUseCase $getRoomUseCase, FilterRoomByRoomNumberUseCase $filterRoomByRoomNumberUseCase,
-                                FilterRoomByStatusUseCase $filterRoomByStatusUseCase)
+    public function __construct(
+        CreateRoomUseCase $createRoomUseCase,
+        UpdateRoomUseCase $updateRoomUseCase,
+        DeleteRoomUseCase $deleteRoomUseCase,
+        GetAllRoomUseCase $getAllRoomUseCase,
+        GetRoomUseCase $getRoomUseCase,
+        FilterRoomByRoomNumberUseCase $filterRoomByRoomNumberUseCase,
+        FilterRoomByStatusUseCase $filterRoomByStatusUseCase,
+        GetAllRoomsWithDetailsUseCase $getAllRoomsWithDetailsUseCase,
+        GetRoomWithDetailsUseCase $getRoomWithDetailsUseCase
+    )
     {
         $this->createRoomUseCase = $createRoomUseCase;
         $this->updateRoomUseCase = $updateRoomUseCase;
@@ -36,7 +48,8 @@ class RoomService implements RoomServiceInterface
         $this->getRoomUseCase = $getRoomUseCase;
         $this->filterRoomByRoomNumberUseCase = $filterRoomByRoomNumberUseCase;
         $this->filterRoomByStatusUseCase = $filterRoomByStatusUseCase;
-
+        $this->getAllRoomsWithDetailsUseCase = $getAllRoomsWithDetailsUseCase;
+        $this->getRoomWithDetailsUseCase = $getRoomWithDetailsUseCase;
     }
 
     /**
@@ -85,9 +98,27 @@ class RoomService implements RoomServiceInterface
     /**
      * @param string $roomNumber
      * @return Room|null
+     * @throws RoomNotFoundException
      */
     public function FilterRoomByRoomNumber(string $roomNumber): ?Room
     {
-        return $this->filterRoomByRoomNumberUseCase->Execute($roomNumber);
+        return $this->filterRoomByRoomNumberUseCase->execute($roomNumber);
+    }
+
+    /**
+     * Get all rooms with detailed information (including room type and images)
+     */
+    public function getAllRoomsWithDetails(): array
+    {
+        return $this->getAllRoomsWithDetailsUseCase->execute();
+    }
+
+    /**
+     * Get single room with detailed information (including room type and images)
+     * @throws RoomNotFoundException
+     */
+    public function getRoomWithDetails(int $id): array
+    {
+        return $this->getRoomWithDetailsUseCase->execute($id);
     }
 }
