@@ -4,6 +4,8 @@ namespace App\Infrastructure\Persistence\Repositories;
 
 use App\Core\Database\Database;
 use App\Domain\Entities\RoomImage;
+use App\Domain\Exceptions\ImageUpdateDisplayOrderException;
+use App\Domain\Exceptions\RoomNotFoundException;
 use App\Domain\Interfaces\Repositories\RoomImageRepositoryInterface;
 
 class RoomImageRepository implements RoomImageRepositoryInterface
@@ -15,7 +17,7 @@ class RoomImageRepository implements RoomImageRepositoryInterface
         $this->db = $db;
     }
 
-    public function save(RoomImage $image): bool
+    public function save(RoomImage $image): ?int
     {
         $sql = "INSERT INTO room_images 
             (room_id, image_url, storage_type, cloudinary_public_id, file_size, mime_type, display_order, is_primary, alt_text) 
@@ -35,9 +37,9 @@ class RoomImageRepository implements RoomImageRepositoryInterface
 
         try {
             $this->db->query($sql, $params);
-            return true;
+            return (int)$this->db->lastInsertId();
         } catch (\Exception $e) {
-            return false;
+            return null;
         }
     }
 
@@ -130,14 +132,14 @@ class RoomImageRepository implements RoomImageRepositoryInterface
             $sql = "UPDATE room_images SET display_order = :order WHERE id = :id";
 
             foreach ($orders as $id => $order) {
-                $this->db->query($sql, ['order' => $order, 'id' => $id]);
+                $this->db->query($sql, ['id' => $order['imageId'], 'order' => $order['displayOrder']]);
             }
             
             $this->db->commit();
             return true;
         } catch (\Exception $e) {
             $this->db->rollback();
-            return false;
+            throw new ImageUpdateDisplayOrderException([$e->getMessage()]);
         }
     }
 

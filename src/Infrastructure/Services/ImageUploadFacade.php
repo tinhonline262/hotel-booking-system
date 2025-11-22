@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Services;
 
+use App\Domain\Exceptions\StorageException;
 use App\Domain\Interfaces\Services\ImageStorageInterface;
 use App\Domain\ValueObjects\UploadedFile;
 use App\Application\Validators\ImageUploadValidator;
@@ -49,6 +50,7 @@ class ImageUploadFacade
 
     /**
      * Upload multiple images
+     * @throws ImageUploadException
      */
     public function uploadMultiple(
         array $files,
@@ -82,6 +84,7 @@ class ImageUploadFacade
 
     /**
      * Delete an image
+     * @throws StorageException
      */
     public function delete(string $path, ?string $publicId = null, ?string $storageType = null): bool
     {
@@ -91,6 +94,7 @@ class ImageUploadFacade
 
     /**
      * Check if image exists
+     * @throws StorageException
      */
     public function exists(string $path, ?string $storageType = null): bool
     {
@@ -100,6 +104,7 @@ class ImageUploadFacade
 
     /**
      * Get image URL
+     * @throws StorageException
      */
     public function getUrl(string $path, ?string $storageType = null): string
     {
@@ -109,6 +114,7 @@ class ImageUploadFacade
 
     /**
      * Health check for storage
+     * @throws StorageException
      */
     public function healthCheck(?string $storageType = null): array
     {
@@ -126,6 +132,7 @@ class ImageUploadFacade
 
     /**
      * Get storage information
+     * @throws StorageException
      */
     public function getStorageInfo(?string $storageType = null): array
     {
@@ -143,6 +150,7 @@ class ImageUploadFacade
 
     /**
      * Switch storage provider
+     * @throws StorageException
      */
     public function switchProvider(string $storageType): void
     {
@@ -156,6 +164,7 @@ class ImageUploadFacade
 
     /**
      * Get current storage type
+     * @throws StorageException
      */
     public function getCurrentStorageType(): string
     {
@@ -166,6 +175,9 @@ class ImageUploadFacade
         return $this->factory->createDefault()->getStorageType();
     }
 
+    /**
+     * @throws StorageException
+     */
     private function getStorage(?string $storageType = null): ImageStorageInterface
     {
         if ($storageType !== null) {

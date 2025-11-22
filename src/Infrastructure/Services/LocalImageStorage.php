@@ -26,9 +26,12 @@ class LocalImageStorage implements ImageStorageInterface
         }
     }
 
+    /**
+     * @throws StorageException
+     */
     public function store(UploadedFile $file, string $directory): array
     {
-        $targetDir = $this->basePath . DIRECTORY_SEPARATOR . trim($directory, '/\\');
+        $targetDir = $this->baseUrl . DIRECTORY_SEPARATOR . trim($directory, '/\\');
         
         // Create subdirectory if not exists
         if (!is_dir($targetDir)) {
@@ -47,15 +50,15 @@ class LocalImageStorage implements ImageStorageInterface
         $extension = pathinfo($file->getOriginalName(), PATHINFO_EXTENSION);
         $filename = 'img_' . uniqid() . '_' . time() . '.' . $extension;
         $filePath = $targetDir . DIRECTORY_SEPARATOR . $filename;
-
+        $filePath = str_replace('\\', '/', $filePath);
         // Move uploaded file
         if (!move_uploaded_file($file->getTempPath(), $filePath)) {
             throw new StorageException("Failed to move uploaded file");
         }
 
         // Generate relative path for URL
-        $relativePath = $directory . '/' . $filename;
-        $url = $this->baseUrl . '/' . $filename;
+        $relativePath = str_replace($this->basePath . '/', '', $filePath);
+        $url = '/'.$relativePath;
 
         return [
             'path' => $relativePath,

@@ -34,13 +34,15 @@ class StorageConfigRepository implements StorageConfigInterface
     {
         $sql = "INSERT INTO storage_settings (setting_key, setting_value) 
                 VALUES (:key, :value) 
-                ON DUPLICATE KEY UPDATE setting_value = :value";
+                ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)";
 
         try {
             $this->db->query($sql, ['key' => $key, 'value' => $value]);
             $this->cache[$key] = $value;
             return true;
         } catch (\Exception $e) {
+            // Log error for debugging
+            error_log("setSetting failed: " . $e->getMessage());
             return false;
         }
     }

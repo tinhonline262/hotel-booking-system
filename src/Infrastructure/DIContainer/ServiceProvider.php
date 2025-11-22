@@ -35,6 +35,8 @@ use App\Infrastructure\Persistence\Repositories\RoomRepository;
 use App\Domain\Interfaces\Services\StorageConfigInterface;
 use App\Infrastructure\Services\ImageStorageFactory;
 use App\Infrastructure\Services\ImageUploadFacade;
+use App\Application\UseCases\GetAllRoomsWithDetailsUseCase;
+use App\Application\UseCases\GetRoomWithDetailsUseCase;
 
 /**
  * Service Provider - Register all application services
@@ -103,8 +105,9 @@ class ServiceProvider
                 $c->make(GetAllRoomUseCase::class),
                 $c->make(GetRoomUseCase::class),
                 $c->make(FilterRoomByRoomNumberUseCase::class),
-                $c->make(FilterRoomByStatusUseCase::class)
-
+                $c->make(FilterRoomByStatusUseCase::class),
+                $c->make(GetAllRoomsWithDetailsUseCase::class),
+                $c->make(GetRoomWithDetailsUseCase::class),
             );
         });
         $container->bind(RoomRepositoryInterface::class, function (Container $c) {

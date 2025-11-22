@@ -17,9 +17,11 @@ return [
 
         // Room API
         ['GET', '/api/rooms', 'Api\RoomController@index'],
+        ['GET', '/api/rooms/details', 'Api\RoomController@indexWithDetails'],
         ['GET', '/api/rooms/filter/status', 'Api\RoomController@filterByStatus'],
         ['GET', '/api/rooms/filter/room-number', 'Api\RoomController@filterByRoomNumber'],
         ['GET', '/api/rooms/{id}', 'Api\RoomController@show'],
+        ['GET', '/api/rooms/{id}/details', 'Api\RoomController@showWithDetails'],
         ['POST', '/api/rooms', 'Api\RoomController@create'],
         ['PUT', '/api/rooms/{id}', 'Api\RoomController@update'],
         ['DELETE', '/api/rooms/{id}', 'Api\RoomController@delete'],

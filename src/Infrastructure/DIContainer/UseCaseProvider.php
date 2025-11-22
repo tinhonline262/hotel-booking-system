@@ -22,6 +22,8 @@ use App\Application\UseCases\GetRoomUseCase;
 use App\Application\UseCases\GetAllRoomUseCase;
 use App\Application\UseCases\FilterRoomByRoomNumberUseCase;
 use App\Application\UseCases\FilterRoomByStatusUseCase;
+use App\Application\UseCases\GetAllRoomsWithDetailsUseCase;
+use App\Application\UseCases\GetRoomWithDetailsUseCase;
 use App\Application\UseCases\UploadRoomImagesUseCase;
 use App\Application\Validators\RoomTypeValidator;
 use App\Application\Validators\RoomValidator;
@@ -143,6 +145,18 @@ class UseCaseProvider
                 $c->make(RoomRepositoryInterface::class)
             );
         });
+
+        $container->bind(GetAllRoomsWithDetailsUseCase::class, function (Container $c) {
+            return new GetAllRoomsWithDetailsUseCase(
+                $c->make(RoomRepositoryInterface::class)
+            );
+        });
+
+        $container->bind(GetRoomWithDetailsUseCase::class, function (Container $c) {
+            return new GetRoomWithDetailsUseCase(
+                $c->make(RoomRepositoryInterface::class)
+            );
+        });
     }
 
     private static function registerRoomImageUseCases(Container $container): void
@@ -151,7 +165,8 @@ class UseCaseProvider
         $container->bind(UploadRoomImagesUseCase::class, function (Container $c) {
             return new UploadRoomImagesUseCase(
                 $c->make(RoomImageRepositoryInterface::class),
-                $c->make(ImageUploadFacade::class)
+                $c->make(ImageUploadFacade::class),
+                $c->make(RoomRepositoryInterface::class)
             );
         });
 

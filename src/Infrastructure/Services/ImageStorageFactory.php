@@ -2,9 +2,10 @@
 
 namespace App\Infrastructure\Services;
 
+use App\Domain\Exceptions\StorageException;
 use App\Domain\Interfaces\Services\ImageStorageInterface;
 use App\Domain\Interfaces\Services\StorageConfigInterface;
-use App\Domain\Exceptions\StorageException;
+use App\Infrastructure\ThirdPartyIntegrations\CloudinaryImageStorage;
 
 /**
  * Factory pattern for creating storage instances
@@ -21,6 +22,7 @@ class ImageStorageFactory
 
     /**
      * Create storage instance by type
+     * @throws StorageException
      */
     public function create(string $type): ImageStorageInterface
     {
@@ -44,6 +46,7 @@ class ImageStorageFactory
 
     /**
      * Create default storage instance
+     * @throws StorageException
      */
     public function createDefault(): ImageStorageInterface
     {
@@ -53,11 +56,12 @@ class ImageStorageFactory
 
     /**
      * Create local storage instance
+     * @throws StorageException
      */
     private function createLocalStorage(): ImageStorageInterface
     {
         $basePath = $this->config->getSetting('local_storage_path') ?? 'public/uploads/rooms';
-        $baseUrl = '/uploads/rooms';
+        $baseUrl = 'uploads';
         $storageLimit = $this->config->getLocalStorageLimit();
 
         return new LocalImageStorage($basePath, $baseUrl, $storageLimit);

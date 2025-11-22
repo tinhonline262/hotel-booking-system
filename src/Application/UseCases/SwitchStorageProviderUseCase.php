@@ -22,7 +22,7 @@ class SwitchStorageProviderUseCase
     public function execute(string $provider): bool
     {
         // Validate provider
-        if (!in_array($provider, ['local', 'cloudinary'])) {
+        if (!in_array($provider, ["local", "cloudinary"])) {
             return false;
         }
 

@@ -10,6 +10,7 @@ use App\Application\UseCases\DeleteRoomImageUseCase;
 use App\Application\UseCases\GetStorageHealthCheckUseCase;
 use App\Application\UseCases\GetStorageInfoUseCase;
 use App\Application\UseCases\SwitchStorageProviderUseCase;
+use App\Domain\Exceptions\RoomNotFoundException;
 
 /**
  * Room Image Service - Orchestrates all room image operations
@@ -45,6 +46,7 @@ class RoomImageService implements RoomImageServiceInterface
 
     /**
      * Upload multiple images for a room
+     * @throws RoomNotFoundException
      */
     public function uploadImages(int $roomId, array $files, ?string $storageType = null): array
     {

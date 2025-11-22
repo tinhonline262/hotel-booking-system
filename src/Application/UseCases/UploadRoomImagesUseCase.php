@@ -3,7 +3,10 @@
 namespace App\Application\UseCases;
 
 use App\Domain\Entities\RoomImage;
+use App\Domain\Exceptions\RoomNotFoundException;
 use App\Domain\Interfaces\Repositories\RoomImageRepositoryInterface;
+use App\Domain\Interfaces\Repositories\RoomRepositoryInterface;
+use App\Domain\Interfaces\Repositories\RoomTypeRepositoryInterface;
 use App\Domain\ValueObjects\UploadedFile;
 use App\Infrastructure\Services\ImageUploadFacade;
 
@@ -11,24 +14,29 @@ class UploadRoomImagesUseCase
 {
     private RoomImageRepositoryInterface $repository;
     private ImageUploadFacade $uploadFacade;
-
+    private RoomRepositoryInterface $roomRepository;
 
     public function __construct(
         RoomImageRepositoryInterface $repository,
-        ImageUploadFacade $uploadFacade
+        ImageUploadFacade $uploadFacade,
+        RoomRepositoryInterface $roomRepository
     ) {
         $this->repository = $repository;
         $this->uploadFacade = $uploadFacade;
+        $this->roomRepository = $roomRepository;
     }
 
     /**
      * Upload multiple images for a room
+     * @throws RoomNotFoundException
      */
     public function execute(int $roomId, array $files, ?string $storageType = null): array
     {
         $uploadedImages = [];
 
-        
+        if (!$this->roomRepository->exists($roomId)) {
+            throw new RoomNotFoundException($roomId);
+        }
         // Convert to UploadedFile objects if needed
         $uploadedFiles = array_map(function ($file) {
             return $file instanceof UploadedFile ? $file : UploadedFile::fromArray($file);
@@ -68,7 +76,8 @@ class UploadRoomImagesUseCase
                 null
             );
 
-            if ($this->repository->save($image)) {
+            if ($imageId = $this->repository->save($image)) {
+                $image->setId($imageId);
                 $uploadedImages[] = $image->toArray();
             }
         }

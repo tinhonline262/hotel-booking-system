@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Infrastructure\Services;
+namespace App\Infrastructure\ThirdPartyIntegrations;
 
+use App\Domain\Exceptions\StorageException;
 use App\Domain\Interfaces\Services\ImageStorageInterface;
 use App\Domain\ValueObjects\UploadedFile;
-use App\Domain\Exceptions\StorageException;
 
 class CloudinaryImageStorage implements ImageStorageInterface
 {

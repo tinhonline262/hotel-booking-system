@@ -6,7 +6,7 @@ use App\Domain\Entities\RoomImage;
 
 interface RoomImageRepositoryInterface
 {
-    public function save(RoomImage $image): bool;
+    public function save(RoomImage $image): ?int;
     
     public function findById(int $id): ?RoomImage;
     

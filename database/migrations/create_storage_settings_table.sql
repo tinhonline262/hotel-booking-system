@@ -23,4 +23,3 @@ INSERT INTO storage_settings (setting_key, setting_value) VALUES
 ('cloudinary_api_key', ''),
 ('cloudinary_api_secret', '')
 ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value);
-
