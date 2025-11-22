@@ -1,6 +1,9 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
+    # Allow access to uploads/rooms
+    RewriteCond %{REQUEST_URI} ^/uploads/rooms/ [NC]
+    RewriteRule ^ - [L]
     # Redirect to index.php
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
