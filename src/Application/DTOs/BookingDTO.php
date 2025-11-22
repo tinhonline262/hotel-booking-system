@@ -46,22 +46,22 @@ class BookingDTO
     }
 
     public static function fromArray(array $data): self
-    {
-        return new self(
-            $data['id'] ?? null,
-            $data['booking_code'] ?? '',
-            $data['room_id'] ?? '',
-            $data['customer_name'] ?? '',
-            $data['customer_email'] ?? '',
-            $data['customer_phone'] ?? '',
-            $data['check_in_date'] ?? '',
-            $data['check_out_date'] ?? '',
-            $data['num_guests'] ?? 1,
-            $data['total_price'] ?? 0,
-            $data['status'] ?? 'pending',
-            $data['special_requests'] ?? null
-        );
-    }
+{
+    return new self(
+        $data['id'] ?? null,
+        $data['booking_code'] ?? '',
+        (int) ($data['room_id'] ?? 0),        // ← CAST sang int
+        $data['customer_name'] ?? '',
+        $data['customer_email'] ?? '',
+        $data['customer_phone'] ?? '',
+        $data['check_in_date'] ?? '',
+        $data['check_out_date'] ?? '',
+        (int) ($data['num_guests'] ?? 1),     // ← CAST sang int
+        (float) ($data['total_price'] ?? 0),  // ← CAST sang float
+        $data['status'] ?? 'pending',
+        $data['special_requests'] ?? null
+    );
+}
 
     public function toArray(): array
     {
