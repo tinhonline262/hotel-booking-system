@@ -16,7 +16,6 @@ class RoomController extends BaseRestController
         $this->service = $service;
     }
 
-
     /**
      * GET /api/rooms
      * Get all rooms
@@ -35,6 +34,23 @@ class RoomController extends BaseRestController
     }
 
     /**
+     * GET /api/rooms/details
+     * Get all rooms with detailed information (including room type and images)
+     */
+    public function indexWithDetails():void{
+        try{
+            $rooms = $this->service->getAllRoomsWithDetails();
+            $this->success(
+                $rooms,
+                "Rooms with details retrieved successfully"
+            );
+        }
+        catch (\Exception $e){
+            $this->serverError('Failed to retrieve rooms with details: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * GET /api/room/{id}
      * Get single room by ID
      */
@@ -49,6 +65,24 @@ class RoomController extends BaseRestController
             $this->notFound($e->getMessage());
         } catch (\Exception $e){
             $this->serverError('Failed to retrieve room ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * GET /api/room/{id}/details
+     * Get single room with detailed information (including room type and images)
+     */
+    public function showWithDetails(int $id):void{
+        try{
+            $room = $this->service->getRoomWithDetails($id);
+            $this->success(
+                $room,
+                "Room with details retrieved successfully"
+            );
+        } catch(RoomNotFoundException $e){
+            $this->notFound($e->getMessage());
+        } catch (\Exception $e){
+            $this->serverError('Failed to retrieve room with details: ' . $e->getMessage());
         }
     }
 

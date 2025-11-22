@@ -7,6 +7,7 @@
     <title>Room Management</title>
     <link rel="stylesheet" href="css/room-types.css">
     <link rel="stylesheet" href="css/rooms.css">
+    <link rel="stylesheet" href="css/room-details.css">
 </head>
 
 <body>
@@ -153,6 +154,7 @@
                     <table class="table">
                         <thead class="table__head">
                             <tr class="table__row">
+                                <th class="table__header" style="width: 50px;"></th>
                                 <th class="table__header">#</th>
                                 <th class="table__header">Số phòng</th>
                                 <th class="table__header">Loại phòng</th>
@@ -262,11 +264,66 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Modal Upload Images -->
+            <div class="modal modal--upload" id="upload_images">
+                <div class="modal__dialog modal__dialog--large">
+                    <div class="modal__content">
+                        <header class="modal__header">
+                            <h5 class="modal__title">Quản lý hình ảnh phòng</h5>
+                            <button class="modal__close">&times;</button>
+                        </header>
+                        <div class="modal__body">
+                            <div class="upload-section">
+                                <h6 class="upload-section__title">Tải lên hình ảnh mới</h6>
+                                <form id="uploadImagesForm" class="upload-form">
+                                    <input type="hidden" id="upload_room_id">
+                                    <div class="form__group">
+                                        <label class="form__label">Chọn hình ảnh (nhiều file)</label>
+                                        <div class="file-upload-area" id="fileUploadArea">
+                                            <input type="file" id="imageFiles" name="images[]" multiple accept="image/*" class="file-upload-input">
+                                            <div class="file-upload-placeholder">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                                </svg>
+                                                <p>Kéo thả hình ảnh hoặc click để chọn</p>
+                                                <span class="file-upload-hint">PNG, JPG, GIF (max. 5MB mỗi file)</span>
+                                            </div>
+                                            <div class="file-preview" id="filePreview"></div>
+                                        </div>
+                                    </div>
+                                    <div class="form__group">
+                                        <label class="form__label">Loại lưu trữ</label>
+                                        <select class="form__input" id="storage_type">
+                                            <option value="local">Local Storage</option>
+                                            <option value="cloudinary">Cloudinary</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn--primary">
+                                        <span class="btn__icon">↑</span>
+                                        <span class="btn__text">Tải lên</span>
+                                    </button>
+                                </form>
+                            </div>
+
+                            <div class="images-section" id="existingImages">
+                                <h6 class="images-section__title">Hình ảnh hiện tại</h6>
+                                <div class="images-grid" id="imagesGrid">
+                                    <!-- Loaded via JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="js/utils/api-service.js"></script>
+    <script src="js/modules/room-details-manager.js"></script>
     <script src="js/modules/room-page.js"></script>
     <script src="js/modules/roomtype-page.js"></script>
 

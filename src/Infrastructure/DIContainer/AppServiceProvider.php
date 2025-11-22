@@ -3,6 +3,7 @@
 namespace App\Infrastructure\DIContainer;
 
 use App\Core\Container\Container;
+use App\Infrastructure\Services\ImageUploadFacade;
 
 /**
  * App Service Provider - Main provider that registers all sub-providers
@@ -33,6 +34,8 @@ class AppServiceProvider
 
         // 6. Controllers
         ControllerProvider::register($container);
+
+
     }
 
     /**

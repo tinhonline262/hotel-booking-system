@@ -3,11 +3,17 @@
 namespace App\Infrastructure\DIContainer;
 
 use App\Application\UseCases\CreateRoomTypeUseCase;
+use App\Application\UseCases\DeleteRoomImageUseCase;
 use App\Application\UseCases\DeleteRoomTypeUseCase;
 use App\Application\UseCases\FilterRoomTypesByCapacityUseCase;
 use App\Application\UseCases\FilterRoomTypesByPriceRangeUseCase;
 use App\Application\UseCases\GetAllRoomTypesUseCase;
 use App\Application\UseCases\GetRoomTypeUseCase;
+use App\Application\UseCases\GetStorageHealthCheckUseCase;
+use App\Application\UseCases\GetStorageInfoUseCase;
+use App\Application\UseCases\SetPrimaryImageUseCase;
+use App\Application\UseCases\SwitchStorageProviderUseCase;
+use App\Application\UseCases\UpdateImageDisplayOrderUseCase;
 use App\Application\UseCases\UpdateRoomTypeUseCase;
 use App\Application\UseCases\CreateRoomUseCase;
 use App\Application\UseCases\UpdateRoomUseCase;
@@ -16,11 +22,32 @@ use App\Application\UseCases\GetRoomUseCase;
 use App\Application\UseCases\GetAllRoomUseCase;
 use App\Application\UseCases\FilterRoomByRoomNumberUseCase;
 use App\Application\UseCases\FilterRoomByStatusUseCase;
+use App\Application\UseCases\CreateBookingUseCase;
+use App\Application\UseCases\DeleteBookingUseCase;
+use App\Application\UseCases\UpdateBookingUseCase;
+use App\Application\UseCases\GetBookingUseCase;
+use App\Application\UseCases\GetAllBookingUseCase;
+use App\Application\UseCases\FilterBookingByCheckInDateUseCase;
+use App\Application\UseCases\FilterBookingByCheckOutDateUseCase;
+use App\Application\UseCases\FilterBookingByCodeUseCase;
+use App\Application\UseCases\FilterBookingByDayByDayUseCase;
+use App\Application\UseCases\FilterBookingByEmailUseCase;
+use App\Application\UseCases\FilterBookingByName;
+use App\Application\UseCases\FilterBookingByPhoneUseCase;
+use App\Application\UseCases\FilterBookingByStatus;
+use App\Application\UseCases\GetAllRoomsWithDetailsUseCase;
+use App\Application\UseCases\GetRoomWithDetailsUseCase;
+use App\Application\UseCases\UploadRoomImagesUseCase;
 use App\Application\Validators\RoomTypeValidator;
 use App\Application\Validators\RoomValidator;
+use App\Application\Validators\BookingValidator;
 use App\Core\Container\Container;
+use App\Domain\Interfaces\Repositories\RoomImageRepositoryInterface;
 use App\Domain\Interfaces\Repositories\RoomTypeRepositoryInterface;
 use App\Domain\Interfaces\Repositories\RoomRepositoryInterface;
+use App\Domain\Interfaces\Repositories\BookingRepositoryInterface;
+use App\Domain\Interfaces\Services\StorageConfigInterface;
+use App\Infrastructure\Services\ImageUploadFacade;
 
 /**
  * UseCase Provider - Register all use cases
@@ -32,10 +59,14 @@ class UseCaseProvider
         // RoomType Use Cases
         self::registerRoomTypeUseCases($container);
 
+        // RoomImage Use Cases
+        self::registerRoomImageUseCases($container);
+
         // Add more use case groups here
         // self::registerUserUseCases($container);
         // self::registerBookingUseCases($container);
         self::registerRoomUseCases($container);
+        self::registerBookingUseCases($container);
     }
 
     private static function registerRoomTypeUseCases(Container $container): void
@@ -129,6 +160,139 @@ class UseCaseProvider
                 $c->make(RoomRepositoryInterface::class)
             );
         });
+
+        $container->bind(GetAllRoomsWithDetailsUseCase::class, function (Container $c) {
+            return new GetAllRoomsWithDetailsUseCase(
+                $c->make(RoomRepositoryInterface::class)
+            );
+        });
+
+        $container->bind(GetRoomWithDetailsUseCase::class, function (Container $c) {
+            return new GetRoomWithDetailsUseCase(
+                $c->make(RoomRepositoryInterface::class)
+            );
+        });
+    }
+    private static function registerBookingUseCases(Container $container): void{
+        $container->bind(CreateBookingUseCase::class, function (Container $c) {
+            return new CreateBookingUseCase(
+                $c->make(BookingRepositoryInterface::class),
+                $c->make(BookingValidator::class)
+            );
+        });
+
+        $container->bind(DeleteBookingUseCase::class, function (Container $c) {
+            return new DeleteBookingUseCase(
+                $c->make(BookingRepositoryInterface::class)
+            );
+        });
+        $container->bind(GetAllBookingUseCase::class, function (Container $c) {
+            return new GetAllBookingUseCase(
+                $c->make(BookingRepositoryInterface::class),
+            );
+        });
+        $container->bind(GetBookingUseCase::class, function (Container $c) {
+            return new GetBookingUseCase(
+                $c->make(BookingRepositoryInterface::class),
+            );
+        });
+        $container->bind(UpdateBookingUseCase::class, function (Container $c) {
+            return new UpdateBookingUseCase(
+                $c->make(BookingRepositoryInterface::class),
+                $c->make(BookingValidator::class)
+            );
+        });
+        $container->bind(FilterBookingByCheckInDateUseCase::class, function (Container $c) {
+            return new FilterBookingByCheckInDateUseCase(
+                $c->make(BookingRepositoryInterface::class)
+            );
+        });
+        $container->bind(FilterBookingByCodeUseCase::class, function (Container $c) {
+            return new FilterBookingByCodeUseCase(
+                $c->make(BookingRepositoryInterface::class)
+            );
+        });
+        $container->bind(FilterBookingByDayByDayUseCase::class, function (Container $c) {
+            return new FilterBookingByDayByDayUseCase(
+                $c->make(BookingRepositoryInterface::class)
+            );
+        });
+        $container->bind(FilterBookingByEmailUseCase::class, function (Container $c) {
+            return new FilterBookingByEmailUsecase(
+                $c->make(BookingRepositoryInterface::class)
+            );
+        });
+        $container->bind(FilterBookingByName::class, function (Container $c) {
+            return new FilterBookingByName(
+                $c->make(BookingRepositoryInterface::class)
+            );
+        });
+        $container->bind(FilterBookingByPhoneUseCase::class, function (Container $c) {
+            return new FilterBookingByPhoneUseCase(
+                $c->make(BookingRepositoryInterface::class)
+            );
+        });
+        $container->bind(FilterBookingByStatus::class, function (Container $c) {
+            return new FilterBookingByStatus(
+                $c->make(BookingRepositoryInterface::class)
+            );
+        });
+    }
+
+
+    private static function registerRoomImageUseCases(Container $container): void
+    {
+        // Upload Room Images Use Case
+        $container->bind(UploadRoomImagesUseCase::class, function (Container $c) {
+            return new UploadRoomImagesUseCase(
+                $c->make(RoomImageRepositoryInterface::class),
+                $c->make(ImageUploadFacade::class),
+                $c->make(RoomRepositoryInterface::class)
+            );
+        });
+
+        // Set Primary Image Use Case
+        $container->bind(SetPrimaryImageUseCase::class, function (Container $c) {
+            return new SetPrimaryImageUseCase(
+                $c->make(RoomImageRepositoryInterface::class)
+            );
+        });
+
+        // Update Image Display Order Use Case
+        $container->bind(UpdateImageDisplayOrderUseCase::class, function (Container $c) {
+            return new UpdateImageDisplayOrderUseCase(
+                $c->make(RoomImageRepositoryInterface::class)
+            );
+        });
+
+        // Delete Room Image Use Case
+        $container->bind(DeleteRoomImageUseCase::class, function (Container $c) {
+            return new DeleteRoomImageUseCase(
+                $c->make(RoomImageRepositoryInterface::class),
+                $c->make(ImageUploadFacade::class)
+            );
+        });
+
+        // Get Storage Health Check Use Case
+        $container->bind(GetStorageHealthCheckUseCase::class, function (Container $c) {
+            return new GetStorageHealthCheckUseCase(
+                $c->make(ImageUploadFacade::class)
+            );
+        });
+
+        // Get Storage Info Use Case
+        $container->bind(GetStorageInfoUseCase::class, function (Container $c) {
+            return new GetStorageInfoUseCase(
+                $c->make(ImageUploadFacade::class),
+                $c->make(RoomImageRepositoryInterface::class)
+            );
+        });
+
+        // Switch Storage Provider Use Case
+        $container->bind(SwitchStorageProviderUseCase::class, function (Container $c) {
+            return new SwitchStorageProviderUseCase(
+                $c->make(StorageConfigInterface::class)
+            );
+        });
     }
 }
-

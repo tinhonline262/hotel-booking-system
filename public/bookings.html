@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Đặt phòng</title>
+    <link rel="stylesheet" href="css/bookings.css">
+    <link rel="stylesheet" href="css/room-types.css">
+    <link rel="stylesheet" href="css/rooms.css">
+</head>
+<body>
+<div class="app">
+
+    <!-- Header giữ nguyên như rooms.html -->
+    <header class="header">
+        <!-- ...content giữ nguyên... -->
+        <div class="header__left">
+            <a href="index.html" class="header__logo">
+                <img src="assets/img/cmc_logo.png" alt="Hotel Management Logo" class="header__logo-img">
+            </a>
+        </div>
+        <button class="header__toggle" id="toggle_btn">
+            <span class="header__toggle-bar"></span>
+            <span class="header__toggle-bar"></span>
+            <span class="header__toggle-bar"></span>
+        </button>
+        <div class="header__title">
+            <h3 class="header__title-text">Hotel</h3>
+        </div>
+        <nav class="header__nav">
+            <ul class="header__menu">
+                <li class="header__menu-item header__menu-item--dropdown">
+                    <a href="#" class="header__menu-link">
+                        <img src="assets/img/user-circle-o.png" alt="User" class="header__user-avatar">
+                        <span class="header__user-status header__user-status--online"></span>
+                        <span class="header__user-name">Admin</span>
+                    </a>
+                    <div class="header__dropdown">
+                        <a href="profile.html" class="header__dropdown-item">Hồ sơ của tôi</a>
+                        <a href="settings.html" class="header__dropdown-item">Cài đặt</a>
+                        <a href="login.html" class="header__dropdown-item">Đăng xuất</a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Sidebar giữ nguyên như rooms.html -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar__inner">
+            <nav class="sidebar__menu">
+                <ul class="sidebar__list">
+                    <li class="sidebar__item sidebar__item--title">
+                        <span class="sidebar__text">Chính</span>
+                    </li>
+                    <li class="sidebar__item">
+                        <a href="dashboard.html" class="sidebar__link"><span class="sidebar__icon"></span><span class="sidebar__text">Bảng điều khiển</span></a>
+                    </li>
+                    <li class="sidebar__item">
+                        <a href="roomtypes.html" class="sidebar__link"><span class="sidebar__icon"></span><span class="sidebar__text">Loại phòng</span></a>
+                    </li>
+                    <li class="sidebar__item">
+                        <a href="rooms.html" class="sidebar__link"><span class="sidebar__icon"></span><span class="sidebar__text">Phòng</span></a>
+                    </li>
+                    <li class="sidebar__item">
+                        <a href="bookings.html" class="sidebar__link sidebar__link--active"><span class="sidebar__icon"></span><span class="sidebar__text">Đặt phòng</span></a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </aside>
+
+    <main class="page">
+        <div class="page__content">
+            <header class="page__header">
+                <div class="page__header-container">
+                    <div class="page__header-left">
+                        <h3 class="page__title">Quản lý Đặt phòng</h3>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb__item">
+                                <a href="index.html" class="breadcrumb__link">Bảng điều khiển</a>
+                            </li>
+                            <li class="breadcrumb__item breadcrumb__item--active">Đặt phòng</li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Filter bar mapping controller fields -->
+            <div class="filter-bar">
+                <form id="bookingFilterForm" class="filter-form">
+                    <div class="form__group">
+                        <label class="form__label" for="filter_status">Trạng thái:</label>
+                        <select id="filter_status" class="form__input">
+                            <option value="">Tất cả</option>
+                            <option value="pending">Chờ xác nhận</option>
+                            <option value="confirmed">Đã xác nhận</option>
+                            <option value="cancelled">Đã hủy</option>
+                            <option value="checked-in">Đã nhận phòng</option>
+                            <option value="checked-out">Đã trả phòng</option>
+                        </select>
+                    </div>
+                    <div class="form__group">
+                        <label class="form__label" for="filter_check_in_date">Ngày đến:</label>
+                        <input type="date" id="filter_check_in_date" class="form__input">
+                    </div>
+                    <div class="form__group">
+                        <label class="form__label" for="filter_check_out_date">Ngày đi:</label>
+                        <input type="date" id="filter_check_out_date" class="form__input">
+                    </div>
+                    <div class="form__group">
+                        <label class="form__label" for="filter_booking_code">Mã đặt phòng:</label>
+                        <input type="text" id="filter_booking_code" class="form__input" placeholder="BK-...">
+                    </div>
+                    <div class="form__group">
+                        <label class="form__label" for="filter_customer_email">Email:</label>
+                        <input type="email" id="filter_customer_email" class="form__input" placeholder="Email khách">
+                    </div>
+                    <div class="form__group">
+                        <label class="form__label" for="filter_customer_name">Tên khách:</label>
+                        <input type="text" id="filter_customer_name" class="form__input" placeholder="Tên khách">
+                    </div>
+                    <div class="form__group">
+                        <label class="form__label" for="filter_customer_phone">Điện thoại:</label>
+                        <input type="text" id="filter_customer_phone" class="form__input" placeholder="SĐT khách">
+                    </div>
+                    <button type="submit" class="btn btn--secondary">Lọc</button>
+                </form>
+            </div>
+
+            <!-- Danh sách đặt phòng -->
+            <div class="table-wrapper">
+                <table class="table">
+                    <thead class="table__head">
+                    <tr class="table__row">
+                        <th class="table__header">#</th>
+                        <th class="table__header">Mã ĐP</th>
+                        <th class="table__header">ID phòng</th>
+                        <th class="table__header">Tên khách</th>
+                        <th class="table__header">Email</th>
+                        <th class="table__header">SĐT</th>
+                        <th class="table__header">Ngày đến</th>
+                        <th class="table__header">Ngày đi</th>
+                        <th class="table__header">Số khách</th>
+                        <th class="table__header">Thành tiền</th>
+                        <th class="table__header">Trạng thái</th>
+                        <th class="table__header">YCĐB</th>
+                        <th class="table__header table__header--action">Hành động</th>
+                    </tr>
+                    </thead>
+                    <tbody class="table__body" id="bookingTableBody">
+                    <!-- Data sẽ được JS load vào -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal sửa -->
+    <div class="modal modal--edit" id="edit_booking_modal">
+        <div class="modal__dialog">
+            <div class="modal__content">
+                <header class="modal__header">
+                    <h5 class="modal__title">Sửa đặt phòng</h5>
+                    <button class="modal__close">&times;</button>
+                </header>
+                <div class="modal__body">
+                    <form id="editBookingForm">
+                        <input type="hidden" id="edit_id">
+                        <div class="form__group">
+                            <label class="form__label">Mã đặt phòng</label>
+                            <input type="text" class="form__input" id="edit_booking_code" required readonly>
+                        </div>
+                        <div class="form__group">
+                            <label class="form__label">ID phòng</label>
+                            <input type="number" class="form__input" id="edit_room_id" required>
+                        </div>
+                        <div class="form__group">
+                            <label class="form__label">Tên khách</label>
+                            <input type="text" class="form__input" id="edit_customer_name" required>
+                        </div>
+                        <div class="form__group">
+                            <label class="form__label">Email</label>
+                            <input type="email" class="form__input" id="edit_customer_email" required>
+                        </div>
+                        <div class="form__group">
+                            <label class="form__label">SĐT</label>
+                            <input type="text" class="form__input" id="edit_customer_phone" required>
+                        </div>
+                        <div class="form__group">
+                            <label class="form__label">Ngày đến</label>
+                            <input type="date" class="form__input" id="edit_check_in_date" required>
+                        </div>
+                        <div class="form__group">
+                            <label class="form__label">Ngày đi</label>
+                            <input type="date" class="form__input" id="edit_check_out_date" required>
+                        </div>
+                        <div class="form__group">
+                            <label class="form__label">Số khách</label>
+                            <input type="number" class="form__input" id="edit_num_guests" required min="1">
+                        </div>
+                        <div class="form__group">
+                            <label class="form__label">Thành tiền</label>
+                            <input type="number" step="0.01" class="form__input" id="edit_total_price" required min="0">
+                        </div>
+                        <div class="form__group">
+                            <label class="form__label">Trạng thái</label>
+                            <select class="form__input" id="edit_status" required>
+                                <option value="pending">Chờ xác nhận</option>
+                                <option value="confirmed">Đã xác nhận</option>
+                                <option value="cancelled">Đã hủy</option>
+                                <option value="checked-in">Đã nhận phòng</option>
+                                <option value="checked-out">Đã trả phòng</option>
+                            </select>
+                        </div>
+                        <div class="form__group">
+                            <label class="form__label">Yêu cầu đặc biệt</label>
+                            <input type="text" class="form__input" id="edit_special_requests">
+                        </div>
+                        <div class="form__submit">
+                            <button type="submit" class="btn btn--primary">Lưu</button>
+                            <button type="button" class="btn btn--secondary modal__close">Hủy</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal xác nhận xóa -->
+    <div class="modal modal--delete" id="delete_booking_modal">
+        <div class="modal__dialog">
+            <div class="modal__content">
+                <div class="modal__body">
+                    <header class="modal__confirm-header">
+                        <h3 class="modal__confirm-title">Xóa đặt phòng</h3>
+                        <p class="modal__confirm-text">Bạn có chắc chắn muốn xóa đặt phòng này?</p>
+                    </header>
+                    <div class="modal__actions">
+                        <button class="btn btn--danger" id="confirm-delete-btn">Xóa</button>
+                        <button class="btn btn--secondary modal__close">Hủy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="js/utils/api-service.js"></script>
+<script src="js/modules/booking-edit-page.js"></script>
+</body>
+</html>
