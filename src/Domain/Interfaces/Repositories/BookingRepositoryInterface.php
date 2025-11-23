@@ -3,7 +3,6 @@
 namespace App\Domain\Interfaces\Repositories;
 
 use App\Domain\Entities\Booking;
-namespace App\Domain\Repositories;
 interface BookingRepositoryInterface
 {
     public function save(Booking $booking): bool;

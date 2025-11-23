@@ -1,7 +1,7 @@
 <?php
 namespace App\Application\UseCases;
 
-use App\Domain\Repositories\BookingRepositoryInterface;
+use App\Domain\Interfaces\Repositories\BookingRepositoryInterface;
 use App\Application\Interfaces\ICacheService;
 
 class FindBookingByCodeUseCase
