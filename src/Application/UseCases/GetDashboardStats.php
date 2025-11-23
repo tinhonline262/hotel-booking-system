@@ -55,23 +55,20 @@ class GetDashboardStats
         $roomTypeStats = $this->dashboardRepository->getRoomTypeStatistics();
 
         return new DashboardStatsDTO(
-            totalRooms: $totalRooms,
-            availableRooms: $availableRooms,
-            occupiedRooms: $occupiedRooms,
-            cleaningRooms: $cleaningRooms,
-            totalBookings: $totalBookings,
-            pendingBookings: $pendingBookings,
-            confirmedBookings: $confirmedBookings,
-            checkedInBookings: $checkedInBookings,
-            cancelledBookings: $cancelledBookings,
-            totalRevenue: $totalRevenue,
-            monthlyRevenue: $monthlyRevenue,
-            todayRevenue: $todayRevenue,
-            recentBookings: $recentBookings,
-            upcomingCheckIns: $upcomingCheckIns,
-            upcomingCheckOuts: $upcomingCheckOuts,
-            roomTypeStats: $roomTypeStats
-        );
+    totalRooms: $totalRooms,
+    availableRooms: $availableRooms,
+    occupiedRooms: $occupiedRooms,
+    cleaningRooms: $cleaningRooms,
+    maintenanceRooms: 0, 
+    totalRoomTypes: 0, 
+    occupancyRate: $occupiedRooms / $totalRooms * 100,
+    roomTypeDistribution: $roomTypeStats,
+    recentBookings: $recentBookings,
+    todayCheckIns: $upcomingCheckIns,
+    todayCheckOuts: $upcomingCheckOuts,
+    todayCheckInsCount: count($upcomingCheckIns),
+    pendingBookingsCount: $pendingBookings
+);
     }
 
     /**

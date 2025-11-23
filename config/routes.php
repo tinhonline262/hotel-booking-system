@@ -5,7 +5,7 @@ return [
         // ============================================
         // REST API ROUTES - JSON Responses
         // ============================================
-        
+
         // Dashboard API
         ['GET', '/api/dashboard/stats', 'Api\DashboardController@getStats'],
 
@@ -20,9 +20,11 @@ return [
 
         // Room API
         ['GET', '/api/rooms', 'Api\RoomController@index'],
+        ['GET', '/api/rooms/details', 'Api\RoomController@indexWithDetails'],
         ['GET', '/api/rooms/filter/status', 'Api\RoomController@filterByStatus'],
         ['GET', '/api/rooms/filter/room-number', 'Api\RoomController@filterByRoomNumber'],
         ['GET', '/api/rooms/{id}', 'Api\RoomController@show'],
+        ['GET', '/api/rooms/{id}/details', 'Api\RoomController@showWithDetails'],
         ['POST', '/api/rooms', 'Api\RoomController@create'],
         ['PUT', '/api/rooms/{id}', 'Api\RoomController@update'],
         ['DELETE', '/api/rooms/{id}', 'Api\RoomController@delete'],
@@ -42,5 +44,15 @@ return [
         ['DELETE', '/api/bookings/{id}', 'Api\CRUDbookingController@delete'],
         //RoomDetailController
         ['GET', '/api/room-details/{id}', 'Api\RoomDetailController@getDetailRooms'],
+        // Room Images API
+        ['POST', '/api/rooms/{id}/images', 'Api\RoomImageController@upload'],
+        ['PUT', '/api/rooms/{roomId}/images/{imageId}/primary', 'Api\RoomImageController@setPrimary'],
+        ['PUT', '/api/rooms/images/order', 'Api\RoomImageController@updateOrder'],
+        ['DELETE', '/api/rooms/images/{id}', 'Api\RoomImageController@delete'],
+
+        // Storage Management API
+        ['GET', '/api/storage/health', 'Api\RoomImageController@healthCheck'],
+        ['GET', '/api/storage/info', 'Api\RoomImageController@storageInfo'],
+        ['PUT', '/api/storage/provider', 'Api\RoomImageController@switchProvider'],
     ],
 ];

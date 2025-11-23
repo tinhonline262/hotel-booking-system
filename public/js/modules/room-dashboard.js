@@ -42,26 +42,39 @@ class RoomDashboardManager {
             this.loadDashboardStats();
             this.showNotification("Đã làm mới dữ liệu!", "success");
         });
+
+        // Modal close buttons
+        $('#closeBookingModal, #closeBookingModalBtn').on('click', () => {
+            this.closeBookingDetail();
+        });
+
+        // Close modal when clicking overlay
+        $('#bookingDetailModal').on('click', (e) => {
+            if (e.target.id === 'bookingDetailModal') {
+                this.closeBookingDetail();
+            }
+        });
     }
 
     async loadDashboardStats() {
         try {
             const result = await this.api.get(this.endpoint);
-            
+
             if (result.success) {
                 const stats = result.data;
                 this.updateOverviewStats(stats);
-                this.updateStatusProgress(stats);
-                this.updateRoomTypeDistribution(stats);
+                this.updateRecentBookings(stats);
+                this.updateTodayCheckIns(stats);
+                this.updateTodayCheckOuts(stats);
             } else {
                 this.showNotification(
-                    result.message || "Không tải được thống kê!", 
+                    result.message || "Không tải được thống kê!",
                     "error"
                 );
             }
         } catch (error) {
             this.showNotification(
-                "Lỗi tải thống kê: " + error.message, 
+                "Lỗi tải thống kê: " + error.message,
                 "error"
             );
             console.error("Error loading dashboard stats:", error);
@@ -71,75 +84,321 @@ class RoomDashboardManager {
     updateOverviewStats(stats) {
         // Update overview stat cards
         $('#totalRooms').text(stats.total_rooms || 0);
-        $('#availableRooms').text(stats.available_rooms || 0);
-        $('#occupiedRooms').text(stats.occupied_rooms || 0);
-        
-        const occupancyRate = stats.occupancy_rate || 0;
-        $('#occupancyRate').text(occupancyRate.toFixed(1));
+
+        // Update room breakdown in card 1
+        $('#availableRoomsStat').text(stats.available_rooms || 0);
+        $('#occupiedRoomsStat').text(stats.occupied_rooms || 0);
+        $('#cleaningRoomsStat').text(stats.cleaning_rooms || 0);
+
+        // Update check-in today count in card 2
+        $('#todayCheckInsCountValue').text(stats.today_check_ins_count || 0);
+
+        // Update pending bookings count in card 3
+        $('#pendingBookingsCountValue').text(stats.pending_bookings_count || 0);
     }
 
-    updateStatusProgress(stats) {
-        const totalRooms = stats.total_rooms || 1; // Avoid division by zero
+    updateRecentBookings(stats) {
+        const bookings = stats.recent_bookings || [];
+        const $tbody = $('#recentBookingsTable');
 
-        if (totalRooms > 0) {
-            // Calculate percentages
-            const availablePct = ((stats.available_rooms || 0) / totalRooms * 100).toFixed(1);
-            const occupiedPct = ((stats.occupied_rooms || 0) / totalRooms * 100).toFixed(1);
-            const cleaningPct = ((stats.cleaning_rooms || 0) / totalRooms * 100).toFixed(1);
-            const maintenancePct = ((stats.maintenance_rooms || 0) / totalRooms * 100).toFixed(1);
-
-            // Update percentage labels
-            $('#availablePercentage').text(availablePct + '%');
-            $('#occupiedPercentage').text(occupiedPct + '%');
-            $('#cleaningPercentage').text(cleaningPct + '%');
-            $('#maintenancePercentage').text(maintenancePct + '%');
-
-            // Update progress bars with animation
-            $('#availableBar').css('width', availablePct + '%');
-            $('#occupiedBar').css('width', occupiedPct + '%');
-            $('#cleaningBar').css('width', cleaningPct + '%');
-            $('#maintenanceBar').css('width', maintenancePct + '%');
-        } else {
-            // Reset to 0 if no rooms
-            $('#availablePercentage, #occupiedPercentage, #cleaningPercentage, #maintenancePercentage')
-                .text('0%');
-            $('#availableBar, #occupiedBar, #cleaningBar, #maintenanceBar')
-                .css('width', '0%');
-        }
-    }
-
-    updateRoomTypeDistribution(stats) {
-        const distribution = stats.room_type_distribution || {};
-        const $container = $('#roomTypeDistribution');
-
-        if (Object.keys(distribution).length === 0) {
-            $container.html(`
-                <div style="text-align:center;padding:20px;color:#999;">
-                    Không có dữ liệu phân bố loại phòng
-                </div>
+        if (!bookings || bookings.length === 0) {
+            $tbody.html(`
+                <tr>
+                    <td colspan="7" style="text-align:center;padding:40px;color:#999;">
+                        Không có booking nào
+                    </td>
+                </tr>
             `);
             return;
         }
 
-        // Generate distribution HTML
-        const distributionHtml = Object.entries(distribution)
-            .map(([type, data]) => `
-                <div class="distribution-item">
-                    <div class="distribution-info">
-                        <span class="distribution-label">${this.escapeHtml(type)}</span>
-                        <span class="distribution-value">
-                            ${data.count || 0} phòng (${(data.percentage || 0).toFixed(1)}%)
-                        </span>
-                    </div>
-                    <div class="progress">
-                        <div class="progress-bar" 
-                             style="width:${data.percentage || 0}%;background:rgb(99,102,241)">
+        const rows = bookings.map(booking => {
+            const statusClass = `status-badge--${booking.status || 'pending'}`;
+            const statusText = this.getStatusText(booking.status);
+            const createdDate = booking.created_at ? this.formatDate(booking.created_at) : 'N/A';
+            const checkInDate = booking.check_in_date ? this.formatDate(booking.check_in_date) : 'N/A';
+
+            return `
+                <tr>
+                    <td><span class="booking-code">${this.escapeHtml(booking.booking_code || 'N/A')}</span></td>
+                    <td>${this.escapeHtml(booking.customer_name || 'N/A')}</td>
+                    <td><strong>${this.escapeHtml(booking.room_number || 'N/A')}</strong></td>
+                    <td>${checkInDate}</td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td>${createdDate}</td>
+                    <td>
+                        <button class="btn-detail" data-id="${booking.id}" data-action="view-detail">Xem chi tiết</button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+
+        $tbody.html(rows);
+
+        // Attach event listeners for detail buttons
+        $('#recentBookingsTable').find('.btn-detail').on('click', (e) => {
+            const bookingId = $(e.target).data('id');
+            this.openBookingDetail(bookingId);
+        });
+    }
+
+    getStatusText(status) {
+        const statusMap = {
+            'pending': 'Chờ xác nhận',
+            'confirmed': 'Đã xác nhận',
+            'checked_in': 'Đã check-in',
+            'checked_out': 'Đã check-out',
+            'cancelled': 'Đã hủy'
+        };
+        return statusMap[status] || status;
+    }
+
+    formatDate(dateStr) {
+        if (!dateStr) return 'N/A';
+        try {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('vi-VN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            });
+        } catch (e) {
+            return dateStr;
+        }
+    }
+
+    updateTodayCheckIns(stats) {
+        const checkIns = stats.today_check_ins || [];
+        const $tbody = $('#todayCheckInsTable');
+
+        if (!checkIns || checkIns.length === 0) {
+            $tbody.html(`
+                <tr>
+                    <td colspan="5" style="text-align:center;padding:30px;color:#999;">
+                        Không có check-in hôm nay
+                    </td>
+                </tr>
+            `);
+            return;
+        }
+
+        const rows = checkIns.map(checkin => {
+            const checkInTime = checkin.check_in_time || '09:00';
+
+            return `
+                <tr>
+                    <td><span class="booking-code">${this.escapeHtml(checkin.booking_code || 'N/A')}</span></td>
+                    <td>${this.escapeHtml(checkin.customer_name || 'N/A')}</td>
+                    <td><strong>${this.escapeHtml(checkin.room_number || 'N/A')}</strong></td>
+                    <td>${checkInTime}</td>
+                    <td>
+                        <button class="btn-checkin" data-id="${checkin.id}" data-action="check-in">Check In</button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+
+        $tbody.html(rows);
+
+        // Attach event listeners
+        $('#todayCheckInsTable').find('.btn-checkin').on('click', (e) => {
+            const bookingId = $(e.target).data('id');
+            this.handleCheckIn(bookingId);
+        });
+    }
+
+    updateTodayCheckOuts(stats) {
+        const checkOuts = stats.today_check_outs || [];
+        const $tbody = $('#todayCheckOutsTable');
+
+        if (!checkOuts || checkOuts.length === 0) {
+            $tbody.html(`
+                <tr>
+                    <td colspan="4" style="text-align:center;padding:30px;color:#999;">
+                        Không có check-out hôm nay
+                    </td>
+                </tr>
+            `);
+            return;
+        }
+
+        const rows = checkOuts.map(checkout => {
+            return `
+                <tr>
+                    <td><span class="booking-code">${this.escapeHtml(checkout.booking_code || 'N/A')}</span></td>
+                    <td>${this.escapeHtml(checkout.customer_name || 'N/A')}</td>
+                    <td><strong>${this.escapeHtml(checkout.room_number || 'N/A')}</strong></td>
+                    <td>
+                        <button class="btn-checkout" data-id="${checkout.id}" data-action="check-out">Check Out</button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+
+        $tbody.html(rows);
+
+        // Attach event listeners
+        $('#todayCheckOutsTable').find('.btn-checkout').on('click', (e) => {
+            const bookingId = $(e.target).data('id');
+            this.handleCheckOut(bookingId);
+        });
+    }
+
+    handleCheckIn(bookingId) {
+        if (confirm('Xác nhận check-in cho booking này?')) {
+            this.api.put(`/bookings/${bookingId}`, { status: 'checked_in' })
+                .then(result => {
+                    if (result.success) {
+                        this.showNotification('Check-in thành công!', 'success');
+                        this.loadDashboardStats();
+                    } else {
+                        this.showNotification(result.message || 'Lỗi check-in', 'error');
+                    }
+                })
+                .catch(error => {
+                    this.showNotification('Lỗi: ' + error.message, 'error');
+                });
+        }
+    }
+
+    handleCheckOut(bookingId) {
+        if (confirm('Xác nhận check-out cho booking này?')) {
+            this.api.put(`/bookings/${bookingId}`, { status: 'checked_out' })
+                .then(result => {
+                    if (result.success) {
+                        this.showNotification('Check-out thành công!', 'success');
+                        this.loadDashboardStats();
+                    } else {
+                        this.showNotification(result.message || 'Lỗi check-out', 'error');
+                    }
+                })
+                .catch(error => {
+                    this.showNotification('Lỗi: ' + error.message, 'error');
+                });
+        }
+    }
+
+    openBookingDetail(bookingId) {
+        const $modal = $('#bookingDetailModal');
+        const $content = $('#bookingDetailContent');
+
+        // Show loading
+        $content.html(`
+            <div style="text-align:center;padding:40px;color:#999;">
+                Đang tải dữ liệu...
+            </div>
+        `);
+
+        $modal.removeClass('modal--hidden');
+        $('body').css('overflow', 'hidden');
+
+        // Fetch booking detail
+        this.api.get(`/bookings/${bookingId}`)
+            .then(result => {
+                if (result.success && result.data) {
+                    this.renderBookingDetail(result.data);
+                } else {
+                    $content.html(`
+                        <div style="text-align:center;padding:40px;color:#e74c3c;">
+                            Không thể tải chi tiết booking
                         </div>
+                    `);
+                }
+            })
+            .catch(error => {
+                $content.html(`
+                    <div style="text-align:center;padding:40px;color:#e74c3c;">
+                        Lỗi: ${error.message}
                     </div>
+                `);
+            });
+    }
+
+    renderBookingDetail(booking) {
+        const $content = $('#bookingDetailContent');
+        const statusText = this.getStatusText(booking.status);
+        const checkInDate = booking.check_in_date ? this.formatDate(booking.check_in_date) : 'N/A';
+        const checkOutDate = booking.check_out_date ? this.formatDate(booking.check_out_date) : 'N/A';
+        const createdDate = booking.created_at ? this.formatDate(booking.created_at) : 'N/A';
+
+        const statusClass = `status-badge--${booking.status || 'pending'}`;
+
+        const html = `
+            <div class="detail-section detail-section--info">
+                <div class="detail-section__title">Thông tin chung</div>
+                <div class="detail-row">
+                    <span class="detail-row__label">Mã Booking:</span>
+                    <span class="detail-row__value detail-row__value--code">${this.escapeHtml(booking.booking_code || 'N/A')}</span>
                 </div>
-            `).join('');
-        
-        $container.html(distributionHtml);
+                <div class="detail-row">
+                    <span class="detail-row__label">Khách hàng:</span>
+                    <span class="detail-row__value">${this.escapeHtml(booking.customer_name || 'N/A')}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-row__label">Email:</span>
+                    <span class="detail-row__value">${this.escapeHtml(booking.customer_email || 'N/A')}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-row__label">Số điện thoại:</span>
+                    <span class="detail-row__value">${this.escapeHtml(booking.customer_phone || 'N/A')}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-row__label">Trạng thái:</span>
+                    <span class="detail-status status-badge ${statusClass}">${statusText}</span>
+                </div>
+            </div>
+
+            <div class="detail-section detail-section--checkin">
+                <div class="detail-section__title">Thông tin nhận phòng</div>
+                <div class="detail-row">
+                    <span class="detail-row__label">Số phòng:</span>
+                    <span class="detail-row__value">${this.escapeHtml(booking.room_number || 'N/A')}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-row__label">Ngày nhận:</span>
+                    <span class="detail-row__value">${checkInDate}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-row__label">Số khách:</span>
+                    <span class="detail-row__value">${booking.num_guests || 1} người</span>
+                </div>
+            </div>
+
+            <div class="detail-section detail-section--checkout">
+                <div class="detail-section__title">Thông tin trả phòng</div>
+                <div class="detail-row">
+                    <span class="detail-row__label">Ngày trả:</span>
+                    <span class="detail-row__value">${checkOutDate}</span>
+                </div>
+            </div>
+
+            <div class="detail-section detail-section--price">
+                <div class="detail-section__title">Thông tin thanh toán</div>
+                <div class="detail-row">
+                    <span class="detail-row__label">Giá phòng:</span>
+                    <span class="detail-row__value">${this.formatCurrency(booking.total_price || 0)}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-row__label">Ngày đặt:</span>
+                    <span class="detail-row__value">${createdDate}</span>
+                </div>
+            </div>
+        `;
+
+        $content.html(html);
+    }
+
+    formatCurrency(value) {
+        if (!value) return '0 ₫';
+        return new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND'
+        }).format(value);
+    }
+
+    closeBookingDetail() {
+        $('#bookingDetailModal').addClass('modal--hidden');
+        $('body').css('overflow', 'auto');
     }
 
     startAutoRefresh() {

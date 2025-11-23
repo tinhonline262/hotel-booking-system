@@ -5,7 +5,6 @@ use App\Core\Database\Database;
 use App\Domain\Entities\Booking;
 use App\Domain\Entities\Room;
 use App\Domain\Interfaces\Repositories\BookingRepositoryInterface;
-use Cassandra\Date;
 
 class BookingRepository implements BookingRepositoryInterface
 {
@@ -242,4 +241,108 @@ class BookingRepository implements BookingRepositoryInterface
 
         return $bookings;
     }
+    public function findRecentWithRoom(int $limit = 10): array
+{
+    $sql = "
+        SELECT 
+            b.id, b.booking_code, b.customer_name, 
+            b.check_in_date, b.status, b.created_at,
+            r.room_number
+        FROM bookings b
+        LEFT JOIN rooms r ON b.room_id = r.id
+        ORDER BY b.created_at DESC
+        LIMIT ?
+    ";
+    
+    $stmt = $this->database->query($sql, [$limit]);
+    $bookings = [];
+    
+    while ($row = $stmt->fetch()) {
+        $bookings[] = [
+            'id' => (int) $row['id'],
+            'booking_code' => $row['booking_code'],
+            'customer_name' => $row['customer_name'],
+            'room_number' => $row['room_number'] ?? 'N/A',
+            'check_in_date' => $row['check_in_date'],
+            'status' => $row['status'],
+            'created_at' => $row['created_at']
+        ];
+    }
+    
+    return $bookings;
+}
+public function findTodayCheckIns(int $limit = 10): array
+{
+    $today = date('Y-m-d');
+    $sql = "
+        SELECT 
+            b.id, b.booking_code, b.customer_name, 
+            b.check_in_date, b.status,
+            r.room_number
+        FROM bookings b
+        LEFT JOIN rooms r ON b.room_id = r.id
+        WHERE DATE(b.check_in_date) = ? 
+        AND b.status IN ('confirmed', 'pending')
+        ORDER BY b.check_in_date
+        LIMIT ?
+    ";
+    
+    $stmt = $this->database->query($sql, [$today, $limit]);
+    $result = [];
+    
+    while ($row = $stmt->fetch()) {
+        $result[] = [
+            'id' => (int) $row['id'],
+            'booking_code' => $row['booking_code'],
+            'customer_name' => $row['customer_name'],
+            'room_number' => $row['room_number'] ?? 'N/A',
+            'check_in_date' => $row['check_in_date'],
+            'check_in_time' => date('H:i', strtotime($row['check_in_date'])),
+            'status' => $row['status']
+        ];
+    }
+    
+    return $result;
+}
+
+public function findTodayCheckOuts(int $limit = 10): array
+{
+    $today = date('Y-m-d');
+    $sql = "
+        SELECT 
+            b.id, b.booking_code, b.customer_name, 
+            b.check_out_date, b.status,
+            r.room_number
+        FROM bookings b
+        LEFT JOIN rooms r ON b.room_id = r.id
+        WHERE DATE(b.check_out_date) = ? 
+        AND b.status = 'checked_in'
+        ORDER BY b.check_out_date
+        LIMIT ?
+    ";
+    
+    $stmt = $this->database->query($sql, [$today, $limit]);
+    $result = [];
+    
+    while ($row = $stmt->fetch()) {
+        $result[] = [
+            'id' => (int) $row['id'],
+            'booking_code' => $row['booking_code'],
+            'customer_name' => $row['customer_name'],
+            'room_number' => $row['room_number'] ?? 'N/A',
+            'check_out_date' => $row['check_out_date'],
+            'status' => $row['status']
+        ];
+    }
+    
+    return $result;
+}
+
+public function countPendingBookings(): int
+{
+    $sql = "SELECT COUNT(*) as count FROM bookings WHERE status = 'pending'";
+    $stmt = $this->database->query($sql);
+    $result = $stmt->fetch();
+    return (int) $result['count'];
+}
 }

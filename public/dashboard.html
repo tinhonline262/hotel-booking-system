@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Room Management Dashboard</title>
-    <link rel="stylesheet" href="css/rooms.css">
     <link rel="stylesheet" href="css/room-types.css">
     <style>
         :root {
@@ -75,7 +74,7 @@
         .stat-card:hover {
             border-color: var(--card-accent);
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
-            transform: translateY(-8px) scale(1.02)
+            /* transform: translateY(-8px) scale(1.02) */
         }
 
         .stat-card:hover::before {
@@ -169,6 +168,29 @@
             font-weight: 500
         }
 
+        .room-status-breakdown {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-secondary)
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            flex-shrink: 0
+        }
+
         .stat-card--blue {
             --card-accent: #0066ff;
             --card-accent-dark: #0052cc
@@ -212,9 +234,6 @@
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1)
         }
 
-        .dashboard-card:hover::before {
-            transform: scaleX(1)
-        }
 
         .dashboard-card__title {
             font-size: 22px;
@@ -317,122 +336,6 @@
             gap: 24px
         }
 
-        .room-type-card {
-            background: linear-gradient(135deg, var(--bg-card) 0%, rgba(255, 255, 255, 0.5) 100%);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 32px;
-            display: flex;
-            align-items: center;
-            gap: 28px;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-            cursor: pointer
-        }
-
-        .room-type-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, transparent, var(--type-color));
-            opacity: 0;
-            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            pointer-events: none
-        }
-
-        .room-type-card:hover {
-            border-color: var(--type-color);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
-            /* transform: translateX(8px) scale(1.02); */
-        }
-
-        .room-type-card:hover::before {
-            opacity: 0.05
-        }
-
-        .room-type-card__visual {
-            position: relative;
-            width: 88px;
-            height: 88px;
-            flex-shrink: 0
-        }
-
-        .room-type-card__circle {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: conic-gradient(var(--type-color) 0deg, var(--type-color) var(--percentage), var(--border) var(--percentage), var(--border) 360deg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-            /* transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1) */
-        }
-
-        .room-type-card:hover .room-type-card__circle {
-            transform: rotate(10deg) scale(1.1)
-        }
-
-        .room-type-card__circle::after {
-            content: '';
-            width: 70%;
-            height: 70%;
-            background: var(--bg-card);
-            border-radius: 50%;
-            position: absolute;
-            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.1)
-        }
-
-        .room-type-card__count {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 24px;
-            font-weight: 800;
-            color: var(--text-primary);
-            z-index: 1
-        }
-
-        .room-type-card__info {
-            flex: 1;
-            min-width: 0
-        }
-
-        .room-type-card__name {
-            font-weight: 800;
-            font-size: 19px;
-            margin-bottom: 8px;
-            color: var(--text-primary);
-            letter-spacing: -0.02em
-        }
-
-        .room-type-card__meta {
-            display: flex;
-            gap: 16px;
-            font-size: 15px;
-            color: var(--text-secondary);
-            font-weight: 600
-        }
-
-        .room-type-card__percentage {
-            font-weight: 900;
-            font-size: 40px;
-            color: var(--text-primary);
-            min-width: 100px;
-            text-align: right;
-            letter-spacing: -0.03em;
-            background: linear-gradient(135deg, var(--text-primary) 0%, var(--type-color) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text
-        }
-
         @media (max-width:768px) {
             body {
                 padding: 20px
@@ -457,6 +360,397 @@
 
             .stat-card__value {
                 font-size: 48px
+            }
+
+            .table-wrapper {
+                overflow-x: auto
+            }
+        }
+
+        .dashboard-card--full {
+            grid-column: 1 / -1
+        }
+
+        .dashboard-recent-bookings {
+            margin-top: 28px
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin-top: 24px
+        }
+
+        .bookings-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px
+        }
+
+        .bookings-table thead {
+            background: var(--bg-primary);
+            border-bottom: 2px solid var(--border)
+        }
+
+        .bookings-table th {
+            padding: 16px 12px;
+            text-align: left;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: 0.5px
+        }
+
+        .bookings-table tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background-color 0.2s
+        }
+
+        .bookings-table tbody tr:hover {
+            background-color: rgba(0, 102, 255, 0.02)
+        }
+
+        .bookings-table td {
+            padding: 16px 12px;
+            color: var(--text-secondary)
+        }
+
+        .booking-code {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: var(--accent-blue);
+            letter-spacing: 0.5px
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap
+        }
+
+        .status-badge--confirmed {
+            background: #d4edda;
+            color: #155724
+        }
+
+        .status-badge--pending {
+            background: #fff3cd;
+            color: #856404
+        }
+
+        .status-badge--checked_in {
+            background: #cfe2ff;
+            color: #084298
+        }
+
+        .status-badge--checked_out {
+            background: #e2e3e5;
+            color: #383d41
+        }
+
+        .status-badge--cancelled {
+            background: #f8d7da;
+            color: #721c24
+        }
+
+        .btn-detail {
+            padding: 6px 12px;
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block
+        }
+
+        .btn-detail:hover {
+            background: #0052cc;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3)
+        }
+
+        .dashboard-grid--two {
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 28px
+        }
+
+        .dashboard-checkin-checkout {
+            margin-top: 28px
+        }
+
+        .dashboard-card__title--checkin::before {
+            background: linear-gradient(180deg, #00c853, #00a843)
+        }
+
+        .dashboard-card__title--checkout::before {
+            background: linear-gradient(180deg, #ff6b35, #e65525)
+        }
+
+        .btn-checkin,
+        .btn-checkout {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            white-space: nowrap
+        }
+
+        .btn-checkin {
+            background: #00c853;
+            color: white
+        }
+
+        .btn-checkin:hover {
+            background: #00a843;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 200, 83, 0.3)
+        }
+
+        .btn-checkout {
+            background: #ff6b35;
+            color: white
+        }
+
+        .btn-checkout:hover {
+            background: #e65525;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3)
+        }
+
+        /* Modal Styles - Minimalist */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            z-index: 10000;
+        }
+
+        .modal__content {
+            position: relative;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            max-width: 450px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            margin-bottom: 60px;
+        }
+
+        .modal--hidden {
+            display: none !important
+        }
+
+        .modal__overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .modal__content::-webkit-scrollbar {
+            width: 4px
+        }
+
+        .modal__content::-webkit-scrollbar-track {
+            background: #f5f5f5
+        }
+
+        .modal__content::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 2px
+        }
+
+        .modal__header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid #eee;
+            position: sticky;
+            top: 0;
+            background: #fff;
+            z-index: 10
+        }
+
+        .modal__title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #000;
+            margin: 0
+        }
+
+        .modal__close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #999;
+            cursor: pointer;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .modal__close:hover {
+            color: #000
+        }
+
+        .modal__body {
+            padding: 20px;
+            color: #666
+        }
+
+        .modal__footer {
+            padding: 12px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            position: sticky;
+            bottom: 0;
+            background: #fff
+        }
+
+        .booking-detail {
+            display: grid;
+            gap: 12px
+        }
+
+        .detail-section {
+            background: #f9f9f9;
+            padding: 12px;
+            border-radius: 4px;
+            border: 1px solid #eee;
+        }
+
+        .detail-section:hover {
+            background: #fafafa
+        }
+
+        .detail-section__title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #999;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+        }
+
+        .detail-row:last-child {
+            padding-bottom: 0
+        }
+
+        .detail-row__label {
+            font-size: 12px;
+            color: #999;
+            font-weight: 500;
+        }
+
+        .detail-row__value {
+            font-size: 13px;
+            color: #000;
+            font-weight: 500;
+            text-align: right;
+            word-break: break-word
+        }
+
+        .detail-row__value--code {
+            font-family: 'Courier New', monospace;
+            color: #0066ff;
+        }
+
+        .detail-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .btn--secondary {
+            padding: 8px 16px;
+            background: #f0f0f0;
+            color: #333;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .btn--secondary:hover {
+            background: #e0e0e0
+        }
+
+        @media (max-width:768px) {
+            .modal__content {
+                max-width: 96%;
+                width: 96%;
+                max-height: 85vh
+            }
+
+            .modal__header {
+                padding: 14px 18px
+            }
+
+            .modal__body {
+                padding: 16px
+            }
+
+            .modal__footer {
+                padding: 10px 18px
+            }
+
+            .detail-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+                padding: 8px 0
+            }
+
+            .detail-row__label {
+                min-width: auto;
+                font-size: 10px
+            }
+
+            .detail-row__value {
+                text-align: left;
+                max-width: 100%;
+                font-size: 11px
+            }
+
+            .detail-section {
+                padding: 10px 14px
             }
         }
     </style>
@@ -590,99 +884,168 @@
                                         <path
                                             d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                                     </svg></div>
-                                <div class="stat-card__meta">Tổng số phòng hiện có</div>
+                                <div class="stat-card__meta">
+                                    <div class="room-status-breakdown">
+                                        <span class="status-item"><span class="status-dot"
+                                                style="background:#00c853;"></span><span
+                                                id="availableRoomsStat">0</span> Còn trống</span>
+                                        <span class="status-item"><span class="status-dot"
+                                                style="background:#ff6b35;"></span><span id="occupiedRoomsStat">0</span>
+                                            Đang sử dụng</span>
+                                        <span class="status-item"><span class="status-dot"
+                                                style="background:#7c3aed;"></span><span id="cleaningRoomsStat">0</span>
+                                            Đang dọn</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div class="stat-card stat-card--green">
                         <div class="stat-card__content">
-                            <div class="stat-card__label">Phòng trống</div>
+                            <div class="stat-card__label">Lượt check-in</div>
                             <div class="stat-card__value-wrapper"><span class="stat-card__value"
-                                    id="availableRooms">-</span><span class="stat-card__unit">phòng</span></div>
+                                    id="todayCheckInsCountValue">-</span><span class="stat-card__unit">hôm nay</span>
+                            </div>
                             <div class="stat-card__footer">
                                 <div class="stat-card__icon"><svg xmlns="http://www.w3.org/2000/svg" width="24"
                                         height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M2 4v16" />
-                                        <path d="M2 8h18a2 2 0 0 1 2 2v10" />
-                                        <path d="M2 17h20" />
-                                        <path d="M6 8v9" />
+                                        <path d="M5 22h14" />
+                                        <path d="M5 2h14v20H5z" />
+                                        <path d="M9 11h6" />
+                                        <path d="M9 7h2v2H9z" />
                                     </svg></div>
-                                <div class="stat-card__meta">Sẵn sàng cho thuê</div>
+                                <div class="stat-card__meta">Khách dự kiến nhận phòng</div>
                             </div>
                         </div>
                     </div>
                     <div class="stat-card stat-card--orange">
                         <div class="stat-card__content">
-                            <div class="stat-card__label">Phòng đã thuê</div>
+                            <div class="stat-card__label">Booking chờ xác nhận</div>
                             <div class="stat-card__value-wrapper"><span class="stat-card__value"
-                                    id="occupiedRooms">-</span><span class="stat-card__unit">phòng</span></div>
-                            <div class="stat-card__footer">
-                                <div class="stat-card__icon"><svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                        height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M10 12h.01" />
-                                        <path d="M18 9V6a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v14" />
-                                        <path d="M2 20h8" />
-                                        <path d="M20 17v-2a2 2 0 1 0-4 0v2" />
-                                        <rect x="14" y="17" width="8" height="5" rx="1" />
-                                    </svg></div>
-                                <div class="stat-card__meta">Đang có khách</div>
+                                    id="pendingBookingsCountValue">-</span><span class="stat-card__unit">đơn</span>
                             </div>
-                        </div>
-                    </div>
-                    <div class="stat-card stat-card--purple">
-                        <div class="stat-card__content">
-                            <div class="stat-card__label">Tỷ lệ lấp đầy</div>
-                            <div class="stat-card__value-wrapper"><span class="stat-card__value"
-                                    id="occupancyRate">-</span><span class="stat-card__unit">%</span></div>
                             <div class="stat-card__footer">
                                 <div class="stat-card__icon"><svg xmlns="http://www.w3.org/2000/svg" width="24"
                                         height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M3 3v16a2 2 0 0 0 2 2h16" />
-                                        <rect x="15" y="5" width="4" height="12" rx="1" />
-                                        <rect x="7" y="8" width="4" height="9" rx="1" />
+                                        <path d="M9 12l2 2 4-4" />
+                                        <path
+                                            d="M7 19H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-2" />
                                     </svg></div>
-                                <div class="stat-card__meta">Hiệu suất khai thác</div>
+                                <div class="stat-card__meta">Cần xác nhận ngay</div>
                             </div>
                         </div>
                     </div>
                 </section>
-                <section class="dashboard-grid">
-                    <div class="dashboard-card">
-                        <h2 class="dashboard-card__title">Trạng thái phòng</h2>
-                        <div class="progress-grid">
-                            <div class="progress-item">
-                                <div class="progress-label"><span>Còn trống</span><span class="progress-value"
-                                        id="availablePercentage">-%</span></div>
-                                <div class="progress">
-                                    <div class="progress-bar" id="availableBar"
-                                        style="background:linear-gradient(90deg,#00c853,#00e676)"></div>
-                                </div>
-                            </div>
-                            <div class="progress-item">
-                                <div class="progress-label"><span>Đã thuê</span><span class="progress-value"
-                                        id="occupiedPercentage">-%</span></div>
-                                <div class="progress">
-                                    <div class="progress-bar" id="occupiedBar"
-                                        style="background:linear-gradient(90deg,#ff6b35,#ff8a65)"></div>
-                                </div>
-                            </div>
+
+                <section class="dashboard-recent-bookings">
+                    <div class="dashboard-card dashboard-card--full">
+                        <h2 class="dashboard-card__title">Booking gần đây</h2>
+                        <div class="table-wrapper">
+                            <table class="bookings-table">
+                                <thead>
+                                    <tr>
+                                        <th>Mã booking</th>
+                                        <th>Khách hàng</th>
+                                        <th>Số phòng</th>
+                                        <th>Ngày check-in</th>
+                                        <th>Trạng thái</th>
+                                        <th>Ngày tạo</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentBookingsTable">
+                                    <tr>
+                                        <td colspan="7" style="text-align:center;padding:40px;color:#999;">
+                                            Đang tải dữ liệu...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                    <div class="dashboard-card dashboard-card--modern">
-                        <h2 class="dashboard-card__title">Phân bố loại phòng</h2>
-                        <div id="roomTypeDistribution" class="room-distribution"></div>
+                </section>
+
+                <section class="dashboard-checkin-checkout">
+                    <div class="dashboard-grid dashboard-grid--two">
+                        <div class="dashboard-card">
+                            <h2 class="dashboard-card__title dashboard-card__title--checkin">Check-in hôm nay</h2>
+                            <div class="table-wrapper">
+                                <table class="bookings-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Mã booking</th>
+                                            <th>Khách hàng</th>
+                                            <th>Số phòng</th>
+                                            <th>Thời gian</th>
+                                            <th>Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="todayCheckInsTable">
+                                        <tr>
+                                            <td colspan="5" style="text-align:center;padding:30px;color:#999;">
+                                                Không có check-in hôm nay
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <h2 class="dashboard-card__title dashboard-card__title--checkout">Check-out hôm nay</h2>
+                            <div class="table-wrapper">
+                                <table class="bookings-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Mã booking</th>
+                                            <th>Khách hàng</th>
+                                            <th>Số phòng</th>
+                                            <th>Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="todayCheckOutsTable">
+                                        <tr>
+                                            <td colspan="4" style="text-align:center;padding:30px;color:#999;">
+                                                Không có check-out hôm nay
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </section>
             </div>
         </main>
     </div>
+
+    <!-- Booking Detail Modal -->
+    <div id="bookingDetailModal" class="modal modal--hidden">
+        <div class="modal__overlay"></div>
+        <div class="modal__content">
+            <div class="modal__header">
+                <h2 class="modal__title">Chi tiết Booking</h2>
+                <button class="modal__close" id="closeBookingModal">&times;</button>
+            </div>
+            <div class="modal__body">
+                <div class="booking-detail" id="bookingDetailContent">
+                    <div style="text-align:center;padding:40px;color:#999;">
+                        Đang tải dữ liệu...
+                    </div>
+                </div>
+            </div>
+            <div class="modal__footer">
+                <button class="btn btn--secondary" id="closeBookingModalBtn">Đóng</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="js/utils/api-service.js"></script>
     <script src="js/modules/room-dashboard.js"></script>
-    <script>$(document).ready(function () { const originalManager = new RoomDashboardManager('http://localhost:8000/api'); window.renderRoomTypeDistribution = function (data) { const container = $('#roomTypeDistribution'); container.empty(); if (!data || data.length === 0) { container.html('<div style="color:rgba(255,255,255,0.7);text-align:center;padding:20px;">Chưa có dữ liệu</div>'); return } const total = data.reduce((sum, item) => sum + item.count, 0); const colors = ['#0066ff', '#00c853', '#ff6b35', '#7c3aed', '#00bcd4', '#ff5722']; data.forEach((item, index) => { const percentage = total > 0 ? Math.round((item.count / total) * 100) : 0; const percentageDeg = (percentage / 100) * 360; const color = colors[index % colors.length]; const card = $(`<div class="room-type-card" style="--type-color:${color}"><div class="room-type-card__visual"><div class="room-type-card__circle" style="--percentage:${percentageDeg}deg;--type-color:${color}"></div><div class="room-type-card__count">${item.count}</div></div><div class="room-type-card__info"><div class="room-type-card__name">${item.name || 'N/A'}</div><div class="room-type-card__meta"><span>${item.count} phòng</span><span>•</span><span>${total} tổng</span></div></div><div class="room-type-card__percentage" style="--type-color:${color}">${percentage}%</div></div>`); container.append(card) }) } });</script>
+    <script>$(document).ready(function () { const originalManager = new RoomDashboardManager('http://localhost:8000/api'); });</script>
 </body>
 
 </html>
