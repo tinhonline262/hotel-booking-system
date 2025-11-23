@@ -40,5 +40,7 @@ return [
         ['GET', '/api/bookings/{id}', 'Api\CRUDbookingController@show'],
         ['PUT', '/api/bookings/{id}', 'Api\CRUDbookingController@update'],
         ['DELETE', '/api/bookings/{id}', 'Api\CRUDbookingController@delete'],
+        //RoomDetailController
+        ['GET', '/api/room-details/{id}', 'Api\RoomDetailController@getDetailRooms'],
     ],
 ];
