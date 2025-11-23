@@ -11,6 +11,7 @@ use App\Core\Container\Container;
 use App\Presentation\Controllers\Api\BookingController;
 use App\Presentation\Controllers\Api\CRUDbookingController;
 use App\Presentation\Controllers\Api\RoomController;
+use App\Presentation\Controllers\Api\RoomDetailController;
 use App\Presentation\Controllers\Api\RoomImageController;
 use App\Presentation\Controllers\Api\RoomTypeController;
 
@@ -51,6 +52,13 @@ class ControllerProvider
         $container->bind(CRUDbookingController::class, function (Container $c) {
             return new CRUDbookingController(
                 $c->make(BookingService::class)
+            );
+        });
+
+        $container->bind(RoomDetailController::class, function (Container $c) {
+            return new RoomDetailController(
+                $c->make(RoomService::class),
+                $c->make(RoomTypeService::class)
             );
         });
     }

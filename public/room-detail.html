@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Chi tiết phòng</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/room-detail.css">
+</head>
+<body>
+<main>
+    <div class="room-detail-container">
+        <div id="room-images" class="room-detail-images"></div>
+        <div class="room-detail-main">
+            <h2 id="room-number">Phòng</h2>
+            <div class="room-info-list">
+                <div><b>Loại phòng: </b> <span id="room-type"></span></div>
+                <div><b>Giá/đêm: </b> <span id="price-per-night"></span></div>
+                <div><b>Sức chứa: </b> <span id="capacity"></span> khách</div>
+                <div><b>Tiện nghi: </b><span id="amenities"></span></div>
+                <div><b>Trạng thái: </b>
+                    <span id="room-status"></span>
+                </div>
+            </div>
+            <button id="book-now-btn" class="book-room-btn">Đặt phòng</button>
+        </div>
+    </div>
+</main>
+<script src="js/modules/room-detail.js"></script>
+</body>
+</html>

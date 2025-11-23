@@ -1,0 +1,107 @@
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f7f8fa;
+    margin:0;
+    padding:0;
+}
+main {
+    max-width: 900px;
+    margin: 48px auto 0 auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 0 24px #0002;
+    padding: 40px 40px 36px 40px;
+}
+.room-detail-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+}
+.room-detail-images {
+    flex: 1 1 330px;
+    max-width: 360px;
+    min-width: 240px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.room-detail-images img.primary-img {
+    width: 100%;
+    border-radius:12px;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    box-shadow:0 4px 14px #0001;
+}
+.room-detail-images .room-image-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.room-detail-images .room-image-list img {
+    border-radius: 7px;
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    cursor: pointer;
+    border:2px solid #fff;
+    box-shadow:0 1px 3px #0001;
+    transition: border 0.18s;
+}
+.room-detail-images .room-image-list img.selected {
+    border:2px solid #2684ff;
+}
+.room-detail-main {
+    flex:2 1 420px;
+    min-width: 250px;
+    display: flex;
+    flex-direction: column;
+    gap:18px;
+}
+#room-number {
+    color: var(--color-primary, #222553);
+    margin-bottom: 2px;
+    font-size: 2rem;
+}
+.room-info-list > div {
+    margin-bottom: 9px;
+    font-size: 1.13em;
+}
+#room-status {
+    font-weight: bold;
+}
+#room-status.available {
+    color: #059669;
+}
+#room-status.occupied {
+    color: #b91c1c;
+}
+#room-status.cleaning {
+    color: #c2410c;
+}
+#room-status.maintenance {
+    color: #6d28d9;
+}
+.book-room-btn {
+    margin-top: 16px;
+    padding: 12px 0;
+    background: #0073ff;
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    font-size: 1.04em;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.18s;
+}
+.book-room-btn:hover {
+    background: #005fcb;
+}
+
+/* Responsive */
+@media (max-width:800px) {
+    .room-detail-container {
+        flex-direction: column;
+        gap:30px;
+    }
+    main { padding: 20px; }
+}

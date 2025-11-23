@@ -57,159 +57,43 @@ class DashboardService implements DashboardServiceInterface
 
         // Calculate occupancy rate
         $occupancyRate = $totalRooms > 0 ? ($occupiedRooms / $totalRooms) * 100 : 0;
-
+ $todayCheckIns = $this->getTodayCheckIns();
         return new DashboardStatsDTO(
-            $totalRooms,
-            $availableRooms,
-            $occupiedRooms,
-            $cleaningRooms,
-            $maintenanceRooms,
-            $totalRoomTypes,
-            $occupancyRate,
-            [],
-            $this->getRecentBookings(),
-            $this->getTodayCheckIns(),
-            $this->getTodayCheckOuts(),
-            count($this->getTodayCheckIns()),
-            $this->getPendingBookingsCount()
-        );
+        $totalRooms,
+        $availableRooms,
+        $occupiedRooms,
+        $cleaningRooms,
+        $maintenanceRooms,
+        $totalRoomTypes,
+        $occupancyRate,
+        [],
+        $this->getRecentBookings(),
+        $todayCheckIns,                   
+        $this->getTodayCheckOuts(),
+        count($todayCheckIns),            
+        $this->getPendingBookingsCount()
+    );
     }
-
+    
     private function getTodayCheckIns(): array
     {
-        if (!$this->bookingRepository) {
-            return [];
-        }
-        
-        try {
-            $bookings = $this->bookingRepository->findAll();
-            $today = date('Y-m-d');
-            $todayCheckIns = [];
-            
-            foreach ($bookings as $booking) {
-                if ($booking->getCheckInDate() && 
-                    date('Y-m-d', strtotime($booking->getCheckInDate())) === $today &&
-                    in_array($booking->getStatus(), ['confirmed', 'pending'])) {
-                    
-                    $room = $this->roomRepository->findById($booking->getRoomId());
-                    $todayCheckIns[] = [
-                        'id' => $booking->getId(),
-                        'booking_code' => $booking->getBookingCode(),
-                        'customer_name' => $booking->getCustomerName(),
-                        'room_number' => $room ? $room->getRoomNumber() : 'N/A',
-                        'check_in_date' => $booking->getCheckInDate(),
-                        'check_in_time' => $booking->getCheckInDate() ? $this->formatTime($booking->getCheckInDate()) : '09:00',
-                        'status' => $booking->getStatus()
-                    ];
-                }
-            }
-            
-            // Sort by time
-            usort($todayCheckIns, function($a, $b) {
-                return strtotime($a['check_in_time']) - strtotime($b['check_in_time']);
-            });
-            
-            return array_slice($todayCheckIns, 0, 10);
-        } catch (\Exception $e) {
-            return [];
-        }
+    return $this->bookingRepository?->findTodayCheckIns(10) ?? [];
     }
 
     private function getTodayCheckOuts(): array
     {
-        if (!$this->bookingRepository) {
-            return [];
-        }
-        
-        try {
-            $bookings = $this->bookingRepository->findAll();
-            $today = date('Y-m-d');
-            $todayCheckOuts = [];
-            
-            foreach ($bookings as $booking) {
-                if ($booking->getCheckOutDate() && 
-                    date('Y-m-d', strtotime($booking->getCheckOutDate())) === $today &&
-                    $booking->getStatus() === 'checked_in') {
-                    
-                    $room = $this->roomRepository->findById($booking->getRoomId());
-                    $todayCheckOuts[] = [
-                        'id' => $booking->getId(),
-                        'booking_code' => $booking->getBookingCode(),
-                        'customer_name' => $booking->getCustomerName(),
-                        'room_number' => $room ? $room->getRoomNumber() : 'N/A',
-                        'check_out_date' => $booking->getCheckOutDate(),
-                        'status' => $booking->getStatus()
-                    ];
-                }
-            }
-            
-            return array_slice($todayCheckOuts, 0, 10);
-        } catch (\Exception $e) {
-            return [];
-        }
+    return $this->bookingRepository?->findTodayCheckOuts(10) ?? [];
     }
 
-    private function formatTime($dateStr): string
-    {
-        if (!$dateStr) return '09:00';
-        try {
-            return date('H:i', strtotime($dateStr));
-        } catch (\Exception $e) {
-            return '09:00';
-        }
-    }
+private function getPendingBookingsCount(): int
+{
+    return $this->bookingRepository?->countPendingBookings() ?? 0;
+}
 
-    private function getPendingBookingsCount(): int
-    {
-        if (!$this->bookingRepository) {
-            return 0;
-        }
-        
-        try {
-            $bookings = $this->bookingRepository->findAll();
-            $pendingCount = 0;
-            
-            foreach ($bookings as $booking) {
-                if ($booking->getStatus() === 'pending') {
-                    $pendingCount++;
-                }
-            }
-            
-            return $pendingCount;
-        } catch (\Exception $e) {
-            return 0;
-        }
-    }
+private function getRecentBookings(): array
+{
+    return $this->bookingRepository?->findRecentWithRoom(10) ?? [];
+}
 
-    private function getRecentBookings(): array
-    {
-        if (!$this->bookingRepository) {
-            return [];
-        }
-        
-        try {
-            $bookings = $this->bookingRepository->findAll();
-            // Get last 10 bookings, sorted by created_at descending
-            usort($bookings, function($a, $b) {
-                return strtotime($b->getCreatedAt() ?? '0') - strtotime($a->getCreatedAt() ?? '0');
-            });
-            
-            $recentBookings = [];
-            foreach (array_slice($bookings, 0, 10) as $booking) {
-                $room = $this->roomRepository->findById($booking->getRoomId());
-                $recentBookings[] = [
-                    'id' => $booking->getId(),
-                    'booking_code' => $booking->getBookingCode(),
-                    'customer_name' => $booking->getCustomerName(),
-                    'room_number' => $room ? $room->getRoomNumber() : 'N/A',
-                    'check_in_date' => $booking->getCheckInDate(),
-                    'status' => $booking->getStatus(),
-                    'created_at' => $booking->getCreatedAt()
-                ];
-            }
-            return $recentBookings;
-        } catch (\Exception $e) {
-            return [];
-        }
-    }
+
 }

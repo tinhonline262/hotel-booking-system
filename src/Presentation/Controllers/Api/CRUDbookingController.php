@@ -47,30 +47,64 @@ class CRUDbookingController extends BaseRestController
         }
     }
 
+/**
+ * PUT /api/bookings/{id}
+ * Update existing booking (full update hoặc chỉ status)
+ */
+public function update(int $id): void
+{
+    try {
+        $data = $this->getJsonInput();
 
-    /**
-     * PUT /api/booking/{id}
-     * Update existing booking
-     */
-    public function update(int $id): void{
-        try {
-            $data = $this->getJsonInput();
+        // CASE 1: Chỉ update status (check-in/check-out từ dashboard)
+        if (isset($data['status']) && count($data) === 1) {
+            // Validate status
+            $allowedStatuses = ['pending', 'confirmed', 'checked_in', 'checked_out', 'cancelled'];
+            if (!in_array($data['status'], $allowedStatuses)) {
+                $this->validationError(['status' => 'Invalid status value'], 'Invalid status value');
+                return;
+            }
 
+            // Lấy booking hiện tại
+            $currentBooking = $this->bookingService->GetBookingById($id);
+
+            // Tạo DTO từ data hiện tại + status mới
+            $dto = new BookingDTO(
+    $currentBooking->getId(),                    // #1: id
+    $currentBooking->getBookingCode(),           // #2: bookingCode ← THÊM
+    (int) $currentBooking->getRoomId(),          // #3: roomId
+    $currentBooking->getCustomerName(),          // #4: customerName
+    $currentBooking->getCustomerEmail(),         // #5: customerEmail
+    $currentBooking->getCustomerPhone(),         // #6: customerPhone
+    $currentBooking->getCheckInDate(),           // #7: checkInDate
+    $currentBooking->getCheckOutDate(),          // #8: checkOutDate
+    (int) $currentBooking->getNumGuests(),       // #9: numGuests
+    (float) $currentBooking->getTotalPrice(),    // #10: totalPrice
+    $data['status'],                             // #11: status
+    $currentBooking->getSpecialRequests()        // #12: specialRequests
+);
+        } 
+        // CASE 2: Full update (từ form edit booking)
+        else {
             $dto = BookingDTO::fromArray($data);
-            $result = $this->bookingService->UpdateBooking($id,$dto);
-
-            $this->success(
-                ['success' => $result],
-                'Booking updated successfully'
-            );
-        } catch (BookingNotFoundException $e) {
-            $this->notFound($e->getMessage());
-        } catch (InvalidBookingDataException $e) {
-            $this->validationError($e->getErrors(), 'Validation failed');
-        } catch (\Exception $e) {
-            $this->serverError('Failed to update booking: ' . $e->getMessage());
         }
+
+        // Execute update
+        $result = $this->bookingService->UpdateBooking($id, $dto);
+
+        $this->success(
+            ['success' => $result],
+            'Booking updated successfully'
+        );
+
+    } catch (BookingNotFoundException $e) {
+        $this->notFound($e->getMessage());
+    } catch (InvalidBookingDataException $e) {
+        $this->validationError($e->getErrors(), 'Validation failed');
+    } catch (\Exception $e) {
+        $this->serverError('Failed to update booking: ' . $e->getMessage());
     }
+}
 
     /**
      * DELETE /api/booking/{id}
