@@ -220,6 +220,91 @@ class RoomRepository implements RoomRepositoryInterface
 
         return array_values($rooms);
     }
+    private function mapToDetail(array $results): array
+    {
+        $rooms = [];
+
+        foreach ($results as $row) {
+            $roomId = $row['room_id'];
+
+            // Initialize room if not exists
+            if (!isset($rooms[$roomId])) {
+                // Parse amenities - handle both JSON and comma-separated string
+                $amenities = [];
+                if (!empty($row['amenities'])) {
+                    // Try to decode as JSON first
+                    $decoded = json_decode($row['amenities'], true);
+                    if (is_array($decoded)) {
+                        $amenities = $decoded;
+                    } else {
+                        // If not JSON, treat as comma-separated string
+                        $amenities = array_map('trim', explode(',', $row['amenities']));
+                    }
+                }
+
+                $rooms[$roomId] = [
+                    'roomId' => $roomId,
+                    'roomNumber' => $row['room_number'],
+                    'status' => $row['status'],
+                    'roomType' => $row['room_type'],
+                    'capacity' => (int)$row['capacity'],
+                    'description' => $row['description'],
+                    'amenities' => $amenities,
+                    'pricePerNight' => (float)$row['price_per_night'],
+                    'images' => []
+                ];
+            }
+
+            // Add image if exists
+            if ($row['image_id']) {
+                $rooms[$roomId]['images'][] = [
+                    'imageId' => $row['image_id'],
+                    'imageUrl' => $row['image_url'],
+                    'storageType' => $row['storage_type'],
+                    'fileSize' => (int)$row['file_size'],
+                    'mimeType' => $row['mime_type'],
+                    'isPrimary' => (bool)$row['image_is_primary'],
+                    'displayOrder' => (int)$row['display_order']
+                ];
+            }
+        }
+
+        return array_values($rooms);
+    }
+    public function details(int $id): ?array
+    {
+        $stmt = $this->database->query("
+            SELECT 
+                r.id as room_id, 
+                r.room_number, 
+                r.status,
+                rt.name as room_type, 
+                rt.description,
+                rt.capacity, 
+                rt.amenities, 
+                rt.price_per_night, 
+                ri.id as image_id, 
+                ri.image_url, 
+                ri.storage_type, 
+                ri.file_size, 
+                ri.mime_type, 
+                ri.is_primary as image_is_primary, 
+                ri.display_order
+            FROM rooms as r
+            LEFT JOIN room_images as ri ON r.id = ri.room_id
+            INNER JOIN room_types as rt ON r.room_type_id = rt.id
+            WHERE r.id = ?
+            ORDER BY ri.display_order
+        ", [$id]);
+
+        $results = $stmt->fetchAll();
+        if (empty($results)) {
+            return null;
+        }
+
+        $rooms = $this->mapToDetail($results);
+        return $rooms[0] ?? null;
+    }
 
     private function mapToEntity(array $data): Room
     {

@@ -13,5 +13,6 @@ interface RoomServiceInterface
     public function GetAllRooms(): array;
     public function FilterRoomByStatus(string $status): array;
     public function FilterRoomByRoomNumber(string $roomNumber): ?Room;
+    public function Details(int $id): ?array;
 
 }
