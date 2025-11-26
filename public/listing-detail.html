@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <title>Chi tiết phòng</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="stylesheet" href="css/listing-detail.css">
+</head>
+<body>
+<header class="site-header">
+    <div class="container">
+        <a class="logo" href="/">MyStay</a>
+        <nav class="top-nav">
+            <a href="/rooms-list.html">Danh sách phòng</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container listing-page">
+    <section class="gallery-column">
+        <div class="hero-image" id="hero-image">
+            <!-- main image injected here -->
+        </div>
+        <div class="thumbs" id="thumbs">
+            <!-- thumbnails -->
+        </div>
+    </section>
+
+    <aside class="sidebar-column">
+        <div class="book-box">
+            <h2 id="room-title">Phòng</h2>
+            <div class="price-line">
+                <div class="price" id="price-per-night">-</div>
+                <div class="per-night">/ đêm</div>
+            </div>
+
+            <div class="date-picker">
+                <label>Check-in</label>
+                <input type="date" id="check-in" />
+                <label>Check-out</label>
+                <input type="date" id="check-out" />
+                <div class="actions">
+                    <button id="check-availability" class="btn btn-primary">Kiểm tra</button>
+                </div>
+                <div id="availability-result" class="availability-result" aria-live="polite"></div>
+            </div>
+
+            <form id="booking-form" style="display:none;" autocomplete="off" novalidate>
+                <input type="hidden" id="room-id" name="room_id" />
+                <input type="hidden" id="booking-code" name="booking_code" />
+                <div class="form-row">
+                    <label for="customer_name">Tên khách *</label>
+                    <input id="customer_name" name="customer_name" required />
+                </div>
+                <div class="form-row">
+                    <label for="customer_email">Email *</label>
+                    <input id="customer_email" name="customer_email" type="email" required />
+                </div>
+                <div class="form-row">
+                    <label for="customer_phone">Số điện thoại *</label>
+                    <input id="customer_phone" name="customer_phone" type="tel" required />
+                </div>
+                <div class="form-row small">
+                    <label for="num_guests">Số khách *</label>
+                    <input id="num_guests" name="num_guests" type="number" min="1" value="1" required />
+                </div>
+                <div class="form-row">
+                    <label for="special_requests">Yêu cầu đặc biệt</label>
+                    <textarea id="special_requests" name="special_requests" rows="2"></textarea>
+                </div>
+
+                <div class="summary-line">
+                    <div>Số đêm: <span id="nights">-</span></div>
+                    <div>Tổng tiền: <strong id="total-price">-</strong></div>
+                </div>
+
+                <div class="form-actions">
+                    <button id="submit-booking" type="submit" class="btn btn-success" disabled>Gửi đặt phòng</button>
+                </div>
+                <div id="booking-feedback" class="booking-feedback" aria-live="polite"></div>
+            </form>
+        </div>
+    </aside>
+
+    <section class="detail-column">
+        <div class="meta">
+            <div><strong>Loại phòng:</strong> <span id="room-type">-</span></div>
+            <div><strong>Sức chứa:</strong> <span id="capacity">-</span> khách</div>
+        </div>
+
+        <div class="description">
+            <h3>Mô tả</h3>
+            <div id="description-text">-</div>
+        </div>
+
+        <div class="amenities">
+            <h3>Tiện nghi</h3>
+            <ul id="amenities-list"></ul>
+        </div>
+    </section>
+</main>
+
+<footer class="site-footer">
+    <div class="container">© MyStay</div>
+</footer>
+
+<script src="js/modules/listing-detail.js"></script>
+</body>
+</html>

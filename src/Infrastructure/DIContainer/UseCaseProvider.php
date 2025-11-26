@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\DIContainer;
 
+use App\Application\UseCases\CheckRoomAvailableUseCase;
 use App\Application\UseCases\CreateRoomTypeUseCase;
 use App\Application\UseCases\DeleteRoomImageUseCase;
 use App\Application\UseCases\DeleteRoomTypeUseCase;
@@ -237,6 +238,12 @@ class UseCaseProvider
                 $c->make(BookingRepositoryInterface::class)
             );
         });
+        $container->bind(CheckRoomAvailableUseCase::class, function (Container $c) {
+            return new CheckRoomAvailableUseCase(
+                $c->make(BookingRepositoryInterface::class)
+            );
+        });
+
     }
 
 

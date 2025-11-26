@@ -32,4 +32,5 @@ interface BookingRepositoryInterface
     public function findByEmail(string $email): array;
 
     public function findByName(string $name): array;
+    public function checkRoomAvailable(int $id, string $checkIn, string $checkOut): bool;
 }

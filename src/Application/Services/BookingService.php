@@ -3,6 +3,7 @@
 namespace App\Application\Services;
 use App\Application\DTOs\BookingDTO;
 use App\Application\Interfaces\BookingServiceInterface;
+use App\Application\UseCases\CheckRoomAvailableUseCase;
 use App\Domain\Entities\Booking;
 use App\Domain\Exceptions\InvalidBookingDataException;
 use App\Domain\Exceptions\BookingNotFoundException;
@@ -34,6 +35,7 @@ class BookingService implements BookingServiceInterface
     private FilterBookingByPhoneUseCase  $filterBookingByPhoneUseCase;
     private FilterBookingByName  $filterBookingByName;
     private FilterBookingByStatus  $filterBookingByStatus;
+    private CheckRoomAvailableUseCase  $checkRoomAvailableUseCase;
 
     public function __construct(CreateBookingUseCase $createBookingUseCase,
     UpdateBookingUseCase $updateBookingUseCase,
@@ -47,7 +49,8 @@ class BookingService implements BookingServiceInterface
     FilterBookingByEmailUseCase  $filterBookingByEmailUseCase,
     FilterBookingByPhoneUseCase  $filterBookingByPhoneUseCase,
     FilterBookingByName  $filterBookingByName,
-    FilterBookingByStatus  $filterBookingByStatus
+    FilterBookingByStatus  $filterBookingByStatus,
+    CheckRoomAvailableUseCase  $checkRoomAvailableUseCase,
     ){
         $this->createBookingUseCase = $createBookingUseCase;
         $this->updateBookingUseCase = $updateBookingUseCase;
@@ -62,6 +65,7 @@ class BookingService implements BookingServiceInterface
         $this->filterBookingByPhoneUseCase = $filterBookingByPhoneUseCase;
         $this->filterBookingByName = $filterBookingByName;
         $this->filterBookingByStatus = $filterBookingByStatus;
+        $this->checkRoomAvailableUseCase = $checkRoomAvailableUseCase;
     }
 
     /**
@@ -153,5 +157,11 @@ class BookingService implements BookingServiceInterface
     {
         // TODO: Implement UpdateBooking() method.
         return $this->updateBookingUseCase->Execute($bookingDTO,$id);
+    }
+
+    public function CheckRoomAvailable(int $id, string $checkInDate, string $checkOutDate): bool
+    {
+        // TODO: Implement CheckRoomAvailable() method.
+        return $this->checkRoomAvailableUseCase->execute($id, $checkInDate, $checkOutDate);
     }
 }
