@@ -4,7 +4,19 @@
     # Allow access to uploads/rooms
     RewriteCond %{REQUEST_URI} ^/uploads/rooms/ [NC]
     RewriteRule ^ - [L]
-    # Redirect to index.php
+
+    # Remove .html extension from URLs
+    # Redirect .html URLs to clean URLs
+    RewriteCond %{THE_REQUEST} ^GET\ /([^\ ]+)\.html
+    RewriteRule ^ /%1 [L,R=301]
+
+    # Serve .html files when clean URL is requested
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME}.html -f
+    RewriteRule ^(.+)$ $1.html [L]
+
+    # Redirect to index.php for API routes
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^(.*)$ index.php [QSA,L]
