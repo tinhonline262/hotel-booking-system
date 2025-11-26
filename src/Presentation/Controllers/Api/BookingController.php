@@ -31,4 +31,18 @@ class BookingController extends BaseRestController
             $this->serverError('Failed to create room ' . $e->getMessage());
         }
     }
+
+    public function check(int $id):void{
+        try{
+            $checkInDate = $_GET['checkInDate'] ?? null;
+            $checkOutDate = $_GET['checkOutDate'] ?? null;
+            $check = $this->bookingService->CheckRoomAvailable($id, $checkInDate, $checkOutDate);
+            $this->success(
+                ['success' => $check],
+                'Check room available successfully'
+            );
+        } catch (\Exception $e){
+            $this->serverError('Failed to check available' . $e->getMessage());
+        }
+    }
 }

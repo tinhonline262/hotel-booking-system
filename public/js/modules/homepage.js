@@ -401,7 +401,7 @@
     const btn = e.target.closest('.view-deal-btn');
     if (btn) {
         const roomId = btn.dataset.roomId;
-        window.location.href = `room-detail.html?id=${roomId}`;
+        window.location.href = `listing-detail.html?id=${roomId}`;
     }
 });
             }

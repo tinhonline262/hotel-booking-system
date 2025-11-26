@@ -30,6 +30,7 @@ return [
         ['DELETE', '/api/rooms/{id}', 'Api\RoomController@delete'],
         // Booking API
         ['POST', '/api/booking/rooms/{id}', 'Api\BookingController@booking'],
+        ['GET', '/api/booking/rooms/{id}', 'Api\BookingController@check'],
         //CRUD Booking API
         ['GET', '/api/bookings', 'Api\CRUDbookingController@index'],
         ['GET', '/api/bookings/filter/checkin', 'Api\CRUDbookingController@filterByCheckIn'],

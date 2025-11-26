@@ -5,6 +5,7 @@ namespace App\Infrastructure\DIContainer;
 use App\Application\Interfaces\RoomImageServiceInterface;
 use App\Application\Interfaces\RoomTypeServiceInterface;
 use App\Application\Services\BookingService;
+use App\Application\UseCases\CheckRoomAvailableUseCase;
 use App\Application\UseCases\CreateBookingUseCase;
 use App\Application\UseCases\DeleteBookingUseCase;
 use App\Application\UseCases\FilterBookingByCheckInDateUseCase;
@@ -147,8 +148,8 @@ class ServiceProvider
                 $c->make(FilterBookingByEmailUseCase::class),
                 $c->make(FilterBookingByPhoneUseCase::class),
                 $c->make(FilterBookingByName::class),
-                $c->make(FilterBookingByStatus::class)
-
+                $c->make(FilterBookingByStatus::class),
+                $c->make(CheckRoomAvailableUseCase::class)
             );
         });
         $container->bind(BookingRepositoryInterface::class, function (Container $c) {
