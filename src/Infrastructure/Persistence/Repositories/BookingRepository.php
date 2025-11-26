@@ -42,8 +42,8 @@ class BookingRepository implements BookingRepositoryInterface
             $booking->getCustomerName(),
             $booking->getCustomerEmail(),
             $booking->getCustomerPhone(),
-            $booking->getCheckInDate(),
-            $booking->getCheckOutDate(),
+            Date($booking->getCheckInDate()),
+            Date($booking->getCheckOutDate()),
             $booking->getNumGuests(),
             $booking->getTotalPrice(),
             $booking->getStatus(),
@@ -337,6 +337,12 @@ public function findTodayCheckOuts(int $limit = 10): array
     
     return $result;
 }
+    public function checkRoomAvailable(int $id, string $checkIn, string $checkOut): bool
+    {
+        $stmt = $this->database->query(" SELECT COUNT(*) as count FROM bookings WHERE room_id = ? AND NOT(check_in_date > ? OR check_out_date < ?)", [$id, $checkOut, $checkIn]);
+        $result = $stmt->fetch();
+        return $result['count'] > 0;
+    }
 
 public function countPendingBookings(): int
 {
