@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function(){
                 <div id="booking-success-code" style="margin-top:6px;font-weight:700;font-size:1.05rem;color:#0b5132;">${code}</div>
                 <div style="margin-top:8px;">
                     <button id="copy-booking-code" style="margin-right:8px;padding:8px 10px;border-radius:8px;border:0;background:#0b5132;color:#fff;cursor:pointer;">Sao chép mã</button>
-                    <a id="view-bookings-link" href="/rooms-list.html" style="color:#0b5132;text-decoration:underline;">Quay về danh sách phòng</a>
+                    <a id="view-bookings-link" href="/homepage.html" style="color:#0b5132;text-decoration:underline;">Quay về danh sách phòng</a>
                 </div>
             </div>
             <div style="margin-top:14px;text-align:right;">
