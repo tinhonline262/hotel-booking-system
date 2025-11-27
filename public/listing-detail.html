@@ -2,8 +2,8 @@
 <html lang="vi">
 <head>
     <meta charset="utf-8" />
-    <title>Chi tiết phòng</title>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Chi tiết phòng - Mẫu VacationRenter</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -12,102 +12,105 @@
     <link rel="stylesheet" href="css/listing-detail.css">
 </head>
 <body>
-<header class="site-header">
-    <div class="container">
-        <a class="logo" href="/">MyStay</a>
-        <nav class="top-nav">
-            <a href="/rooms-list.html">Danh sách phòng</a>
-        </nav>
+<header class="vr-header">
+    <div class="vr-wrap">
+        <a class="vr-logo" href="/">MyStay</a>
+        <nav class="vr-nav"><a href="/homepage.html">Trang Chủ</a></nav>
     </div>
 </header>
 
-<main class="container listing-page">
-    <section class="gallery-column">
-        <div class="hero-image" id="hero-image">
-            <!-- main image injected here -->
+<main class="vr-wrap vr-main">
+    <section class="vr-left">
+        <div class="vr-gallery">
+            <div id="vr-hero" class="vr-hero"></div>
+            <div id="vr-thumbs" class="vr-thumbs"></div>
         </div>
-        <div class="thumbs" id="thumbs">
-            <!-- thumbnails -->
+
+        <div class="vr-info">
+            <h1 id="vr-title">Phòng</h1>
+
+            <!-- Updated meta to show labeled lines "Loại phòng:" and "Số người:" with inline price -->
+            <div class="vr-meta vr-meta-inline">
+                <div class="meta-left">
+                    <div class="meta-row">
+                        <span class="meta-label">Loại phòng:</span>
+                        <span class="meta-value" id="vr-roomtype">—</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Số người:</span>
+                        <span class="meta-value" id="vr-capacity">—</span>
+                    </div>
+                </div>
+
+                <div class="meta-price">
+                    <span class="price-label">Giá/đêm:</span>
+                    <span id="vr-price-inline">—</span>
+                </div>
+            </div>
+
+            <article class="vr-desc">
+                <h3>Mô tả</h3>
+                <div id="vr-description">—</div>
+            </article>
+
+            <section class="vr-amenities">
+                <h3>Tiện nghi</h3>
+                <ul id="vr-amenities-list"></ul>
+            </section>
         </div>
     </section>
 
-    <aside class="sidebar-column">
-        <div class="book-box">
-            <h2 id="room-title">Phòng</h2>
-            <div class="price-line">
-                <div class="price" id="price-per-night">-</div>
-                <div class="per-night">/ đêm</div>
+    <aside class="vr-right">
+        <div class="vr-bookcard" id="vr-bookcard">
+            <div class="price-row">
+                <div class="price-large" id="vr-price">-</div>
+                <div class="price-sub">/ đêm</div>
             </div>
 
-            <div class="date-picker">
+            <div class="date-row">
                 <label>Check-in</label>
-                <input type="date" id="check-in" />
+                <input type="date" id="vr-checkin" />
                 <label>Check-out</label>
-                <input type="date" id="check-out" />
-                <div class="actions">
-                    <button id="check-availability" class="btn btn-primary">Kiểm tra</button>
-                </div>
-                <div id="availability-result" class="availability-result" aria-live="polite"></div>
+                <input type="date" id="vr-checkout" />
+                <button id="vr-check-btn" class="btn primary">Kiểm tra</button>
+                <div id="vr-availability" class="availability" aria-live="polite"></div>
             </div>
 
-            <form id="booking-form" style="display:none;" autocomplete="off" novalidate>
-                <input type="hidden" id="room-id" name="room_id" />
-                <input type="hidden" id="booking-code" name="booking_code" />
-                <div class="form-row">
-                    <label for="customer_name">Tên khách *</label>
-                    <input id="customer_name" name="customer_name" required />
-                </div>
-                <div class="form-row">
-                    <label for="customer_email">Email *</label>
-                    <input id="customer_email" name="customer_email" type="email" required />
-                </div>
-                <div class="form-row">
-                    <label for="customer_phone">Số điện thoại *</label>
-                    <input id="customer_phone" name="customer_phone" type="tel" required />
-                </div>
-                <div class="form-row small">
-                    <label for="num_guests">Số khách *</label>
-                    <input id="num_guests" name="num_guests" type="number" min="1" value="1" required />
-                </div>
-                <div class="form-row">
-                    <label for="special_requests">Yêu cầu đặc biệt</label>
-                    <textarea id="special_requests" name="special_requests" rows="2"></textarea>
+            <form id="vr-bookform" class="vr-bookform" style="display:none" autocomplete="off" novalidate>
+                <input type="hidden" id="vr-room-id" name="room_id" />
+                <input type="hidden" id="vr-booking-code" name="booking_code" />
+
+                <label>Tên khách *</label>
+                <input id="vr-cname" name="customer_name" required />
+
+                <label>Email *</label>
+                <input id="vr-cemail" name="customer_email" type="email" required />
+
+                <label>Điện thoại *</label>
+                <input id="vr-cphone" name="customer_phone" type="tel" required />
+
+                <label>Số khách *</label>
+                <input id="vr-guests" name="num_guests" type="number" min="1" value="1" required />
+
+                <label>Yêu cầu đặc biệt</label>
+                <textarea id="vr-requests" name="special_requests" rows="2"></textarea>
+
+                <div class="summary">
+                    <div>Số đêm: <span id="vr-nights">-</span></div>
+                    <div>Tổng: <strong id="vr-total">-</strong></div>
                 </div>
 
-                <div class="summary-line">
-                    <div>Số đêm: <span id="nights">-</span></div>
-                    <div>Tổng tiền: <strong id="total-price">-</strong></div>
-                </div>
-
-                <div class="form-actions">
-                    <button id="submit-booking" type="submit" class="btn btn-success" disabled>Gửi đặt phòng</button>
-                </div>
-                <div id="booking-feedback" class="booking-feedback" aria-live="polite"></div>
+                <button id="vr-submit" class="btn success" type="submit" disabled>Gửi đặt phòng</button>
+                <div id="vr-feedback" class="vr-feedback" aria-live="polite"></div>
             </form>
         </div>
+
+        <!-- host / map / reviews removed as requested -->
+
     </aside>
-
-    <section class="detail-column">
-        <div class="meta">
-            <div><strong>Loại phòng:</strong> <span id="room-type">-</span></div>
-            <div><strong>Sức chứa:</strong> <span id="capacity">-</span> khách</div>
-        </div>
-
-        <div class="description">
-            <h3>Mô tả</h3>
-            <div id="description-text">-</div>
-        </div>
-
-        <div class="amenities">
-            <h3>Tiện nghi</h3>
-            <ul id="amenities-list"></ul>
-        </div>
-    </section>
 </main>
 
-<footer class="site-footer">
-    <div class="container">© MyStay</div>
-</footer>
+<footer class="vr-footer vr-wrap">© MyStay</footer>
 
 <script src="js/modules/listing-detail.js"></script>
 </body>

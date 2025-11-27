@@ -24,5 +24,7 @@ interface RoomRepositoryInterface
     public function delete(int $id): bool;
     // check room exists by id
     public function exists(int $id): bool;
+
+    public function details(int $id): ?array;
 }
 

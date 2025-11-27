@@ -386,10 +386,9 @@ setActiveSidebar() {
     }
     formatStatus(status) {
         switch (status) {
-            case "available": return `<span style="color:#059669">Còn trống</span>`;
-            case "occupied": return `<span style="color:#b91c1c">Đã thuê</span>`;
+            case "available": return `<span style="color:#059669">Khả dụng</span>`;
+            case "occupied": return `<span style="color:#b91c1c">Không khả dụng</span>`;
             case "cleaning": return `<span style="color:#c2410c">Đang dọn</span>`;
-            case "maintenance": return `<span style="color:#6d28d9">Bảo trì</span>`;
             default: return this.escapeHtml(status || "-");
         }
     }
