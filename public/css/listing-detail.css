@@ -146,7 +146,7 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,Arial;
 .date-row label{display:block;margin-top:8px;font-size:0.9rem;color:#333}
 .date-row input[type="date"]{width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px}
 .btn{display:inline-block;padding:10px 12px;border-radius:8px;border:0;cursor:pointer;margin-top:10px}
-.btn.primary{background:var(--accent);color:#fff}
+.btn.primary{background:var(--accent);color:#fff; background-color: #0a0a0a}
 .btn.success{background:#059669;color:#fff}
 .availability{margin-top:10px;font-weight:600}
 .availability.unavailable{color:#b91c1c}
