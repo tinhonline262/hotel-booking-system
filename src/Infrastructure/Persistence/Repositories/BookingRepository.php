@@ -344,6 +344,31 @@ public function findTodayCheckOuts(int $limit = 10): array
         return $result['count'] > 0;
     }
 
+    /**
+     * Check if a room has any booking conflicts for given date range
+     *
+     * @param int $roomId
+     * @param string $checkIn Check-in date (Y-m-d)
+     * @param string $checkOut Check-out date (Y-m-d)
+     * @return bool True if there's a conflict, false if available
+     */
+    public function hasBookingConflict(int $roomId, string $checkIn, string $checkOut): bool
+    {
+        // Check for overlapping bookings (excluding cancelled bookings)
+        $sql = "
+            SELECT COUNT(*) as count 
+            FROM bookings 
+            WHERE room_id = ? 
+            AND status NOT IN ('cancelled', 'completed')
+            AND NOT (check_out_date <= ? OR check_in_date >= ?)
+        ";
+
+        $stmt = $this->database->query($sql, [$roomId, $checkIn, $checkOut]);
+        $result = $stmt->fetch();
+
+        return $result['count'] > 0;
+    }
+
 public function countPendingBookings(): int
 {
     $sql = "SELECT COUNT(*) as count FROM bookings WHERE status = 'pending'";

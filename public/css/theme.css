@@ -1,0 +1,213 @@
+/* RESET CSS */
+
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+
+ol,
+ul {
+  list-style: none;
+}
+
+blockquote,
+q {
+  quotes: none;
+}
+
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: "";
+  content: none;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* THEME VARIABLES */
+:root {
+  /* primary color */
+  --p-50: #eef9ff;
+  --p-100: #d9f0ff;
+  --p-200: #bbe6ff;
+  --p-300: #8bd8ff;
+  --p-400: #55c0ff;
+  --p-500: #2ea2ff;
+  --p-600: #1783f9;
+  --p-700: #106be5;
+  --p-800: #1456b9;
+  --p-900: #164b92;
+  --p-950: #17396d;
+
+  --p-800-code: 20, 86, 185;
+
+  --theme-orange-50: #fff5f1;
+  --theme-orange-100: #fce0d2;
+  --theme-orange-200: #facbb4;
+  --theme-orange-300: #f6b697;
+  --theme-orange-400: #f2a279;
+  --theme-orange-500: #ed8c5c;
+  --theme-orange-600: #e4763f;
+  --theme-orange-700: #d15d23;
+  --theme-orange-800: #b84105;
+  --theme-orange-900: #a33600;
+
+  /* background colors */
+  --bg-primary: #efeff1;
+  --bg-primary-code: 240, 7%, 94%;
+
+  --color-secondary: #204f97;
+  --color-accent: #0e2343;
+  --color-success: #176d17;
+  --color-warning: #6d6d17;
+  --color-error: #6d1717;
+  --color-info: #17396d;
+
+  /* text colors */
+  --text-primary: #232629;
+  --text-secondary: #5e646e;
+  --text-light: #848a95;
+
+  --border-color: #dddfe2;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+  /*================================= 
+        FONTS -  Sử dụng Scale 1.125
+    =================================*/
+  /* 32px */
+  --h1-font-size: 2rem;
+  /* 36px */
+  --h1-line-height: 2.25rem;
+
+  /* 26px */
+  --h2-font-size: 1.6rem;
+  /* 32px */
+  --h2-line-height: 2rem;
+
+  /* 20px */
+  --h3-font-size: 1.266rem;
+  /* 24px */
+  --h3-line-height: 1.5rem;
+
+  /* 18px */
+  --h4-font-size: 1.125rem;
+  /* 16px */
+  --h4-line-height: 1.5rem;
+
+  /* 16px */
+  --p-font-size: 1rem;
+  /* 24px */
+  --p-line-height: 1.5rem;
+
+  --p-letter-spacing: 0.025rem;
+
+  /* 12px */
+  --caption-font-size: 0.875rem;
+  /* 16px */
+  --caption-line-height: 1rem;
+}

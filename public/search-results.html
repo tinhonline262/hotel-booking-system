@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+    <title>Kết Quả Tìm Kiếm - VacationRenter</title>
+    <link
+        rel="stylesheet"
+        href="css/search-results.css"
+    >
+    <link
+        rel="stylesheet"
+        href="css/search-filter.css"
+    >
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+    <link
+        href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
+        rel="stylesheet"
+    >
+</head>
+
+<body>
+    <header class="booking__header">
+        <div class="header__container">
+            <div class="header__panel--left">
+                <div class="booking__logo_container">
+                    <div class="booking__logo_box">
+                        <span class="booking__logo_icon"></span>
+                        <p class="booking__logo_desciption">
+                            <a href="homepage.html">
+                                Hotel booking
+                            </a>
+                        </p>
+                    </div>
+                </div>
+                <div class="booking__search_form_container">
+                    <div class="booking__search_box">
+                        <!-- Date Fields -->
+                        <div class="date-fields-wrapper">
+                            <div
+                                class="search-field date-field"
+                                id="datePickerField"
+                            >
+                                <span>
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="search-field-icon calendar-icon"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                    >
+                                        <rect
+                                            x="3"
+                                            y="4"
+                                            width="18"
+                                            height="18"
+                                            rx="2"
+                                            ry="2"
+                                        ></rect>
+                                        <line
+                                            x1="16"
+                                            y1="2"
+                                            x2="16"
+                                            y2="6"
+                                        ></line>
+                                        <line
+                                            x1="8"
+                                            y1="2"
+                                            x2="8"
+                                            y2="6"
+                                        ></line>
+                                        <line
+                                            x1="3"
+                                            y1="10"
+                                            x2="21"
+                                            y2="10"
+                                        ></line>
+                                    </svg>
+                                </span>
+                                <div class="search-field-content">
+                                    <label class="search-label">Ngày thuê phòng</label>
+                                    <span class="search-input date-input">Oct 18&thinsp;-&thinsp;Oct 25</span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="divider"></div>
+
+                        <div
+                            class="search-field select-guests-field"
+                            id="guestsField"
+                        >
+                            <span>
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    class="search-field-icon"
+                                    fill="none"
+                                    viewBox="0 0 16 16"
+                                >
+                                    <g
+                                        stroke="currentColor"
+                                        stroke-linejoin="round"
+                                        stroke-width="1.6"
+                                    >
+                                        <path
+                                            stroke-linecap="square"
+                                            d="M11.334 14.003V12.67a2.667 2.667 0 0 0-2.667-2.667H3.334A2.667 2.667 0 0 0 .667 12.67v1.333"
+                                        >
+                                        </path>
+                                        <path d="M6 7.337a2.667 2.667 0 1 0 0-5.333 2.667 2.667 0 0 0 0 5.333Z"></path>
+                                        <path
+                                            stroke-linecap="square"
+                                            d="M15.333 14.002V12.67a2.666 2.666 0 0 0-2-2.58M10.667 2.09a2.667 2.667 0 0 1 0 5.166"
+                                        >
+                                        </path>
+                                    </g>
+                                </svg>
+                            </span>
+
+                            <div class="search-field-content">
+                                <label class="search-label">Số khách</label>
+                                <span class="search-input guest-count">1</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="header__panel--right">
+                <div class="booking__wishlist-account">
+                    <div class="booking__wishlist">
+                        <span
+                            title="wishlist"
+                            class="panel_box_icon"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="1em"
+                                height="1em"
+                                fill="none"
+                                viewBox="0 0 16 16"
+                                class="wishlist-icon right-panel-icon"
+                            >
+                                <path
+                                    stroke="currentColor"
+                                    stroke-linecap="square"
+                                    stroke-width="1.333"
+                                    d="m7.437 13.575-.001-.001c-1.816-1.667-3.27-3.002-4.277-4.249-1-1.237-1.492-2.306-1.492-3.429 0-1.82 1.403-3.23 3.183-3.23 1.013 0 1.998.481 2.64 1.244l.51.606.51-.606a3.5 3.5 0 0 1 2.64-1.243c1.78 0 3.183 1.408 3.183 3.23 0 1.122-.493 2.191-1.492 3.43-1.008 1.247-2.461 2.584-4.277 4.254q0 0 0 0l-.562.514z"
+                                ></path>
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main class="booking__main container">
+        <!-- MAIN HEADER -->
+        <section class="results__header">
+            <div class="results_header__container">
+                <div class="results_header__container--left">
+                    <h1 class="results__title">
+                        <span>0</span> Phòng
+                    </h1>
+                    <div class="CTA__hashtag">
+                        <span><svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="1em"
+                                height="1em"
+                                fill="none"
+                                viewBox="0 0 20 20"
+                                class="cta_icon"
+                            >
+                                <g
+                                    stroke="currentColor"
+                                    stroke-linecap="square"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    clip-path="url(#calendar_svg__a)"
+                                >
+                                    <path
+                                        d="M16.417 2.667H3.583c-1.012 0-1.833.82-1.833 1.833v12.833c0 1.013.82 1.834 1.833 1.834h12.834c1.012 0 1.833-.821 1.833-1.834V4.5c0-1.013-.82-1.833-1.833-1.833ZM13.667.833V4.5M6.334.833V4.5M1.75 8.167h16.5"
+                                    ></path>
+                                </g>
+                                <defs>
+                                    <clipPath id="calendar_svg__a">
+                                        <path
+                                            fill="currentColor"
+                                            d="M0 0h20v20H0z"
+                                        ></path>
+                                    </clipPath>
+                                </defs>
+                            </svg></span>
+                        <span>Đặt sớm!&nbsp;</span>
+                        <span>80% phòng đã được đặt hôm nay.</span>
+                    </div>
+                </div>
+                <div class="results_header__container--right">
+
+                </div>
+            </div>
+            <div class="results_list_wrapper">
+                <!-- SEARCH RESULT ITEMS WILL BE INSERTED HERE DYNAMICALLY -->
+
+            </div>
+            <div class="load_more__container">
+                <div class="load_more__inner">
+                    <button
+                        type="button"
+                        class="load_more_btn"
+                    >Tải thêm</button>
+
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="footer">
+        <div class="footer-container">
+
+            <div class="footer-section">
+                <h4 class="footer-title">Đặt phòng khách sạn</h4>
+                <p class="footer-desc">Khách sạn chuẩn 4 sao – dịch vụ chuyên nghiệp.</p>
+            </div>
+
+            <div class="footer-section">
+                <h4 class="footer-title">Thông tin</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Giới thiệu</a></li>
+                    <li><a href="#">Phòng & Giá</a></li>
+                    <li><a href="#">Tiện ích</a></li>
+                    <li><a href="#">Liên hệ</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4 class="footer-title">Hỗ trợ</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Hướng dẫn đặt phòng</a></li>
+                    <li><a href="#">Chính sách hoàn tiền</a></li>
+                    <li><a href="#">Câu hỏi thường gặp</a></li>
+                    <li><a href="#">Báo lỗi hệ thống</a></li>
+                </ul>
+            </div>
+
+        </div>
+
+        <div class="footer-bottom">
+            <div class="footer-container">
+                <div class="footer-bottom-content">
+                    <p>&copy; 2025 Đặt phòng khách sạn. All rights reserved.</p>
+                    <div class="footer-bottom-links">
+                        <a href="#">Chính sách bảo mật</a>
+                        <a href="#">Điều khoản sử dụng</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-container">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <p class="loading-text">Đang tải kết quả tìm kiếm...</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- API Service -->
+    <script src="js/utils/api-service.js"></script>
+    <!-- Search Filter Manager -->
+    <script src="js/modules/search-filter.js"></script>
+    <!-- Search Results Manager -->
+    <script src="js/modules/search-results-page.js"></script>
+</body>
+
+</html>

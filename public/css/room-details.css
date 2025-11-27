@@ -196,6 +196,17 @@
 }
 
 /* Action Dropdown Enhancement */
+.action-dropdown__menu {
+    min-width: 180px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.table__body .table__row:nth-child(odd):nth-last-of-type(-n+4) .action-dropdown__menu{
+    top: auto;
+    bottom: 100%;
+}
 .action-dropdown__item {
     display: flex;
     align-items: center;

@@ -28,6 +28,12 @@ return [
         ['POST', '/api/rooms', 'Api\RoomController@create'],
         ['PUT', '/api/rooms/{id}', 'Api\RoomController@update'],
         ['DELETE', '/api/rooms/{id}', 'Api\RoomController@delete'],
+
+        // Search API - Available rooms only
+        ['GET', '/api/search/rooms', 'Api\SearchController@searchRooms'],
+        ['GET', '/api/search/rooms/available', 'Api\SearchController@getAvailableRooms'],
+        ['GET', '/api/search/rooms/dates', 'Api\SearchController@searchWithDates'],
+
         // Booking API
         ['POST', '/api/booking/rooms/{id}', 'Api\BookingController@booking'],
         ['GET', '/api/booking/rooms/{id}', 'Api\BookingController@check'],

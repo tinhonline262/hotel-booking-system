@@ -82,9 +82,16 @@ class RoomRepository implements RoomRepositoryInterface
 
     public function delete(int $id): bool
     {
-        $this->database->query("DELETE FROM bookings WHERE room_id = ? ", [$id]);
-        $this->database->query("DELETE FROM rooms WHERE id = ?", [$id]);
-        return true;
+        $this->database->beginTransaction();
+        try {
+            $this->database->query("DELETE FROM bookings WHERE room_id = ? ", [$id]);
+            $this->database->query("DELETE FROM rooms WHERE id = ?", [$id]);
+            $this->database->commit();
+            return true;
+        } catch (\PDOException $e) {
+            $this->database->rollback();
+            throw $e;
+        }
     }
 
     public function exists(int $id): bool

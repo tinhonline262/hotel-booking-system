@@ -40,6 +40,8 @@ use App\Application\UseCases\FilterBookingByStatus;
 use App\Application\UseCases\GetAllRoomsWithDetailsUseCase;
 use App\Application\UseCases\GetRoomWithDetailsUseCase;
 use App\Application\UseCases\UploadRoomImagesUseCase;
+use App\Application\UseCases\SearchAvailableRoomsUseCase;
+use App\Application\UseCases\SearchRoomsWithDatesUseCase;
 use App\Application\Validators\RoomTypeValidator;
 use App\Application\Validators\RoomValidator;
 use App\Application\Validators\BookingValidator;
@@ -177,6 +179,19 @@ class UseCaseProvider
         $container->bind(DetailUseCase::class, function (Container $c) {
             return new DetailUseCase(
                 $c->make(RoomRepositoryInterface::class)
+            );
+        });
+
+        $container->bind(SearchAvailableRoomsUseCase::class, function (Container $c) {
+            return new SearchAvailableRoomsUseCase(
+                $c->make(RoomRepositoryInterface::class)
+            );
+        });
+
+        $container->bind(SearchRoomsWithDatesUseCase::class, function (Container $c) {
+            return new SearchRoomsWithDatesUseCase(
+                $c->make(RoomRepositoryInterface::class),
+                $c->make(BookingRepositoryInterface::class)
             );
         });
     }
