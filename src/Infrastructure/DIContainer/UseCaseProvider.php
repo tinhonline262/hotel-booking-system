@@ -6,6 +6,7 @@ use App\Application\UseCases\CheckRoomAvailableUseCase;
 use App\Application\UseCases\CreateRoomTypeUseCase;
 use App\Application\UseCases\DeleteRoomImageUseCase;
 use App\Application\UseCases\DeleteRoomTypeUseCase;
+use App\Application\UseCases\DetailUseCase;
 use App\Application\UseCases\FilterRoomTypesByCapacityUseCase;
 use App\Application\UseCases\FilterRoomTypesByPriceRangeUseCase;
 use App\Application\UseCases\GetAllRoomTypesUseCase;
@@ -172,6 +173,11 @@ class UseCaseProvider
 
         $container->bind(GetRoomWithDetailsUseCase::class, function (Container $c) {
             return new GetRoomWithDetailsUseCase(
+                $c->make(RoomRepositoryInterface::class)
+            );
+        });
+        $container->bind(DetailUseCase::class, function (Container $c) {
+            return new DetailUseCase(
                 $c->make(RoomRepositoryInterface::class)
             );
         });

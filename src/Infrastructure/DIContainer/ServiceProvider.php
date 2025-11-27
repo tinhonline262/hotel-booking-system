@@ -8,6 +8,7 @@ use App\Application\Services\BookingService;
 use App\Application\UseCases\CheckRoomAvailableUseCase;
 use App\Application\UseCases\CreateBookingUseCase;
 use App\Application\UseCases\DeleteBookingUseCase;
+use App\Application\UseCases\DetailUseCase;
 use App\Application\UseCases\FilterBookingByCheckInDateUseCase;
 use App\Application\UseCases\FilterBookingByCheckOutDateUseCase;
 use App\Application\UseCases\FilterBookingByCodeUseCase;
@@ -125,6 +126,7 @@ class ServiceProvider
                 $c->make(FilterRoomByStatusUseCase::class),
                 $c->make(GetAllRoomsWithDetailsUseCase::class),
                 $c->make(GetRoomWithDetailsUseCase::class),
+                $c->make(DetailUseCase::class)
             );
         });
         $container->bind(RoomRepositoryInterface::class, function (Container $c) {

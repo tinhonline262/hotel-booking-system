@@ -60,8 +60,7 @@ class ControllerProvider
 
         $container->bind(RoomDetailController::class, function (Container $c) {
             return new RoomDetailController(
-                $c->make(RoomService::class),
-                $c->make(RoomTypeService::class)
+                $c->make(RoomService::class)
             );
         });
 

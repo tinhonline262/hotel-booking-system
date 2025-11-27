@@ -2,13 +2,12 @@
 
 namespace App\Presentation\Controllers\Api;
 use App\Application\Interfaces\RoomServiceInterface;
-use App\Application\Services\RoomTypeService;
 use App\Domain\Exceptions\RoomNotFoundException;
 class RoomDetailController extends BaseRestController
 {
     private RoomServiceInterface $roomService;
 
-    public function __construct(RoomServiceInterface $roomService, RoomTypeService $roomTypeService){
+    public function __construct(RoomServiceInterface $roomService){
         parent::__construct();
         $this->roomService = $roomService;
     }
@@ -16,9 +15,9 @@ class RoomDetailController extends BaseRestController
      * GET /api/room-details/{id}
      * Get single room by ID
      */
-    public function getDetailRooms(int $id):void{
+    public function getDetailRoom(int $id):void{
         try{
-            $room = $this->roomService->getRoomWithDetails($id);
+            $room = $this->roomService->Details($id);
             $this->success(
                 $room,
                 "Room with details retrieved successfully"

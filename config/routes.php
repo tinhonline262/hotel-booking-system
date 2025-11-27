@@ -50,7 +50,7 @@ return [
         ['PUT', '/api/bookings/{id}', 'Api\CRUDbookingController@update'],
         ['DELETE', '/api/bookings/{id}', 'Api\CRUDbookingController@delete'],
         //RoomDetailController
-        ['GET', '/api/room-details/{id}', 'Api\RoomDetailController@getDetailRooms'],
+        ['GET', '/api/room-details/{id}', 'Api\RoomDetailController@getDetailRoom'],
         // Room Images API
         ['POST', '/api/rooms/{id}/images', 'Api\RoomImageController@upload'],
         ['PUT', '/api/rooms/{roomId}/images/{imageId}/primary', 'Api\RoomImageController@setPrimary'],

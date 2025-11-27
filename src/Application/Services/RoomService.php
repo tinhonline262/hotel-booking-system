@@ -4,6 +4,7 @@ namespace App\Application\Services;
 
 use App\Application\DTOs\RoomDTO;
 use App\Application\Interfaces\RoomServiceInterface;
+use App\Application\UseCases\DetailUseCase;
 use App\Domain\Entities\Room;
 use App\Domain\Exceptions\InvalidRoomDataExceptions;
 use App\Domain\Exceptions\RoomNotFoundException;
@@ -28,6 +29,7 @@ class RoomService implements RoomServiceInterface
     private FilterRoomByStatusUseCase $filterRoomByStatusUseCase;
     private GetAllRoomsWithDetailsUseCase $getAllRoomsWithDetailsUseCase;
     private GetRoomWithDetailsUseCase $getRoomWithDetailsUseCase;
+    private DetailUseCase $detailUseCase;
 
     public function __construct(
         CreateRoomUseCase $createRoomUseCase,
@@ -38,7 +40,8 @@ class RoomService implements RoomServiceInterface
         FilterRoomByRoomNumberUseCase $filterRoomByRoomNumberUseCase,
         FilterRoomByStatusUseCase $filterRoomByStatusUseCase,
         GetAllRoomsWithDetailsUseCase $getAllRoomsWithDetailsUseCase,
-        GetRoomWithDetailsUseCase $getRoomWithDetailsUseCase
+        GetRoomWithDetailsUseCase $getRoomWithDetailsUseCase,
+        DetailUseCase $detailUseCase
     )
     {
         $this->createRoomUseCase = $createRoomUseCase;
@@ -50,6 +53,7 @@ class RoomService implements RoomServiceInterface
         $this->filterRoomByStatusUseCase = $filterRoomByStatusUseCase;
         $this->getAllRoomsWithDetailsUseCase = $getAllRoomsWithDetailsUseCase;
         $this->getRoomWithDetailsUseCase = $getRoomWithDetailsUseCase;
+        $this->detailUseCase = $detailUseCase;
     }
 
     /**
@@ -120,5 +124,10 @@ class RoomService implements RoomServiceInterface
     public function getRoomWithDetails(int $id): array
     {
         return $this->getRoomWithDetailsUseCase->execute($id);
+    }
+
+    public function Details(int $id): ?array
+    {
+        return $this->detailUseCase->execute($id);
     }
 }
