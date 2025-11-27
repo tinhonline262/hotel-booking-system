@@ -1,4 +1,4 @@
-        /**
+/**
  * VacationRenter Landing Page Manager - Clean Version
  * Only uses real backend data fields
  * Removed: destination search, gallery filters, fake data
@@ -303,44 +303,57 @@
             }
 
             /**
-             * Search rooms by guests (capacity)
+             * Search rooms by guests and dates - Redirect to search results page
              */
             async searchRooms() {
-                try {
-                    // Filter by available status
-                    const result = await this.api.get('/rooms/filter/status?status=available');
+                // Build query parameters
+                const params = new URLSearchParams();
 
-                    if (result.success && result.data) {
-                        let availableRoomIds = result.data.map(r => r.room_type_id);
+                // Add guest count
+                if (this.searchGuests) {
+                    params.append('guests', this.searchGuests);
+                }
 
-                        // Get room types that match capacity
-                        const rtResult = await this.api.get('/room-types');
-                        if (rtResult.success && rtResult.data) {
-                            let filteredRoomTypes = rtResult.data.filter(rt =>
-                                availableRoomIds.includes(rt.id) && rt.capacity >= this.searchGuests
-                            );
+                // Add dates if selected
+                if (this.searchCheckin) {
+                    const checkinStr = this.searchCheckin.toISOString().split('T')[0];
+                    params.append('check_in', checkinStr);
+                }
 
-                            if (filteredRoomTypes.length > 0) {
-                                this.allListings = this.mapRoomTypesToListings(filteredRoomTypes);
-                            } else {
-                                this.allListings = [];
-                            }
-                        }
+                if (this.searchCheckout) {
+                    const checkoutStr = this.searchCheckout.toISOString().split('T')[0];
+                    params.append('check_out', checkoutStr);
+                }
 
-                        this.listingsPage = 1;
-                        this.renderListings();
+                // Redirect to search results page with parameters
+                window.location.href = `search-results.html?${params.toString()}`;
+            }
 
-                        // Scroll to results
-                        setTimeout(() => {
-                            document.querySelector('.listings-section')?.scrollIntoView({
-                                behavior: 'smooth',
-                                block: 'start'
-                            });
-                        }, 200);
+            /**
+             * Show search summary
+             */
+            showSearchSummary(roomCount, typeCount) {
+                let message = '';
+
+                if (roomCount === 0) {
+                    message = 'Không tìm thấy phòng phù hợp';
+                } else {
+                    message = `Tìm thấy ${roomCount} phòng trống`;
+                    if (this.searchCheckin && this.searchCheckout) {
+                        const options = { month: 'short', day: 'numeric' };
+                        const checkinStr = this.searchCheckin.toLocaleDateString('vi-VN', options);
+                        const checkoutStr = this.searchCheckout.toLocaleDateString('vi-VN', options);
+                        message += ` từ ${checkinStr} đến ${checkoutStr}`;
                     }
-                } catch (error) {
-                    console.error('Error searching rooms:', error);
-                    this.showEmptyState('listingsGrid', 'Không tìm thấy phòng phù hợp');
+                    if (this.searchGuests > 1) {
+                        message += ` cho ${this.searchGuests} khách`;
+                    }
+                }
+
+                // Update section subtitle with search results
+                const sectionSubtitle = document.querySelector('.listings-section .section-subtitle');
+                if (sectionSubtitle) {
+                    sectionSubtitle.textContent = message;
                 }
             }
 
@@ -395,15 +408,48 @@
                     });
                 }
 
+                // Close dropdowns when clicking outside
+                document.addEventListener('click', (e) => {
+                    const datepickerContainer = document.getElementById('datepickerContainer');
+                    const guestsDropdown = document.getElementById('guestsDropdown');
+                    const datePickerField = document.getElementById('datePickerField');
+                    const guestsField = document.getElementById('guestsField');
+
+                    // Close date picker if clicking outside
+                    if (datepickerContainer && !datePickerField?.contains(e.target)) {
+                        datepickerContainer.classList.remove('active');
+                    }
+
+                    // Close guests dropdown if clicking outside
+                    if (guestsDropdown && !guestsField?.contains(e.target)) {
+                        guestsDropdown.classList.remove('active');
+                    }
+                });
+
+                // Enter key to search
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        const dateInput = document.getElementById('dateRangeInput');
+                        const guestsInput = document.getElementById('guestsInput');
+
+                        if (document.activeElement === dateInput || document.activeElement === guestsInput) {
+                            e.preventDefault();
+                            this.searchRooms();
+                        }
+                    }
+                });
+
                 // Lightbox
                 this.setupLightbox();
+
+                // View deal button navigation
                 document.addEventListener('click', (e) => {
-    const btn = e.target.closest('.view-deal-btn');
-    if (btn) {
-        const roomId = btn.dataset.roomId;
-        window.location.href = `listing-detail.html?id=${roomId}`;
-    }
-});
+                    const btn = e.target.closest('.view-deal-btn');
+                    if (btn) {
+                        const roomId = btn.dataset.roomId;
+                        window.location.href = `listing-detail.html?id=${roomId}`;
+                    }
+                });
             }
 
             /**
@@ -505,6 +551,8 @@
                 let currentDate = new Date();
                 let selectedStartDate = null;
                 let selectedEndDate = null;
+                const today = new Date();
+                today.setHours(0, 0, 0, 0); // Set to start of day for comparison
 
                 const datepickerContainer = document.getElementById('datepickerContainer');
                 const dateRangeInput = document.getElementById('dateRangeInput');
@@ -514,8 +562,8 @@
                 if (!datepickerContainer || !dateRangeInput) return;
 
                 const renderCalendar = () => {
-                    const monthNames = ["January", "February", "March", "April", "May", "June",
-                        "July", "August", "September", "October", "November", "December"];
+                    const monthNames = ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6",
+                        "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"];
                     const currentMonthEl = document.getElementById('currentMonth');
                     if (currentMonthEl) {
                         currentMonthEl.textContent = `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
@@ -549,49 +597,55 @@
                         day.textContent = i;
 
                         const currentDateObj = new Date(currentDate.getFullYear(), currentDate.getMonth(), i);
+                        currentDateObj.setHours(0, 0, 0, 0);
 
-                        if (selectedStartDate && currentDateObj.getTime() === selectedStartDate.getTime()) {
-                            day.classList.add('selected', 'range-start');
-                        }
-                        if (selectedEndDate && currentDateObj.getTime() === selectedEndDate.getTime()) {
-                            day.classList.add('selected', 'range-end');
-                        }
-                        if (selectedStartDate && selectedEndDate &&
-                            currentDateObj > selectedStartDate && currentDateObj < selectedEndDate) {
-                            day.classList.add('in-range');
-                        }
-
-                        day.addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            if (!selectedStartDate || (selectedStartDate && selectedEndDate)) {
-                                selectedStartDate = currentDateObj;
-                                selectedEndDate = null;
-                                this.searchCheckin = currentDateObj;
-                                this.searchCheckout = null;
-                            } else if (currentDateObj > selectedStartDate) {
-                                selectedEndDate = currentDateObj;
-                                this.searchCheckout = currentDateObj;
-                            } else {
-                                selectedStartDate = currentDateObj;
-                                selectedEndDate = null;
-                                this.searchCheckin = currentDateObj;
-                                this.searchCheckout = null;
+                        // Disable dates before today
+                        if (currentDateObj < today) {
+                            day.classList.add('disabled');
+                        } else {
+                            if (selectedStartDate && currentDateObj.getTime() === selectedStartDate.getTime()) {
+                                day.classList.add('selected', 'range-start');
+                            }
+                            if (selectedEndDate && currentDateObj.getTime() === selectedEndDate.getTime()) {
+                                day.classList.add('selected', 'range-end');
+                            }
+                            if (selectedStartDate && selectedEndDate &&
+                                currentDateObj > selectedStartDate && currentDateObj < selectedEndDate) {
+                                day.classList.add('in-range');
                             }
 
-                            updateDateDisplay();
-                            renderCalendar();
-                        });
+                            day.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                if (!selectedStartDate || (selectedStartDate && selectedEndDate)) {
+                                    selectedStartDate = currentDateObj;
+                                    selectedEndDate = null;
+                                    this.searchCheckin = currentDateObj;
+                                    this.searchCheckout = null;
+                                } else if (currentDateObj >= selectedStartDate) {
+                                    selectedEndDate = currentDateObj;
+                                    this.searchCheckout = currentDateObj;
+                                } else {
+                                    selectedStartDate = currentDateObj;
+                                    selectedEndDate = null;
+                                    this.searchCheckin = currentDateObj;
+                                    this.searchCheckout = null;
+                                }
+
+                                updateDateDisplay();
+                                renderCalendar();
+                            });
+                        }
 
                         daysContainer.appendChild(day);
                     }
                 };
 
                 const updateDateDisplay = () => {
-                    const options = { month: 'short', day: 'numeric', year: 'numeric' };
+                    const options = { month: 'short', day: 'numeric' };
                     const checkinText = selectedStartDate ?
-                        selectedStartDate.toLocaleDateString('en-US', options) : 'Select date';
+                        selectedStartDate.toLocaleDateString('vi-VN', options) : 'Chọn ngày';
                     const checkoutText = selectedEndDate ?
-                        selectedEndDate.toLocaleDateString('en-US', options) : 'Select date';
+                        selectedEndDate.toLocaleDateString('vi-VN', options) : 'Chọn ngày';
 
                     const checkinDateEl = document.getElementById('checkinDate');
                     const checkoutDateEl = document.getElementById('checkoutDate');
@@ -604,15 +658,25 @@
                     } else if (selectedStartDate) {
                         dateRangeInput.value = checkinText;
                     } else {
-                        dateRangeInput.value = 'Add dates';
+                        dateRangeInput.value = 'Thêm ngày';
                     }
                 };
 
                 if (prevMonthBtn) {
                     prevMonthBtn.addEventListener('click', (e) => {
                         e.stopPropagation();
-                        currentDate.setMonth(currentDate.getMonth() - 1);
-                        renderCalendar();
+                        // Don't allow going to months before current month
+                        const prevMonth = new Date(currentDate);
+                        prevMonth.setMonth(prevMonth.getMonth() - 1);
+
+                        const currentMonth = new Date(today);
+                        currentMonth.setDate(1);
+                        currentMonth.setHours(0, 0, 0, 0);
+
+                        if (prevMonth >= currentMonth) {
+                            currentDate.setMonth(currentDate.getMonth() - 1);
+                            renderCalendar();
+                        }
                     });
                 }
 
@@ -648,8 +712,8 @@
                 const updateGuests = () => {
                     const total = adults + children;
                     this.searchGuests = total;
-                    guestsInput.value = `${total} guest${total > 1 ? 's' : ''}` +
-                        (children > 0 ? ` (${adults} adult${adults > 1 ? 's' : ''}, ${children} child${children > 1 ? 'ren' : ''})` : '');
+                    guestsInput.value = `${total} khách` +
+                        (children > 0 ? ` (${adults} người lớn, ${children} trẻ em)` : '');
 
                     const adultsCountEl = document.getElementById('adultsCount');
                     const childrenCountEl = document.getElementById('childrenCount');

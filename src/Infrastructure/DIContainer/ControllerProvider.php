@@ -3,17 +3,20 @@
 namespace App\Infrastructure\DIContainer;
 
 use App\Application\Interfaces\BookingServiceInterface;
+use App\Application\Interfaces\RoomServiceInterface;
 use App\Application\Services\BookingService;
 use App\Application\Services\RoomService;
-use App\Application\Interfaces\RoomImageServiceInterface;
 use App\Application\Services\RoomTypeService;
+use App\Application\Interfaces\RoomImageServiceInterface;
 use App\Core\Container\Container;
+use App\Domain\Interfaces\Repositories\BookingRepositoryInterface;
 use App\Presentation\Controllers\Api\BookingController;
 use App\Presentation\Controllers\Api\CRUDbookingController;
 use App\Presentation\Controllers\Api\RoomController;
 use App\Presentation\Controllers\Api\RoomDetailController;
 use App\Presentation\Controllers\Api\RoomImageController;
 use App\Presentation\Controllers\Api\RoomTypeController;
+use App\Presentation\Controllers\Api\SearchController;
 
 /**
  * Controller Provider - Register all controllers
@@ -59,6 +62,13 @@ class ControllerProvider
             return new RoomDetailController(
                 $c->make(RoomService::class),
                 $c->make(RoomTypeService::class)
+            );
+        });
+
+        $container->bind(SearchController::class, function (Container $c) {
+            return new SearchController(
+                $c->make(RoomService::class),
+                $c->make(BookingRepositoryInterface::class)
             );
         });
     }
