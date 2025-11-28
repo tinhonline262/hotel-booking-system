@@ -16,8 +16,8 @@
 body {
     margin: 0;
     padding: 0;
-    font-family: 'Poppins', sans-serif; /* Font hiện đại */
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); /* Nền Gradient nhẹ */
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     min-height: 100vh;
     display: flex;
     justify-content: center;
@@ -40,7 +40,7 @@ body {
     letter-spacing: 2px;
     color: var(--primary-color);
     margin-bottom: 10px;
-    font-size: 0.9rem;
+    font-size: 1.5rem; /* Tăng kích thước logo */
     text-transform: uppercase;
 }
 
@@ -66,7 +66,7 @@ body {
     background: var(--white);
     padding: 40px;
     border-radius: 20px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.08); /* Bóng đổ sâu */
+    box-shadow: 0 20px 50px rgba(0,0,0,0.08);
     margin-bottom: 30px;
     position: relative;
     overflow: hidden;
@@ -106,7 +106,7 @@ body {
 
 input[type="text"] {
     width: 100%;
-    padding: 18px 20px 18px 55px; /* Chừa chỗ cho icon */
+    padding: 18px 20px 18px 55px;
     border: 2px solid #dfe6e9;
     border-radius: 12px;
     font-size: 1rem;
@@ -193,7 +193,6 @@ input[type="text"]:focus {
     position: relative;
 }
 
-/* Đường viền màu trên cùng */
 .ticket-card::before {
     content: '';
     position: absolute;
@@ -242,7 +241,6 @@ input[type="text"]:focus {
 .label { color: var(--text-light); font-size: 0.95rem; }
 .value { font-weight: 600; color: var(--text-dark); text-align: right; }
 
-/* Highlight giá tiền */
 .total-box {
     background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
     padding: 25px;
@@ -255,7 +253,6 @@ input[type="text"]:focus {
 .total-label { opacity: 0.9; font-size: 0.9rem; margin-bottom: 5px; }
 .total-value { font-size: 2rem; font-weight: 700; }
 
-/* BADGES */
 .badge {
     padding: 8px 16px;
     border-radius: 30px;
@@ -272,7 +269,6 @@ input[type="text"]:focus {
 .status-checked-out { background: rgba(99, 110, 114, 0.15); color: #636e72; }
 .status-cancelled { background: rgba(255, 118, 117, 0.15); color: #d63031; }
 
-/* RESPONSIVE */
 @media (max-width: 768px) {
     .search-input-group { flex-direction: column; }
     .search-input-group button { width: 100%; padding: 15px; }
@@ -281,7 +277,7 @@ input[type="text"]:focus {
     .main-title { font-size: 1.8rem; }
 }
 
-/* ANIMATION */
+/* === ĐÃ SỬA LỖI Ở ĐÂY === */
 @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
