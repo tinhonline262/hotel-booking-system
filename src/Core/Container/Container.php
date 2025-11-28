@@ -1,9 +1,9 @@
 <?php
-
 namespace App\Core\Container;
 
 use ReflectionClass;
 use ReflectionException;
+use App\Core\Container\ServiceProviderInterface; // <-- THÊM DÒNG NÀY
 
 /**
  * Dependency Injection Container
@@ -36,6 +36,7 @@ class Container
             $concrete = $abstract;
         }
 
+        // Code bind() gốc của bạn đã đúng
         $this->bindings[$abstract] = [
             'concrete' => $concrete,
             'singleton' => $singleton,
@@ -61,11 +62,14 @@ class Container
         }
 
         // Get binding or use abstract as concrete
-        $concrete = $this->bindings[$abstract]['concrete'] ?? $abstract;
-        $singleton = $this->bindings[$abstract]['singleton'] ?? false;
-
+        $binding = $this->bindings[$abstract] ?? null;
+        $concrete = $binding['concrete'] ?? $abstract;
+        $singleton = $binding['singleton'] ?? false;
+        
         // Build the instance
-        $instance = $this->build($concrete, $parameters);
+        // === SỬA LỖI LOGIC NHỎ ===
+        // Chuyển $concrete (tên class) thành $binding['concrete'] (có thể là Closure)
+        $instance = $this->build($binding['concrete'] ?? $concrete, $parameters);
 
         // Store singleton
         if ($singleton) {
@@ -80,32 +84,24 @@ class Container
      */
     private function build($concrete, array $parameters = [])
     {
-        // If it's a closure, call it
+        // (Code build() gốc của bạn đã đúng)
         if ($concrete instanceof \Closure) {
             return $concrete($this);
         }
-
         try {
             $reflection = new ReflectionClass($concrete);
         } catch (ReflectionException $e) {
             throw new \Exception("Class {$concrete} does not exist");
         }
-
         if (!$reflection->isInstantiable()) {
             throw new \Exception("Class {$concrete} is not instantiable");
         }
-
         $constructor = $reflection->getConstructor();
-
-        // No constructor, just instantiate
         if ($constructor === null) {
             return new $concrete();
         }
-
-        // Resolve constructor dependencies
         $dependencies = $constructor->getParameters();
         $instances = $this->resolveDependencies($dependencies, $parameters);
-
         return $reflection->newInstanceArgs($instances);
     }
 
@@ -114,33 +110,25 @@ class Container
      */
     private function resolveDependencies(array $dependencies, array $parameters = []): array
     {
+        // (Code resolveDependencies() gốc của bạn đã đúng)
         $results = [];
-
         foreach ($dependencies as $dependency) {
             $name = $dependency->getName();
-
-            // Use provided parameter if available
             if (isset($parameters[$name])) {
                 $results[] = $parameters[$name];
                 continue;
             }
-
-            // Try to resolve type-hinted dependency
             $type = $dependency->getType();
             if ($type && !$type->isBuiltin()) {
                 $results[] = $this->make($type->getName());
                 continue;
             }
-
-            // Use default value if available
             if ($dependency->isDefaultValueAvailable()) {
                 $results[] = $dependency->getDefaultValue();
                 continue;
             }
-
             throw new \Exception("Cannot resolve dependency: {$name}");
         }
-
         return $results;
     }
 
@@ -151,5 +139,15 @@ class Container
     {
         $this->instances[$abstract] = $instance;
     }
-}
 
+    // ===>>> (PHƯƠNG THỨC BỊ THIẾU) <<<===
+    /**
+     * Đăng ký một Service Provider
+     */
+    public function register(ServiceProviderInterface $provider)
+    {
+        // Gọi phương thức register() của Provider
+        // và truyền chính container này vào
+        $provider->register($this);
+    }
+}
