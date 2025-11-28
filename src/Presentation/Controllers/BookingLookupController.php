@@ -1,46 +1,41 @@
 <?php
-namespace App\Presentation\Controllers;
+namespace App\Presentation\Controllers\Api;
 
 use App\Application\UseCases\FindBookingByCodeUseCase;
-use App\Core\Template\ITemplateEngine;
 
-class BookingLookupController
+class BookingApiController
 {
     public function __construct(
-        private FindBookingByCodeUseCase $findBookingUseCase,
-        private ITemplateEngine $templateEngine
+        private FindBookingByCodeUseCase $findBookingUseCase
     ) {}
 
-    public function index()
+    /**
+     * API: GET /api/booking-lookup?code=BK-123
+     */
+    public function lookup()
     {
-        echo $this->templateEngine->render('pages/booking-lookup', [
-            'pageTitle' => 'Tra cứu đặt phòng',
-            'booking' => null,
-            'error' => null,
-            'searchCode' => ''
-        ]);
-    }
-
-    public function search()
-    {
+        // 1. Lấy input
         $code = $_GET['code'] ?? '';
-        $booking = null;
-        $error = null;
 
-        if (empty($code)) {
-            $error = 'Vui lòng nhập mã booking.';
+        // 2. Gọi UseCase (Logic cũ)
+        $booking = $this->findBookingUseCase->execute($code);
+
+        // 3. Trả về JSON
+        header('Content-Type: application/json');
+        
+        if ($booking) {
+            http_response_code(200);
+            echo json_encode([
+                'status' => 'success',
+                'data' => $booking
+            ]);
         } else {
-            $booking = $this->findBookingUseCase->execute($code);
-            if (!$booking) {
-                $error = 'Không tìm thấy thông tin đặt phòng với mã này.';
-            }
+            http_response_code(404);
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Không tìm thấy đơn đặt phòng với mã này.'
+            ]);
         }
-
-        echo $this->templateEngine->render('pages/booking-lookup', [
-            'pageTitle' => 'Kết quả tra cứu',
-            'booking' => $booking,
-            'error' => $error,
-            'searchCode' => $code
-        ]);
+        exit;
     }
 }
