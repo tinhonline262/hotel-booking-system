@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VacationRenter - Find your perfect stay</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Crimson+Text:wght@400;600&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/homepage.css">
+
+
+</head>
+
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <div class="logo-icon"></div>
+                Hotel Booking
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-subtitle">Hơn 8 triệu đêm đã lưu trú</div>
+        <h1 class="hero-title">Tìm chỗ nghỉ hoàn hảo</h1>
+
+        <div class="search-wrapper">
+            <div class="search-container">
+
+                <!-- Date Fields -->
+                <div class="date-fields-wrapper">
+                    <div class="search-field date-field" id="datePickerField">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="search-field-icon calendar-icon" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        <div class="search-field-content">
+                            <label class="search-label">Ngày đến</label>
+                            <input type="text" class="search-input" id="dateRangeInput"
+       value="Thêm ngày" readonly title="Chọn ngày nhận và trả phòng">
+
+                        </div>
+
+                        <!-- Datepicker -->
+                        <div class="datepicker-container" id="datepickerContainer">
+                            <div class="datepicker-header">
+                                <button class="datepicker-nav" id="prevMonth">‹</button>
+                                <div class="datepicker-month" id="currentMonth">Tháng 10 2025</div>
+                                <button class="datepicker-nav" id="nextMonth">›</button>
+                            </div>
+                            <div class="datepicker-weekdays">
+                                <div>CN</div>
+                                <div>T2</div>
+                                <div>T3</div>
+                                <div>T4</div>
+                                <div>T5</div>
+                                <div>T6</div>
+                                <div>T7</div>
+                            </div>
+                            <div class="datepicker-days" id="calendarDays"></div>
+                            <div class="datepicker-footer">
+                                <div class="date-range-display">
+                                    <div class="date-range-item">
+                                        <span class="date-label">Nhận phòng</span>
+                                        <span class="date-value" id="checkinDate">Chọn ngày</span>
+                                    </div>
+                                    <div class="date-range-divider">→</div>
+                                    <div class="date-range-item">
+                                        <span class="date-label">Trả phòng</span>
+                                        <span class="date-value" id="checkoutDate">Chọn ngày</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                </div>
+
+                <div class="search-field" id="guestsField">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="search-field-icon" fill="none" viewBox="0 0 16 16">
+                        <g stroke="currentColor" stroke-linejoin="round" stroke-width="1.6">
+                            <path stroke-linecap="square"
+                                d="M11.334 14.003V12.67a2.667 2.667 0 0 0-2.667-2.667H3.334A2.667 2.667 0 0 0 .667 12.67v1.333">
+                            </path>
+                            <path d="M6 7.337a2.667 2.667 0 1 0 0-5.333 2.667 2.667 0 0 0 0 5.333Z"></path>
+                            <path stroke-linecap="square"
+                                d="M15.333 14.002V12.67a2.666 2.666 0 0 0-2-2.58M10.667 2.09a2.667 2.667 0 0 1 0 5.166">
+                            </path>
+                        </g>
+                    </svg>
+                    <div class="search-field-content">
+                        <label class="search-label">Khách</label>
+<input type="text" class="search-input" id="guestsInput"
+       value="1 khách" readonly autocomplete="off"
+       title="Số lượng khách">
+                    </div>
+
+                    <div class="guests-dropdown" id="guestsDropdown">
+                        <div class="guest-row">
+                            <div class="guest-info">
+                                <h4>Số khách</h4>
+                            </div>
+                            <div class="guest-controls">
+                                <button class="guest-btn" id="adultsDecrement">−</button>
+                                <span class="guest-count" id="adultsCount">1</span>
+                                <button class="guest-btn" id="adultsIncrement">+</button>
+                            </div>
+                        </div>
+
+<!--                        <div class="guest-row">-->
+<!--                            <div class="guest-info">-->
+<!--                                <h4>Trẻ em</h4>-->
+<!--                                <p>0-17 tuổi</p>-->
+<!--                            </div>-->
+<!--                            <div class="guest-controls">-->
+<!--                                <button class="guest-btn" id="childrenDecrement" disabled>−</button>-->
+<!--                                <span class="guest-count" id="childrenCount">0</span>-->
+<!--                                <button class="guest-btn" id="childrenIncrement">+</button>-->
+<!--                            </div>-->
+<!--                        </div>-->
+                    </div>
+                </div>
+                <button class="btn-search">
+                    <div class="svg-wrapper-1">
+                        <div class="svg-wrapper">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 16">
+                                <path
+                                    d="M7.33333 12.6667C10.2789 12.6667 12.6667 10.2789 12.6667 7.33333C12.6667 4.38781 10.2789 2 7.33333 2C4.38781 2 2 4.38781 2 7.33333C2 10.2789 4.38781 12.6667 7.33333 12.6667Z"
+                                    stroke="currentColor" fill="none" stroke-width="1.6" stroke-linecap="round"
+                                    stroke-linejoin="round"></path>
+                                <path d="M14.0001 14L11.1001 11.1" stroke="currentColor" stroke-width="1.6"
+                                    stroke-linecap="square" stroke-linejoin="round"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <span>Tìm kiếm</span>
+                </button>
+            </div>
+        </div>
+
+    </section>
+
+    <div class="testimonial">
+        <div class="stars">★ ★ ★ ★ ★</div>
+        <p class="testimonial-text">"ước gì tao bớt đẳng cấp một chút để sống hoà đồng thì tốt biết bao."</p>
+        <p class="testimonial-author">- Bình Bát</p>
+    </div>
+
+    <div class="partners">
+        <span class="partner-logo">Booking.com</span>
+        <span class="partner-logo">AVANTSTAY</span>
+        <span class="partner-logo">evolve</span>
+        <span class="partner-logo">NOVASOL</span>
+        <span class="partner-logo">Outdoorsy</span>
+        <span class="partner-logo">priceline</span>
+        <span class="partner-logo">vrbo</span>
+        <span class="partner-logo">+Thêm</span>
+    </div>
+
+    <section class="listings-section">
+        <h2 class="section-title">Nơi nghỉ độc đáo cho chuyến đi tiếp theo</h2>
+        <p class="section-subtitle">Khám phá các nơi nghỉ hàng đầu - được chọn lọc kỹ càng về chất lượng, sự hài lòng và
+            trải nghiệm khó quên</p>
+        <div class="listings-grid" id="listingsGrid"></div>
+        <div class="load-more-container">
+            <button class="load-more-btn" id="loadMoreBtn">
+                <span class="btn-text">Xem thêm</span>
+                <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </button>
+        </div>
+    </section>
+
+    <section class="gallery-section">
+        <div class="gallery-header">
+            <h2 class="section-title">Khám phá điểm đến tuyệt vời</h2>
+            <p class="section-subtitle">Duyệt qua bộ sưu tập được tuyển chọn các bất động sản tuyệt đẹp và địa điểm
+                ngoạn mục</p>
+        </div>
+
+        <div class="gallery-grid" id="galleryGrid"></div>
+
+        <div class="gallery-load-more">
+            <button class="load-more-btn" id="galleryLoadMore">
+                <span class="btn-text">Xem thêm ảnh</span>
+                <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </button>
+        </div>
+    </section>
+
+    <!-- Lightbox Modal -->
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-overlay"></div>
+        <div class="lightbox-content">
+            <button class="lightbox-close" id="lightboxClose" title="Đóng"></button>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+
+            <button class="lightbox-nav lightbox-prev" id="lightboxPrev" title="Ảnh trước"></button>
+
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </button>
+
+            <button class="lightbox-nav lightbox-next" id="lightboxNext" title="Ảnh tiếp theo"></button>
+
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </button>
+
+            <div class="lightbox-image-container">
+                <img src="" alt="" id="lightboxImage" class="lightbox-image">
+                <div class="lightbox-caption">
+                    <h3 id="lightboxTitle"></h3>
+                    <p id="lightboxLocation"></p>
+                </div>
+            </div>
+
+            <div class="lightbox-counter">
+                <span id="lightboxCounter"></span>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="js/utils/api-service.js"></script>
+    <script src="js/modules/homepage.js"></script>
+
+
+
+
+    <footer class="footer">
+        <div class="footer-container">
+
+            <div class="footer-section">
+                <h4 class="footer-title">Đặt phòng khách sạn</h4>
+                <p class="footer-desc">Khách sạn chuẩn 4 sao – dịch vụ chuyên nghiệp.</p>
+            </div>
+
+            <div class="footer-section">
+                <h4 class="footer-title">Thông tin</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Giới thiệu</a></li>
+                    <li><a href="#">Phòng & Giá</a></li>
+                    <li><a href="#">Tiện ích</a></li>
+                    <li><a href="#">Liên hệ</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4 class="footer-title">Hỗ trợ</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Hướng dẫn đặt phòng</a></li>
+                    <li><a href="#">Chính sách hoàn tiền</a></li>
+                    <li><a href="#">Câu hỏi thường gặp</a></li>
+                    <li><a href="#">Báo lỗi hệ thống</a></li>
+                </ul>
+            </div>
+
+        </div>
+
+        <div class="footer-bottom">
+            <div class="footer-container">
+                <div class="footer-bottom-content">
+                    <p>&copy; 2025 Đặt phòng khách sạn. All rights reserved.</p>
+                    <div class="footer-bottom-links">
+                        <a href="#">Chính sách bảo mật</a>
+                        <a href="#">Điều khoản sử dụng</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+
+
+
+</body>
+
+</html>

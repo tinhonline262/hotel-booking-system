@@ -1,0 +1,55 @@
+:root{
+  --container-width: 1100px;
+  --accent: #ff7a59;
+  --dark: #0b1020;
+  --muted: #718096;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;line-height:1.4;color:var(--dark);margin:0;background:#fff}
+.container{max-width:var(--container-width);margin:0 auto;padding:0 16px}
+
+/* Hero */
+.hero{position:relative;min-height:66vh;display:flex;align-items:center}
+.hero__bg{position:absolute;inset:0;background-image:linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.35)), url('https://images.unsplash.com/photo-1501117716987-c8e6e8d9e5ab?auto=format&fit=crop&w=1600&q=60');background-size:cover;background-position:center;filter:contrast(1.02);z-index:0}
+.hero__overlay{position:absolute;inset:0;background:linear-gradient(180deg, rgba(11,16,32,0.45), rgba(11,16,32,0.15));z-index:1}
+.hero__content{position:relative;z-index:2;padding:48px 0;color:#fff;text-align:center}
+.hero__title{font-size:clamp(28px,4vw,48px);margin:0 0 8px}
+.hero__subtitle{margin:0 0 24px;color:rgba(255,255,255,0.92);max-width:800px;margin-left:auto;margin-right:auto}
+
+/* Search form */
+.search{display:flex;justify-content:center;margin-top:12px}
+.search__row{display:flex;gap:10px;align-items:center;background:rgba(255,255,255,0.95);padding:10px;border-radius:8px;box-shadow:0 6px 22px rgba(16,24,40,0.25);}
+.search input[type=date], .search select{padding:10px;border-radius:6px;border:1px solid #e6e9ee;background:transparent;font-size:14px}
+.search input[type=date]:focus, .search select:focus{outline:3px solid rgba(255,122,89,0.14);border-color:var(--accent)}
+.btn{background:var(--accent);color:white;padding:10px 16px;border-radius:6px;border:0;cursor:pointer;font-weight:600}
+.btn:disabled{opacity:0.6;cursor:default}
+.btn--ghost{background:transparent;color:var(--dark);border:1px solid rgba(11,16,32,0.06);padding:8px 12px}
+.search__feedback{margin-top:8px;color:#fff}
+.visually-hidden{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}
+
+/* Featured rooms grid */
+.featured{padding:48px 0}
+.featured h2{font-size:22px;margin:0 0 18px}
+.rooms-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+.room-card{background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 6px 18px rgba(16,24,40,0.08);display:flex;flex-direction:column}
+.room-card img{width:100%;height:160px;object-fit:cover;display:block}
+.room-card__body{padding:12px}
+.room-card__title{margin:0 0 8px;font-size:18px}
+.room-card__price{margin:0 0 12px;color:var(--muted)}
+
+/* About */
+.about{padding:24px 0;border-top:1px solid #f1f3f6}
+
+/* Footer */
+.site-footer{background:#0b1020;color:#fff;padding:18px 0 0}
+.footer__inner{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:18px 16px}
+.site-footer a{color:#fff;text-decoration:underline}
+.site-footer__bar{text-align:center;padding:10px 16px;background:rgba(255,255,255,0.04);font-size:14px}
+
+/* Responsive tweaks */
+@media (max-width:720px){
+  .search__row{flex-direction:column;align-items:stretch}
+  .room-card img{height:180px}
+  .footer__inner{flex-direction:column;align-items:flex-start}
+}

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý phòng khách sạn</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/room-types.css">
+    <link rel="stylesheet" href="css/rooms.css">
+    <style>
+        body { background: var(--color-gray-100,#f6f8fc); font-family: var(--font-family-base,'Segoe UI',Tahoma,sans-serif); margin:0;}
+        main { max-width: 880px; margin: 48px auto 40px; background: #fff; border-radius: 18px; box-shadow:0 1px 16px #0001; padding: 30px 42px 36px 42px;}
+        h2 { color: var(--color-primary,#2151a1); font-size: 2rem; margin-bottom:28px;}
+        .room-list-cards { display: flex; flex-wrap: wrap; gap: 26px; margin-top: 18px;}
+        .room-card {
+            flex: 1 1 320px; max-width: 340px; border: 1px solid var(--color-gray-400,#e7e7eb); border-radius: 11px; background: #fcfdff;
+            padding: 24px 28px 18px 28px; display: flex; flex-direction: column; box-shadow: 0 1.5px 12px #0001; min-width: 270px; position: relative; transition: box-shadow .18s;}
+        .room-card:hover { box-shadow: 0 7px 26px #acc6e933; border-color: var(--color-primary-light,#bedcf7);}
+        .room-header { font-size: 1.16em; font-weight: 600; color: var(--color-primary,#17457d); margin-bottom: 10px;}
+        .room-row { margin-bottom: 7px; font-size: 15px; color: var(--color-black,#16223c);}
+        .rc-label { color: #456ea6; font-weight: 500; width:110px;display:inline-block;}
+        .rc-value { color: #2e2e3b; }
+        .rc-price { color: #187700; font-weight: 600;}
+        .room-actions { margin-top: 15px; display: flex; gap:4px; align-items: center;}
+        .room-actions button { background: var(--color-primary,#17396d); color: #fff; border: 0; border-radius: 7px; font-size: 1em; font-weight: 500; padding: 11px 26px; cursor: pointer; box-shadow: 0 2px 7px #1a307711; transition:background .15s;}
+        .room-actions button:hover { background: var(--color-primary-hover,#102a51);}
+        .room-actions button[disabled] { background: #bbb; cursor: not-allowed;}
+        .status-dot { display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:7px;}
+        .st-avail { background: #27c281;}
+        .st-occp { background: #da3540;}
+        .st-clean{ background: #f5a442;}
+        .st-maint{ background: #7c49d5;}
+        .room-status-txt { font-weight: 500; font-size:15px;}
+        @media (max-width: 800px) {
+            main { padding:15px 3vw;}
+            .room-list-cards { flex-direction: column; gap:18px;}
+            .room-card { max-width: 100%; min-width:unset; width:100%;}
+        }
+        @media (max-width:480px){
+            h2 {font-size: 1.1rem;padding-top:20px;}
+            .room-card {padding:15px;}
+            main {margin:0;}
+        }
+    </style>
+</head>
+<body>
+<main>
+    <h2>Danh sách phòng khách sạn</h2>
+    <div class="room-list-cards" id="rooms-list"></div>
+</main>
+<script>
+    // Helper format
+    function formatStatus(status) {
+        switch (status) {
+            case "available":
+                return `<span class="status-dot st-avail"></span><span class="room-status-txt" style="color:#059669">Còn trống</span>`;
+            case "occupied":
+                return `<span class="status-dot st-occp"></span><span class="room-status-txt" style="color:#b91c1c">Đã thuê</span>`;
+            case "cleaning":
+                return `<span class="status-dot st-clean"></span><span class="room-status-txt" style="color:#c2410c">Đang dọn</span>`;
+            case "maintenance":
+                return `<span class="status-dot st-maint"></span><span class="room-status-txt" style="color:#6d28d9">Bảo trì</span>`;
+            default:
+                return status || "-";
+        }
+    }
+    function viMoney(x) {
+        if(!x) return '-';
+        return Number(x).toLocaleString('vi-VN')+' đ';
+    }
+    let roomTypesMap = {};
+    // Lấy loại phòng và phòng song song
+    Promise.all([
+        fetch('/api/room-types').then(res=>res.json()),
+        fetch('/api/rooms').then(res=>res.json())
+    ]).then(([typesRes, roomsRes]) => {
+        let typeList = (typesRes && typesRes.success && Array.isArray(typesRes.data)) ? typesRes.data : [];
+        let roomList = (roomsRes && roomsRes.success && Array.isArray(roomsRes.data)) ? roomsRes.data : [];
+        roomTypesMap = {};
+        typeList.forEach(rt => { roomTypesMap[rt.id] = rt; });
+        renderRooms(roomList);
+    }).catch(()=>{
+        document.getElementById('rooms-list').innerHTML='<div class="room-card">Lỗi tải dữ liệu!</div>';
+    });
+
+    function renderRooms(rooms) {
+        const container = document.getElementById('rooms-list');
+        if(!rooms.length) {
+            container.innerHTML = "<div class='room-card'>Không có phòng nào.</div>";
+            return;
+        }
+        container.innerHTML = rooms.map(room => {
+            const rt = roomTypesMap[room.room_type_id] || {};
+            return `
+        <div class="room-card">
+            <div class="room-header">Phòng ${room.room_number}</div>
+            <div class="room-row"><span class="rc-label">Loại:</span> <span class="rc-value">${rt.name||room.room_type_id||'-'}</span></div>
+            <div class="room-row"><span class="rc-label">Trạng thái:</span> ${formatStatus(room.status)}</div>
+            <div class="room-row"><span class="rc-label">Giá/đêm:</span> <span class="rc-price">${viMoney(rt.pricePerNight)}</span></div>
+            <div class="room-row"><span class="rc-label">Sức chứa:</span> <span>${rt.capacity||'-'}</span></div>
+            <div class="room-row"><span class="rc-label">Tiện nghi:</span> <span>${rt.amenities ? rt.amenities : '-'}</span></div>
+            <div class="room-actions">
+                <button onclick="window.location.href='room-booking.html?id=${room.id}'" ${(room.status!=='available')?'disabled style="background:#bbb;cursor:not-allowed;"':''}>
+                  Booking
+                </button>
+            </div>
+        </div>
+      `;
+        }).join('');
+    }
+</script>
+</body>
+</html>
