@@ -5,6 +5,7 @@ namespace App\Infrastructure\Persistence\Repositories;
 use App\Core\Database\Database;
 use App\Domain\Entities\RoomImage;
 use App\Domain\Exceptions\ImageUpdateDisplayOrderException;
+use App\Domain\Exceptions\ImageUploadException;
 use App\Domain\Exceptions\RoomNotFoundException;
 use App\Domain\Interfaces\Repositories\RoomImageRepositoryInterface;
 
@@ -39,7 +40,7 @@ class RoomImageRepository implements RoomImageRepositoryInterface
             $this->db->query($sql, $params);
             return (int)$this->db->lastInsertId();
         } catch (\Exception $e) {
-            return null;
+            throw new ImageUploadException($e->getMessage());
         }
     }
 
