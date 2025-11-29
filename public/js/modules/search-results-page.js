@@ -304,7 +304,7 @@ class SearchResultsManager {
                                 </div>
                                 <div class="hotel-booking">
                                     <a
-                                        href="/room-booking.html?id=${roomId}"
+                                        href="/listing-detail.html?id=${roomId}"
                                         rel="noopener noreferrer"
                                         type="button"
                                     >Đặt ngay <span><svg

@@ -31,7 +31,6 @@ class ImageUploadValidator
             return false;
         }
 
-        // Check if it's a valid uploaded file
         if (!$file->isValid()) {
             $this->errors[] = 'Invalid file upload';
             return false;

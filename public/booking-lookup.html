@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tra Cứu Đặt Phòng</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        /* === CẤU HÌNH CƠ BẢN === */
+        :root {
+            --primary-color: #4e54c8;
+            --secondary-color: #8f94fb;
+            --text-dark: #2d3436;
+            --text-light: #636e72;
+            --bg-color: #f0f2f5;
+            --white: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 60px;
+            color: var(--text-dark);
+        }
+
+        .main-wrapper {
+            width: 100%;
+            max-width: 850px;
+            padding: 0 20px;
+            margin-bottom: 50px;
+        }
+
+        /* LOGO & TITLE */
+        .brand-logo {
+            text-align: center;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+        }
+
+        .main-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin: 0 0 10px;
+            font-weight: 700;
+            background: -webkit-linear-gradient(45deg, var(--primary-color), #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sub-title {
+            text-align: center;
+            color: var(--text-light);
+            margin-bottom: 40px;
+            font-weight: 300;
+        }
+
+        /* SEARCH BOX */
+        .search-container {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .search-container::before {
+            content: '';
+            position: absolute;
+            top: -50px; left: -50px;
+            width: 150px; height: 150px;
+            background: var(--secondary-color);
+            opacity: 0.1;
+            border-radius: 50%;
+        }
+
+        .search-input-group {
+            display: flex;
+            gap: 15px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .input-wrapper { flex: 1; position: relative; }
+
+        .icon-input {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #b2bec3;
+            font-size: 1.2rem;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 18px 20px 18px 55px;
+            border: 2px solid #dfe6e9;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            background: #fcfcfc;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary-color);
+            background: #fff;
+            box-shadow: 0 0 0 5px rgba(78, 84, 200, 0.1);
+            outline: none;
+        }
+
+        .btn-gradient {
+            padding: 0 35px;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            white-space: nowrap;
+            box-shadow: 0 10px 20px rgba(78, 84, 200, 0.3);
+        }
+
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px rgba(78, 84, 200, 0.4);
+        }
+
+        .suggestions {
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            text-align: center;
+        }
+
+        .tag {
+            background: #f1f2f6;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin: 0 3px;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--primary-color);
+            transition: 0.2s;
+        }
+        .tag:hover { background: #dfe4ea; }
+
+        /* NOTIFICATION */
+        .notification {
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            text-align: center;
+            animation: slideDown 0.4s ease;
+        }
+        .error {
+            background-color: #fff5f5;
+            color: #ff7675;
+            border: 1px solid #ffeaa7;
+        }
+
+        /* RESULT CARD */
+        .ticket-card {
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.05);
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease;
+            position: relative;
+        }
+
+        .ticket-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary-color), #ff6b6b);
+        }
+
+        .ticket-header {
+            padding: 25px 40px;
+            border-bottom: 1px dashed #dfe6e9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fdfdfd;
+        }
+
+        .code-label { font-size: 0.85rem; text-transform: uppercase; color: var(--text-light); letter-spacing: 1px; }
+        .code-value { font-size: 1.5rem; font-weight: 800; color: var(--text-dark); }
+
+        .ticket-body {
+            padding: 40px;
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 50px;
+        }
+
+        .info-section h3 {
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #f5f6fa;
+            padding-bottom: 8px;
+        }
+
+        .label { color: var(--text-light); font-size: 0.95rem; }
+        .value { font-weight: 600; color: var(--text-dark); text-align: right; }
+
+        .total-box {
+            background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+            padding: 25px;
+            border-radius: 15px;
+            color: white;
+            text-align: center;
+            margin-top: 20px;
+            box-shadow: 0 10px 20px rgba(108, 92, 231, 0.3);
+        }
+        .total-label { opacity: 0.9; font-size: 0.9rem; margin-bottom: 5px; }
+        .total-value { font-size: 2rem; font-weight: 700; }
+
+        /* BADGES */
+        .badge {
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .status-pending { background: rgba(253, 203, 110, 0.2); color: #e17055; }
+        .status-confirmed { background: rgba(0, 184, 148, 0.15); color: #00b894; }
+        .status-checked-in { background: rgba(9, 132, 227, 0.15); color: #0984e3; }
+        .status-checked-out { background: rgba(99, 110, 114, 0.15); color: #636e72; }
+        .status-cancelled { background: rgba(255, 118, 117, 0.15); color: #d63031; }
+
+        /* ANIMATION */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .search-input-group { flex-direction: column; }
+            .search-input-group button { width: 100%; padding: 15px; }
+            .ticket-body { grid-template-columns: 1fr; gap: 30px; padding: 25px; }
+            .ticket-header { flex-direction: column; text-align: center; gap: 15px; }
+            .main-title { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-wrapper">
+        <div class="search-container">
+            <div class="brand-logo"><i class="fa-solid fa-hotel"></i></div>
+            <h1 class="main-title">Tra Cứu Đơn Đặt Phòng</h1>
+            <p class="sub-title">Nhập mã xác nhận để kiểm tra trạng thái đơn hàng của bạn</p>
+            
+            <div class="search-input-group">
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-ticket icon-input"></i>
+                    <input type="text" id="inputCode" placeholder="Ví dụ: BK-123..." autocomplete="off">
+                </div>
+                <button id="btnSearch" class="btn-gradient">Tra cứu ngay <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+            
+            <div class="suggestions">
+                Gợi ý: <span class="tag" onclick="fillCode('BK-123')">BK-123</span> <span class="tag" onclick="fillCode('BK-456')">BK-456</span> <span class="tag" onclick="fillCode('BK-999')">BK-999</span>
+            </div>
+        </div>
+
+        <div id="errorBox" class="notification error" style="display: none;"></div>
+
+        <div id="resultArea" class="ticket-card" style="display: none;"></div>
+    </div>
+
+    <script>
+        const API_BASE_URL = '/api';
+
+        const statusConfig = {
+            'pending':      { label: 'Chờ xác nhận', class: 'status-pending', icon: 'fa-clock' },
+            'confirmed':    { label: 'Đã xác nhận',  class: 'status-confirmed', icon: 'fa-check-circle' },
+            'checked_in':   { label: 'Đã Check-in',  class: 'status-checked-in', icon: 'fa-luggage-cart' },
+            'checked_out':  { label: 'Đã Check-out', class: 'status-checked-out', icon: 'fa-door-open' },
+            'cancelled':    { label: 'Đã hủy',       class: 'status-cancelled', icon: 'fa-times-circle' }
+        };
+
+        const formatMoney = (amount) => {
+            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+        };
+
+        const formatDate = (dateString) => {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const btnSearch = document.getElementById('btnSearch');
+            const inputCode = document.getElementById('inputCode');
+            const errorBox = document.getElementById('errorBox');
+            const resultArea = document.getElementById('resultArea');
+
+            const handleSearch = async () => {
+                const code = inputCode.value.trim().toUpperCase();
+                errorBox.style.display = 'none';
+                resultArea.style.display = 'none';
+
+                if (!code) {
+                    errorBox.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Vui lòng nhập mã đặt phòng!`;
+                    errorBox.style.display = 'block';
+                    return;
+                }
+
+                btnSearch.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
+                btnSearch.disabled = true;
+
+                try {
+                    // Gọi API mới: GET /api/bookings/search/code/{code}
+                    const response = await fetch(`${API_BASE_URL}/bookings/search/code/${encodeURIComponent(code)}`);
+                    const result = await response.json();
+
+                    if (result.success && result.data) {
+                        const booking = result.data;
+                        const status = statusConfig[booking.status] || statusConfig['pending'];
+
+                        resultArea.innerHTML = `
+                            <div class="ticket-header">
+                                <div>
+                                    <div class="code-label">Mã xác nhận</div>
+                                    <div class="code-value">#${booking.booking_code}</div>
+                                </div>
+                                <div class="badge ${status.class}">
+                                    <i class="fa-solid ${status.icon}"></i> ${status.label}
+                                </div>
+                            </div>
+                            <div class="ticket-body">
+                                <div class="info-section">
+                                    <h3><i class="fa-solid fa-user-shield"></i> Thông tin khách hàng</h3>
+                                    <div class="info-row">
+                                        <span class="label">Họ tên khách</span>
+                                        <span class="value">${booking.customer_name}</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="label">Email</span>
+                                        <span class="value">${booking.customer_email}</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="label">Số điện thoại</span>
+                                        <span class="value">${booking.customer_phone}</span>
+                                    </div>
+                                    <h3 style="margin-top: 30px;"><i class="fa-solid fa-bed"></i> Chi tiết phòng</h3>
+                                    <div class="info-row">
+                                        <span class="label">Mã phòng</span>
+                                        <span class="value" style="color: #4e54c8;">Phòng #${booking.room_id}</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="label">Số khách</span>
+                                        <span class="value">${booking.num_guests} người</span>
+                                    </div>
+                                    ${booking.special_requests ? `
+                                    <div class="info-row">
+                                        <span class="label">Yêu cầu đặc biệt</span>
+                                        <span class="value" style="font-style: italic;">${booking.special_requests}</span>
+                                    </div>
+                                    ` : ''}
+                                </div>
+                                <div class="info-section">
+                                    <h3><i class="fa-solid fa-calendar-check"></i> Lịch trình</h3>
+                                    <div class="info-row">
+                                        <span class="label">Ngày nhận phòng</span>
+                                        <span class="value">${formatDate(booking.check_in_date)}</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="label">Ngày trả phòng</span>
+                                        <span class="value">${formatDate(booking.check_out_date)}</span>
+                                    </div>
+                                    <div class="total-box">
+                                        <div class="total-label">TỔNG THANH TOÁN</div>
+                                        <div class="total-value">${formatMoney(booking.total_price)}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        resultArea.style.display = 'block';
+                    } else {
+                        errorBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Không tìm thấy đơn đặt phòng <b>${code}</b>.`;
+                        errorBox.style.display = 'block';
+                    }
+                } catch (error) {
+                    console.error('Error searching booking:', error);
+                    errorBox.innerHTML = `<i class="fa-solid fa-exclamation-triangle"></i> Có lỗi xảy ra khi tra cứu. Vui lòng thử lại!`;
+                    errorBox.style.display = 'block';
+                } finally {
+                    btnSearch.innerHTML = 'Tra cứu ngay <i class="fa-solid fa-arrow-right"></i>';
+                    btnSearch.disabled = false;
+                }
+            };
+
+            btnSearch.addEventListener('click', handleSearch);
+            inputCode.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleSearch();
+            });
+        });
+
+        function fillCode(code) {
+            document.getElementById('inputCode').value = code;
+            document.getElementById('inputCode').focus();
+        }
+    </script>
+</body>
+</html>

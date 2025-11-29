@@ -31,7 +31,7 @@ CREATE TABLE room_images (
                              id INT PRIMARY KEY AUTO_INCREMENT,
                              room_id INT NOT NULL,
                              image_url VARCHAR(500) NOT NULL,
-                             storage_type ENUM('local', 'cloud') DEFAULT 'local',
+                             storage_type ENUM('local', 'cloudinary') DEFAULT 'local',
                              cloudinary_public_id VARCHAR(255),
                              file_size INT,
                              mime_type VARCHAR(100),
