@@ -17,6 +17,7 @@ interface BookingServiceInterface
     public function FilterBookingByStatus(string $status):array;
     public function GetAllBooking():array;
     public function GetBookingById(int $id) :Booking;
+    public function GetBookingByCode(string $code): ?array;
     public function UpdateBooking(int $id, BookingDTO $bookingDTO) :bool;
     public function CheckRoomAvailable(int $id, string $checkInDate, string $checkOutDate):bool;
 

@@ -187,13 +187,37 @@ public function update(int $id): void
 
             $this->success(
                 array_map(fn($rt) => $rt->toArray(), $bookings),
-                'booking filtered by checkin'
+                'Bookings filtered by code'
             );
         } catch (BookingNotFoundException $e) {
             $this->notFound($e->getMessage());
         }
         catch (\Exception $e) {
             $this->serverError('Failed to filter booking: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * GET /api/bookings/search/code/{code}
+     * Tìm kiếm chính xác một booking theo code
+     * Endpoint mới - trả về một booking hoặc not found
+     */
+    public function findByCode(string $code): void
+    {
+        try {
+            $booking = $this->bookingService->GetBookingByCode($code);
+
+            if (!$booking) {
+                $this->notFound("Booking with code '{$code}' not found");
+                return;
+            }
+
+            $this->success(
+                $booking,
+                'Booking found successfully'
+            );
+        } catch (\Exception $e) {
+            $this->serverError('Failed to find booking: ' . $e->getMessage());
         }
     }
 
