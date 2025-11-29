@@ -3,10 +3,10 @@
 return [
     'driver' => 'mysql', // mysql, pgsql, sqlite
     'host' =>'localhost',
-    'port' => '3306',
+    'port' => '3307',
     'database' => 'hotel_booking_system',
-    'username' => 'root',
-    'password' => 'password',
+    'username' => 'an',
+    'password' => 'napui@123',
     'charset' => 'utf8mb4',
     'collation' => 'utf8mb4_unicode_ci',
     'prefix' => '',
