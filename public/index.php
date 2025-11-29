@@ -59,18 +59,43 @@ $router->loadRoutes($routesConfig['routes']);
 try {
     $method = $_SERVER['REQUEST_METHOD'];
     $uri = $_SERVER['REQUEST_URI'];
+    
+    // Check if this is an API request
+    $isApiRequest = strpos($uri, '/api/') === 0 || strpos($uri, '/api/') !== false;
 
     $router->dispatch($method, $uri);
+    
 } catch (Exception $e) {
+    // Log error
+    error_log("Application Error: " . $e->getMessage());
+    error_log("Stack trace: " . $e->getTraceAsString());
+    
     // Handle errors
     http_response_code(500);
-
-    if ($appConfig['debug']) {
-        echo "<h1>Error</h1>";
-        echo "<p>" . $e->getMessage() . "</p>";
-        echo "<pre>" . $e->getTraceAsString() . "</pre>";
+    
+    // Check if this is an API request
+    $uri = $_SERVER['REQUEST_URI'] ?? '';
+    $isApiRequest = strpos($uri, '/api/') !== false;
+    
+    if ($isApiRequest) {
+        // Return JSON for API requests
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => false,
+            'message' => 'Internal server error',
+            'error' => $appConfig['debug'] ? $e->getMessage() : null,
+            'trace' => $appConfig['debug'] ? $e->getTraceAsString() : null,
+            'timestamp' => date('Y-m-d H:i:s')
+        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     } else {
-        echo "<h1>Something went wrong</h1>";
-        echo "<p>Please try again later.</p>";
+        // Return HTML for web requests
+        if ($appConfig['debug']) {
+            echo "<h1>Error</h1>";
+            echo "<p>" . htmlspecialchars($e->getMessage()) . "</p>";
+            echo "<pre>" . htmlspecialchars($e->getTraceAsString()) . "</pre>";
+        } else {
+            echo "<h1>Something went wrong</h1>";
+            echo "<p>Please try again later.</p>";
+        }
     }
 }

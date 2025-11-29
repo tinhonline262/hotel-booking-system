@@ -17,28 +17,30 @@ class ApiService {
    * @param {object} options - jQuery AJAX options
    * @returns {Promise<object>} - Response data
    */
-  request(endpoint, options = {}) {
+  async request(endpoint, options = {}) {
     const url = `${this.baseUrl}${endpoint}`;
 
-    const defaultOptions = {
-      url: url,
-      contentType: "application/json",
-      dataType: "json",
-      ...options,
-    };
-
-    return $.ajax(defaultOptions).fail((jqXHR, textStatus, errorThrown) => {
-      console.error("API Error:", {
-        status: jqXHR.status,
-        statusText: textStatus,
-        error: errorThrown,
-        response: jqXHR.responseJSON,
+    return new Promise((resolve, reject) => {
+      $.ajax({
+        url: url,
+        method: options.method || 'GET',
+        data: options.data || options.body,  // ✅ Dùng trực tiếp
+        contentType: options.contentType || 'application/json',
+        dataType: 'json',
+        processData: options.processData !== false,  // ✅ Thêm này
+        statusCode: {
+          422: function (xhr) {
+            resolve(xhr.responseJSON);
+          }
+        },
+        success: function (data) {
+          resolve(data);
+        },
+        error: function (xhr) {
+          const error = xhr.responseJSON || { message: 'Request failed' };
+          reject(new Error(error.message));
+        }
       });
-
-      // Throw error with proper message
-      const errorMsg =
-        jqXHR.responseJSON?.message || errorThrown || "API request failed";
-      throw new Error(errorMsg);
     });
   }
 
@@ -64,7 +66,8 @@ class ApiService {
   post(endpoint, data) {
     return this.request(endpoint, {
       method: "POST",
-      data: JSON.stringify(data),
+      data: JSON.stringify(data),  // Stringify ở đây
+      processData: false  // ✅ Quan trọng: Không để jQuery xử lý data
     });
   }
 

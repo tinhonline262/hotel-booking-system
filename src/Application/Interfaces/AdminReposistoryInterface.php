@@ -1,57 +1,46 @@
 <?php
 
-namespace App\Application\Interfaces;
+namespace App\Domain\Interfaces\Repositories;
 
-use App\Application\DTOs\AdminDTO;
+use App\Domain\Entities\Admin;
 
 /**
  * Admin Repository Interface
- * 
- * Defines contract for Admin data access operations
  */
 interface AdminRepositoryInterface
 {
     /**
-     * Find admin by username
-     * 
-     * @param string $username
-     * @return AdminDTO|null
+     * Find admin by ID
      */
-    public function findByUsername(string $username): ?AdminDTO;
+    public function findById(int $id): ?Admin;
 
     /**
-     * Find admin by ID
-     * 
-     * @param int $id
-     * @return AdminDTO|null
+     * Find admin by email
      */
-    public function findById(int $id): ?AdminDTO;
+    public function findByEmail(string $email): ?Admin;
+
+    /**
+     * Find admin by username
+     */
+    public function findByUsername(string $username): ?Admin;
+
+    /**
+     * Get all admins
+     */
+    public function findAll(): array;
 
     /**
      * Create new admin
-     * 
-     * @param string $username
-     * @param string $password (will be hashed)
-     * @param string $fullName
-     * @param string $email
-     * @return AdminDTO
      */
-    public function create(string $username, string $password, string $fullName, string $email): AdminDTO;
+    public function create(Admin $admin): bool;
 
     /**
      * Update admin
-     * 
-     * @param int $id
-     * @param array $data
-     * @return bool
      */
-    public function update(int $id, array $data): bool;
+    public function update(Admin $admin): bool;
 
     /**
      * Delete admin
-     * 
-     * @param int $id
-     * @return bool
      */
     public function delete(int $id): bool;
 }

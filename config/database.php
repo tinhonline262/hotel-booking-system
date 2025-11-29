@@ -1,12 +1,13 @@
 <?php
 
 return [
+
     'driver' => 'mysql', // mysql, pgsql, sqlite
     'host' =>'localhost',
-    'port' => '3307',
+    'port' => '3306',
     'database' => 'hotel_booking_system',
-    'username' => 'an',
-    'password' => 'napui@123',
+    'username' => 'root',
+    'password' => '',
     'charset' => 'utf8mb4',
     'collation' => 'utf8mb4_unicode_ci',
     'prefix' => '',
@@ -16,4 +17,3 @@ return [
         PDO::ATTR_EMULATE_PREPARES => false,
     ],
 ];
-
