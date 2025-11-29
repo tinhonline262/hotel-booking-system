@@ -1,8 +1,8 @@
 <?php
-
 namespace App\Domain\Interfaces\Repositories;
 
 use App\Domain\Entities\Booking;
+
 interface BookingRepositoryInterface
 {
     public function save(Booking $booking): bool;
@@ -21,7 +21,7 @@ interface BookingRepositoryInterface
 
     public function findByStatus(string $status): array;
 
-    public function findByCode(string $code): array;
+    public function findByCode(string $code): ?Booking;
 
     public function exists(int $id): bool;
 

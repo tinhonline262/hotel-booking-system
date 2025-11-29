@@ -269,6 +269,13 @@ class UseCaseProvider
             );
         });
 
+
+        $container->bind(FindBookingByCodeUseCase::class, function (Container $c) {
+            return new FindBookingByCodeUseCase(
+                $c->make(BookingRepositoryInterface::class),
+                $c->make(\App\Application\Interfaces\ICacheService::class)
+            );
+        });
     }
 
 

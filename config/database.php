@@ -1,12 +1,13 @@
 <?php
 
 return [
-    'driver' => 'mysql',
-    'host' => 'localhost', // hoặc '127.0.0.1'
+
+    'driver' => 'mysql', // mysql, pgsql, sqlite
+    'host' =>'localhost',
     'port' => '3306',
     'database' => 'hotel_booking_system',
     'username' => 'root',
-    'password' => '', // XAMPP mặc định không có password, hoặc điền password của bạn
+    'password' => 'password',
     'charset' => 'utf8mb4',
     'collation' => 'utf8mb4_unicode_ci',
     'prefix' => '',

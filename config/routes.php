@@ -34,6 +34,7 @@ return [
         ['PUT', '/api/rooms/{id}', 'Api\RoomController@update'],
         ['DELETE', '/api/rooms/{id}', 'Api\RoomController@delete'],
 
+
         // Search API - Available rooms only
         ['GET', '/api/search/rooms', 'Api\SearchController@searchRooms'],
         ['GET', '/api/search/rooms/available', 'Api\SearchController@getAvailableRooms'],
@@ -48,6 +49,7 @@ return [
         ['GET', '/api/bookings/filter/checkin', 'Api\CRUDbookingController@filterByCheckIn'],
         ['GET', '/api/bookings/filter/checkout', 'Api\CRUDbookingController@filterByCheckOut'],
         ['GET', '/api/bookings/filter/code', 'Api\CRUDbookingController@filterByCode'],
+        ['GET', '/api/bookings/search/code/{code}', 'Api\CRUDbookingController@findByCode'],
         ['GET', '/api/bookings/filter/email', 'Api\CRUDbookingController@filterByEmail'],
         ['GET', '/api/bookings/filter/name', 'Api\CRUDbookingController@filterByName'],
         ['GET', '/api/bookings/filter/phone', 'Api\CRUDbookingController@filterByPhone'],
