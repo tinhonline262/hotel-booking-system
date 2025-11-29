@@ -168,7 +168,6 @@ class ServiceProvider
                 $c->make(FilterBookingByName::class),
                 $c->make(FilterBookingByStatus::class),
                 $c->make(CheckRoomAvailableUseCase::class),
-                $c->make(FilterBookingByStatus::class),
                 $c->make(FindBookingByCodeUseCase::class)
             );
         });
