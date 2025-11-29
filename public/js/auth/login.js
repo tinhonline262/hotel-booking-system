@@ -1,8 +1,7 @@
 /**
  * Admin Login Handler - Pure JS with ApiService
- * File: public/assets/js/auth/login.js
+ * File: public/js/auth/login.js
  */
-
 
 class AdminLogin {
   constructor() {
@@ -11,25 +10,18 @@ class AdminLogin {
   }
 
   init() {
-    // Check if already logged in
     this.checkAuth();
 
-    // Setup form handler
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
       loginForm.addEventListener('submit', (e) => this.handleLogin(e));
     }
   }
 
-  /**
-   * Check authentication status
-   */
   async checkAuth() {
     try {
       const response = await this.api.get('/auth/check');
-
       if (response.success && response.data.authenticated) {
-        // Already logged in, redirect to dashboard
         window.location.href = 'dashboard.html';
       }
     } catch (error) {
@@ -37,45 +29,24 @@ class AdminLogin {
     }
   }
 
-  /**
-   * Handle login form submission
-   */
   async handleLogin(e) {
     e.preventDefault();
 
     const submitBtn = document.getElementById('submitBtn');
-    const errorDiv = document.getElementById('errorMessage');
-
-    // ✅ Đọc giá trị
     const identifier = document.getElementById('identifier').value.trim();
     const password = document.getElementById('password').value;
 
-    // ✅ Debug đúng
-    console.log('=== DEBUG LOGIN ===');
-    console.log('Identifier value:', identifier);
-    console.log('Password value:', password);
-    console.log('Identifier length:', identifier.length);
-    console.log('Password length:', password.length);
-
-    // ✅ Tạo formData với key "username" để gửi đi
     const formData = {
-      username: identifier,  // Backend cần key "username"
+      username: identifier,
       password: password
     };
 
-    console.log('Form data to send:', formData);
-
-    // Clear previous errors
     this.clearErrors();
-
-    // Disable submit button
     submitBtn.disabled = true;
     submitBtn.textContent = 'Logging in...';
 
     try {
-      console.log('Sending request...');
       const response = await this.api.post('/auth/login', formData);
-      console.log('Response:', response);
 
       if (response.success) {
         this.showSuccess('Login successful! Redirecting...');
@@ -84,24 +55,32 @@ class AdminLogin {
           window.location.href = 'dashboard.html';
         }, 1000);
       } else {
-        // ✅ Xử lý response.success = false
         this.showError(response.message || 'Invalid credentials');
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Login';
+        submitBtn.textContent = 'Sign In';
       }
     } catch (error) {
       console.error('Login error:', error);
-      const errorMsg = error.message || 'Login failed. Please try again.';
-      this.showError(errorMsg);
-
+      this.showError(error.message || 'Login failed. Please try again.');
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Login';
+      submitBtn.textContent = 'Sign In';
     }
   }
 
-  /**
-   * Clear all error messages
-   */
+  async logout() {
+    try {
+      const response = await this.api.post('/auth/logout', {});
+
+      if (response.success) {
+        sessionStorage.removeItem('admin');
+        window.location.href = 'login.html';
+      }
+    } catch (error) {
+      console.error('Logout failed:', error);
+      sessionStorage.removeItem('admin');
+      window.location.href = 'login.html';
+    }
+  }
   clearErrors() {
     const errorDiv = document.getElementById('errorMessage');
     if (errorDiv) {
@@ -110,9 +89,6 @@ class AdminLogin {
     }
   }
 
-  /**
-   * Show error message
-   */
   showError(message) {
     const errorDiv = document.getElementById('errorMessage');
     if (errorDiv) {
@@ -122,9 +98,6 @@ class AdminLogin {
     }
   }
 
-  /**
-   * Show success message
-   */
   showSuccess(message) {
     const errorDiv = document.getElementById('errorMessage');
     if (errorDiv) {
@@ -135,6 +108,16 @@ class AdminLogin {
   }
 }
 
+// ✅ Tạo instance global để dùng logout ở nơi khác
+let adminLogin;
+
 document.addEventListener('DOMContentLoaded', () => {
-  new AdminLogin();
+  adminLogin = new AdminLogin();
 });
+
+// ✅ Function logout global để gọi từ button
+function logout() {
+  if (adminLogin) {
+    adminLogin.logout();
+  }
+}
