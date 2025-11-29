@@ -52,6 +52,10 @@ use App\Domain\Interfaces\Repositories\RoomRepositoryInterface;
 use App\Domain\Interfaces\Repositories\BookingRepositoryInterface;
 use App\Domain\Interfaces\Services\StorageConfigInterface;
 use App\Infrastructure\Services\ImageUploadFacade;
+use App\Application\UseCases\LoginUseCase;
+use App\Application\UseCases\LogoutUseCase;
+use App\Application\Validators\LoginValidator;
+use App\Domain\Interfaces\Repositories\AdminRepositoryInterface;
 
 /**
  * UseCase Provider - Register all use cases

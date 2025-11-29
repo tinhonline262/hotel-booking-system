@@ -6,6 +6,11 @@ return [
         // REST API ROUTES - JSON Responses
         // ============================================
 
+        // Auth API
+        ['POST', '/api/auth/login', 'Api\AuthController@login'],
+        ['POST', '/api/auth/logout', 'Api\AuthController@logout'],
+        ['GET', '/api/auth/check', 'Api\AuthController@check'],
+
         // Dashboard API
         ['GET', '/api/dashboard/stats', 'Api\DashboardController@getStats'],
 
@@ -38,6 +43,7 @@ return [
         // Booking API
         ['POST', '/api/booking/rooms/{id}', 'Api\BookingController@booking'],
         ['GET', '/api/booking/rooms/{id}', 'Api\BookingController@check'],
+        
         //CRUD Booking API
         ['GET', '/api/bookings', 'Api\CRUDbookingController@index'],
         ['GET', '/api/bookings/filter/checkin', 'Api\CRUDbookingController@filterByCheckIn'],
@@ -51,8 +57,10 @@ return [
         ['GET', '/api/bookings/{id}', 'Api\CRUDbookingController@show'],
         ['PUT', '/api/bookings/{id}', 'Api\CRUDbookingController@update'],
         ['DELETE', '/api/bookings/{id}', 'Api\CRUDbookingController@delete'],
+        
         //RoomDetailController
         ['GET', '/api/room-details/{id}', 'Api\RoomDetailController@getDetailRoom'],
+        
         // Room Images API
         ['POST', '/api/rooms/{id}/images', 'Api\RoomImageController@upload'],
         ['PUT', '/api/rooms/{roomId}/images/{imageId}/primary', 'Api\RoomImageController@setPrimary'],

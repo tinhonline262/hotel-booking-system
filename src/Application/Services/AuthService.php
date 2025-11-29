@@ -2,127 +2,102 @@
 
 namespace App\Application\Services;
 
-use App\Application\DTOs\AdminDTO;
-use App\Application\Interfaces\AdminRepositoryInterface;
-use App\Application\Interfaces\AuthServiceInterface;
-use App\Infrastructure\Session\SessionManager;
-use Exception;
+use App\Application\DTOs\LoginDTO;
+use App\Application\UseCases\LoginUseCase;
+use App\Application\UseCases\LogoutUseCase;
+use App\Domain\Entities\Admin;
 
 /**
- * Authentication Service
- * 
- * Handles admin authentication, session management, and password verification
+ * Auth Service - Refactored để tránh code lặp
  */
-class AuthService implements AuthServiceInterface
+class AuthService
 {
-    private AdminRepositoryInterface $adminRepository;
+    private LoginUseCase $loginUseCase;
+    private LogoutUseCase $logoutUseCase;
 
-    /**
-     * Constructor
-     * 
-     * @param AdminRepositoryInterface $adminRepository
-     */
-    public function __construct(AdminRepositoryInterface $adminRepository)
-    {
-        $this->adminRepository = $adminRepository;
+    public function __construct(
+        LoginUseCase $loginUseCase,
+        LogoutUseCase $logoutUseCase
+    ) {
+        $this->loginUseCase = $loginUseCase;
+        $this->logoutUseCase = $logoutUseCase;
     }
 
     /**
-     * Login admin with username and password
-     * 
-     * @param string $username
-     * @param string $password
-     * @return AdminDTO
-     * @throws Exception
+     * Login admin and create session
      */
-    public function login(string $username, string $password): AdminDTO
+    public function login(array $data): array
     {
-        try {
-            // Find admin by username
-            $admin = $this->adminRepository->findByUsername($username);
+        $dto = LoginDTO::fromArray($data);
+        $result = $this->loginUseCase->execute($dto);
 
-            if (!$admin) {
-                throw new Exception('Username or password is incorrect.');
-            }
-
-            // Verify password
-            if (!$this->verifyPassword($password, $admin->password)) {
-                throw new Exception('Username or password is incorrect.');
-            }
-
-            // Set admin session
-            SessionManager::setAdminSession($admin->id, $admin->toSessionArray());
-
-            // Return admin without password
-            $admin->password = null;
-
-            return $admin;
-        } catch (Exception $e) {
-            throw $e;
+        if ($result['success'] && $result['admin'] instanceof Admin) {
+            $this->createSession($result['admin']);
         }
+
+        return $result;
     }
 
     /**
-     * Logout current admin
+     * Logout admin and destroy session
      */
-    public function logout(): void
+    public function logout(): array
     {
-        SessionManager::destroy();
+        return $this->logoutUseCase->execute();
     }
 
     /**
-     * Check if admin is logged in
-     * 
-     * @return bool
+     * Check if admin is authenticated
      */
-    public function isLogged(): bool
+    public function isAuthenticated(): bool
     {
-        return SessionManager::isLogged();
+        $this->ensureSession();
+        return isset($_SESSION['admin_id']) && !empty($_SESSION['admin_id']);
     }
 
     /**
-     * Get current logged in admin
-     * 
-     * @return AdminDTO|null
+     * Get current authenticated admin data
      */
-    public function getCurrentAdmin(): ?AdminDTO
+    public function getCurrentAdmin(): ?array
     {
-        $adminData = SessionManager::getAdminSession();
-
-        if (!$adminData) {
+        if (!$this->isAuthenticated()) {
             return null;
         }
 
-        try {
-            $admin = $this->adminRepository->findById($adminData['id']);
-            if ($admin) {
-                $admin->password = null; // Never return password
-            }
-            return $admin;
-        } catch (Exception $e) {
-            return null;
+        return [
+            'admin_id' => $_SESSION['admin_id'] ?? null,
+            'username' => $_SESSION['username'] ?? null,
+            'email' => $_SESSION['email'] ?? null,
+            'full_name' => $_SESSION['full_name'] ?? null,
+        ];
+    }
+
+    /**
+     * REFACTOR: Đảm bảo session đã khởi động
+     * Thay thế code lặp lại 3 lần
+     */
+    private function ensureSession(): void
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
         }
     }
 
     /**
-     * Refresh admin session (update last activity)
+     * Create admin session
      */
-    public function refreshSession(): void
+    private function createSession(Admin $admin): void
     {
-        if ($this->isLogged()) {
-            SessionManager::init(); // This updates last_activity
-        }
-    }
+        $this->ensureSession();
 
-    /**
-     * Verify password
-     * 
-     * @param string $password
-     * @param string $hash
-     * @return bool
-     */
-    public function verifyPassword(string $password, string $hash): bool
-    {
-        return password_verify($password, $hash);
+        // Regenerate session ID to prevent session fixation
+        session_regenerate_id(true);
+
+        // Store admin data in session
+        $_SESSION['admin_id'] = $admin->getId();
+        $_SESSION['username'] = $admin->getUsername();
+        $_SESSION['email'] = $admin->getEmail();
+        $_SESSION['full_name'] = $admin->getFullName();
+        $_SESSION['logged_in_at'] = time();
     }
 }
