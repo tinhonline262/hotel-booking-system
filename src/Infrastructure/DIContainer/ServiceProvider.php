@@ -4,7 +4,11 @@ namespace App\Infrastructure\DIContainer;
 
 use App\Application\Interfaces\RoomImageServiceInterface;
 use App\Application\Interfaces\RoomTypeServiceInterface;
+use App\Application\Services\AuthService;
 use App\Application\Services\BookingService;
+use App\Application\Services\RoomImageService;
+use App\Application\Services\RoomTypeService;
+use App\Application\Services\RoomService;
 use App\Application\UseCases\CheckRoomAvailableUseCase;
 use App\Application\UseCases\CreateBookingUseCase;
 use App\Application\UseCases\DeleteBookingUseCase;
@@ -20,11 +24,10 @@ use App\Application\UseCases\FilterBookingByStatus;
 use App\Application\UseCases\GetAllBookingUseCase;
 use App\Application\UseCases\GetBookingUseCase;
 use App\Application\UseCases\UpdateBookingUseCase;
+use App\Application\UseCases\LoginUseCase;
+use App\Application\UseCases\LogoutUseCase;
 use App\Domain\Interfaces\Repositories\BookingRepositoryInterface;
 use App\Domain\Interfaces\Repositories\RoomRepositoryInterface;
-use App\Application\Services\RoomImageService;
-use App\Application\Services\RoomTypeService;
-use App\Application\Services\RoomService;
 use App\Application\UseCases\CreateRoomTypeUseCase;
 use App\Application\UseCases\DeleteRoomImageUseCase;
 use App\Application\UseCases\DeleteRoomTypeUseCase;
@@ -72,10 +75,14 @@ class ServiceProvider
         // RoomImage Service
         self::registerRoomImageService($container);
 
-        // Add more services here
-        // self::registerUserService($container);
-        // self::registerBookingService($container);
+        // Room Service
         self::registerRoomService($container);
+
+        // Booking Service
+        self::registerBookingService($container);
+
+        // Auth Service
+        self::registerAuthService($container);
     }
 
     private static function registerInfrastructureServices(Container $container): void
@@ -114,7 +121,8 @@ class ServiceProvider
         });
     }
 
-    private static function registerRoomService(Container $container): void{
+    private static function registerRoomService(Container $container): void
+    {
         $container->singleton(RoomService::class, function (Container $c) {
             return new RoomService(
                 $c->make(CreateRoomUseCase::class),
@@ -129,13 +137,14 @@ class ServiceProvider
                 $c->make(DetailUseCase::class)
             );
         });
+        
         $container->bind(RoomRepositoryInterface::class, function (Container $c) {
             return $c->make(RoomRepository::class);
         });
     }
 
-
-    private static function registerBookingService(Container $container): void{
+    private static function registerBookingService(Container $container): void
+    {
         $container->singleton(BookingService::class, function (Container $c) {
             return new BookingService(
                 $c->make(CreateBookingUseCase::class),
@@ -154,11 +163,11 @@ class ServiceProvider
                 $c->make(CheckRoomAvailableUseCase::class)
             );
         });
+        
         $container->bind(BookingRepositoryInterface::class, function (Container $c) {
             return $c->make(BookingRepository::class);
         });
     }
-
 
     private static function registerRoomImageService(Container $container): void
     {
@@ -177,6 +186,16 @@ class ServiceProvider
         // Bind interface to implementation
         $container->bind(RoomImageServiceInterface::class, function (Container $c) {
             return $c->make(RoomImageService::class);
+        });
+    }
+
+    private static function registerAuthService(Container $container): void
+    {
+        $container->singleton(AuthService::class, function (Container $c) {
+            return new AuthService(
+                $c->make(LoginUseCase::class),
+                $c->make(LogoutUseCase::class)
+            );
         });
     }
 }

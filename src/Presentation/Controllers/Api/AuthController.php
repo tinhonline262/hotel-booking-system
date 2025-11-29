@@ -1,212 +1,90 @@
 <?php
 
-namespace App\Presentation\Controllers;
+namespace App\Presentation\Controllers\Api;
 
-use App\Application\UseCases\LoginAdminUseCase;
-use App\Application\UseCases\LogoutAdminUseCase;
-use App\Application\UseCases\GetCurrentAdminUseCase;
-use App\Application\UseCases\CheckIsLoggedUseCase;
-use App\Infrastructure\Session\SessionManager;
-use Exception;
+use App\Application\Services\AuthService;
 
 /**
- * Auth Controller
- * 
- * Handles authentication operations (login, logout, check login status)
+ * Auth Controller - Fixed Version
  */
-class AuthController
+class AuthController extends BaseRestController
 {
-    private LoginAdminUseCase $loginAdminUseCase;
-    private LogoutAdminUseCase $logoutAdminUseCase;
-    private GetCurrentAdminUseCase $getCurrentAdminUseCase;
-    private CheckIsLoggedUseCase $checkIsLoggedUseCase;
+    private AuthService $authService;
+
+    public function __construct(AuthService $authService)
+    {
+        parent::__construct();
+        $this->authService = $authService;
+    }
 
     /**
-     * Constructor
+     * POST /api/auth/login
+     * Admin login
      * 
-     * @param LoginAdminUseCase $loginAdminUseCase
-     * @param LogoutAdminUseCase $logoutAdminUseCase
-     * @param GetCurrentAdminUseCase $getCurrentAdminUseCase
-     * @param CheckIsLoggedUseCase $checkIsLoggedUseCase
+     * FIX: Thêm kiểm tra $result['admin'] !== null
      */
-    public function __construct(
-        LoginAdminUseCase $loginAdminUseCase,
-        LogoutAdminUseCase $logoutAdminUseCase,
-        GetCurrentAdminUseCase $getCurrentAdminUseCase,
-        CheckIsLoggedUseCase $checkIsLoggedUseCase
-    ) {
-        $this->loginAdminUseCase = $loginAdminUseCase;
-        $this->logoutAdminUseCase = $logoutAdminUseCase;
-        $this->getCurrentAdminUseCase = $getCurrentAdminUseCase;
-        $this->checkIsLoggedUseCase = $checkIsLoggedUseCase;
-    }
-
-    /**
-     * Show login page
-     */
-    public function showLogin(): void
+    public function login(): void
     {
-        // Initialize session
-        SessionManager::init();
-
-        // If already logged in, redirect to dashboard
-        if ($this->checkIsLoggedUseCase->execute()) {
-            header('Location: /dashboard');
-            exit;
-        }
-
-        // Generate CSRF token for form
-        $csrfToken = SessionManager::generateCSRFToken();
-
-        // Prepare view variables (used directly by the view)
-        $error = $_SESSION['login_error'] ?? null;
-        $success = $_SESSION['login_success'] ?? null;
-
-        // Clear flash messages after use
-        unset($_SESSION['login_error']);
-        unset($_SESSION['login_success']);
-
-        // Render login view
-        require_once __DIR__ . '/../Views/login.php';
-    }
-
-    /**
-     * Handle login form submission
-     */
-    public function handleLogin(): void
-    {
-        // Initialize session
-        SessionManager::init();
-
-        // Verify request method
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /login');
-            exit;
-        }
-
         try {
-            // Verify CSRF token
-            $csrfToken = $_POST['csrf_token'] ?? null;
+            $data = $this->getJsonInput();
+            $result = $this->authService->login($data);
 
-            if (!$csrfToken || !SessionManager::verifyCSRFToken($csrfToken)) {
-                throw new Exception('CSRF token verification failed. Please try again.');
+            // FIX: Thêm && $result['admin'] !== null
+            if ($result['success'] && isset($result['admin']) && $result['admin'] !== null) {
+                $this->success(
+                    [
+                        'admin' => $result['admin']->toArray()
+                    ],
+                    $result['message'] ?? 'Login successful'
+                );
+            } else {
+                $this->validationError(
+                    $result['errors'] ?? [],
+                    $result['message'] ?? 'Login failed'
+                );
             }
-
-            // Get username and password
-            $username = $_POST['username'] ?? '';
-            $password = $_POST['password'] ?? '';
-
-            // Perform login
-            $admin = $this->loginAdminUseCase->execute($username, $password);
-
-            // Set success message
-            $_SESSION['login_success'] = 'Login successful!';
-
-            // Redirect to dashboard
-            header('Location: /dashboard');
-            exit;
-        } catch (Exception $e) {
-            // Set error message in session
-            $_SESSION['login_error'] = $e->getMessage();
-
-            // Redirect back to login
-            header('Location: /login');
-            exit;
+        } catch (\Exception $e) {
+            error_log('Login error: ' . $e->getMessage());
+            error_log('Stack trace: ' . $e->getTraceAsString());
+            $this->serverError('Login failed');
         }
     }
 
     /**
-     * Handle logout
+     * POST /api/auth/logout
+     * Admin logout
      */
-    public function handleLogout(): void
+    public function logout(): void
     {
         try {
-            $this->logoutAdminUseCase->execute();
-
-            // Set success message
-            $_SESSION['logout_success'] = 'You have been logged out successfully.';
-
-            // Redirect to login
-            header('Location: /login');
-            exit;
-        } catch (Exception $e) {
-            // Even if error occurs, try to destroy session and redirect
-            SessionManager::destroy();
-            header('Location: /login');
-            exit;
+            $result = $this->authService->logout();
+            $this->success(null, $result['message']);
+        } catch (\Exception $e) {
+            error_log('Logout error: ' . $e->getMessage());
+            $this->serverError('Logout failed');
         }
     }
 
     /**
-     * API: Check if admin is logged in
+     * GET /api/auth/check
+     * Check if admin is authenticated
      */
-    public function checkIsLogged(): void
+    public function check(): void
     {
-        header('Content-Type: application/json');
-
-        $isLogged = $this->checkIsLoggedUseCase->execute();
-
-        echo json_encode([
-            'success' => true,
-            'isLogged' => $isLogged,
-            'remainingTime' => SessionManager::getRemainingTime(),
-        ]);
-    }
-
-    /**
-     * API: Get current admin info
-     */
-    public function getCurrentAdmin(): void
-    {
-        header('Content-Type: application/json');
-
         try {
-            $admin = $this->getCurrentAdminUseCase->execute();
+            $isAuthenticated = $this->authService->isAuthenticated();
+            $admin = $isAuthenticated ? $this->authService->getCurrentAdmin() : null;
 
-            if (!$admin) {
-                throw new Exception('Admin not logged in.');
-            }
-
-            echo json_encode([
-                'success' => true,
-                'admin' => $admin->toArray(),
-                'remainingTime' => SessionManager::getRemainingTime(),
-            ]);
-        } catch (Exception $e) {
-            http_response_code(401);
-            echo json_encode([
-                'success' => false,
-                'error' => $e->getMessage(),
-            ]);
-        }
-    }
-
-    /**
-     * API: Refresh session (keep alive)
-     */
-    public function refreshSession(): void
-    {
-        header('Content-Type: application/json');
-
-        try {
-            if (!$this->checkIsLoggedUseCase->execute()) {
-                throw new Exception('Not logged in.');
-            }
-
-            // Refresh session
-            SessionManager::init();
-
-            echo json_encode([
-                'success' => true,
-                'message' => 'Session refreshed.',
-                'remainingTime' => SessionManager::getRemainingTime(),
-            ]);
-        } catch (Exception $e) {
-            http_response_code(401);
-            echo json_encode([
-                'success' => false,
-                'error' => $e->getMessage(),
-            ]);
+            $this->success(
+                [
+                    'authenticated' => $isAuthenticated,
+                    'admin' => $admin
+                ],
+                $isAuthenticated ? 'Authenticated' : 'Not authenticated'
+            );
+        } catch (\Exception $e) {
+            error_log('Auth check error: ' . $e->getMessage());
+            $this->serverError('Failed to check authentication');
         }
     }
 }

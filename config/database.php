@@ -1,12 +1,12 @@
 <?php
 
 return [
-    'driver' => 'mysql', // mysql, pgsql, sqlite
-    'host' => 'yamabiko.proxy.rlwy.net',
-    'port' => '15242',
+    'driver' => 'mysql',
+    'host' => 'localhost', // hoặc '127.0.0.1'
+    'port' => '3306',
     'database' => 'hotel_booking_system',
     'username' => 'root',
-    'password' => 'meXceRwzglYiFRtopuXukOPfzrbtdblT',
+    'password' => '', // XAMPP mặc định không có password, hoặc điền password của bạn
     'charset' => 'utf8mb4',
     'collation' => 'utf8mb4_unicode_ci',
     'prefix' => '',
@@ -16,4 +16,3 @@ return [
         PDO::ATTR_EMULATE_PREPARES => false,
     ],
 ];
-
