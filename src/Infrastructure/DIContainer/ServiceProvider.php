@@ -10,6 +10,7 @@ use App\Application\UseCases\DeleteBookingUseCase;
 use App\Application\UseCases\FilterBookingByCheckInDateUseCase;
 use App\Application\UseCases\FilterBookingByCheckOutDateUseCase;
 use App\Application\UseCases\FilterBookingByCodeUseCase;
+use App\Application\UseCases\FindBookingByCodeUseCase;
 use App\Application\UseCases\FilterBookingByDayByDayUseCase;
 use App\Application\UseCases\FilterBookingByEmailUseCase;
 use App\Application\UseCases\FilterBookingByName;
@@ -78,6 +79,12 @@ class ServiceProvider
 
     private static function registerInfrastructureServices(Container $container): void
     {
+        // Cache Service
+        $container->singleton(\App\Application\Interfaces\ICacheService::class, function (Container $c) {
+            $cachePath = __DIR__ . '/../../../storage/cache';
+            return new \App\Application\Services\FileSystemCacheService($cachePath);
+        });
+
         // Image Storage Factory
         $container->singleton(ImageStorageFactory::class, function (Container $c) {
             return new ImageStorageFactory($c->make(StorageConfigInterface::class));
@@ -147,15 +154,16 @@ class ServiceProvider
                 $c->make(FilterBookingByEmailUseCase::class),
                 $c->make(FilterBookingByPhoneUseCase::class),
                 $c->make(FilterBookingByName::class),
-                $c->make(FilterBookingByStatus::class)
-
+                $c->make(FilterBookingByStatus::class),
+                $c->make(FindBookingByCodeUseCase::class)
             );
         });
-        $container->bind(BookingRepositoryInterface::class, function (Container $c) {
-            return $c->make(BookingRepository::class);
+
+        // Bind interface to implementation
+        $container->bind(\App\Application\Interfaces\BookingServiceInterface::class, function (Container $c) {
+            return $c->make(BookingService::class);
         });
     }
-
 
     private static function registerRoomImageService(Container $container): void
     {

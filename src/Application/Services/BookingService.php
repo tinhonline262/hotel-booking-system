@@ -19,6 +19,7 @@ use App\Application\UseCases\FilterBookingByEmailUseCase;
 use App\Application\UseCases\FilterBookingByName;
 use App\Application\UseCases\FilterBookingByPhoneUseCase;
 use App\Application\UseCases\FilterBookingByStatus;
+use App\Application\UseCases\FindBookingByCodeUseCase;
 class BookingService implements BookingServiceInterface
 {
     private CreateBookingUseCase  $createBookingUseCase;
@@ -34,6 +35,7 @@ class BookingService implements BookingServiceInterface
     private FilterBookingByPhoneUseCase  $filterBookingByPhoneUseCase;
     private FilterBookingByName  $filterBookingByName;
     private FilterBookingByStatus  $filterBookingByStatus;
+    private FindBookingByCodeUseCase $findBookingByCodeUseCase;
 
     public function __construct(CreateBookingUseCase $createBookingUseCase,
     UpdateBookingUseCase $updateBookingUseCase,
@@ -47,7 +49,8 @@ class BookingService implements BookingServiceInterface
     FilterBookingByEmailUseCase  $filterBookingByEmailUseCase,
     FilterBookingByPhoneUseCase  $filterBookingByPhoneUseCase,
     FilterBookingByName  $filterBookingByName,
-    FilterBookingByStatus  $filterBookingByStatus
+    FilterBookingByStatus  $filterBookingByStatus,
+    FindBookingByCodeUseCase $findBookingByCodeUseCase
     ){
         $this->createBookingUseCase = $createBookingUseCase;
         $this->updateBookingUseCase = $updateBookingUseCase;
@@ -62,6 +65,7 @@ class BookingService implements BookingServiceInterface
         $this->filterBookingByPhoneUseCase = $filterBookingByPhoneUseCase;
         $this->filterBookingByName = $filterBookingByName;
         $this->filterBookingByStatus = $filterBookingByStatus;
+        $this->findBookingByCodeUseCase = $findBookingByCodeUseCase;
     }
 
     /**
@@ -153,5 +157,17 @@ class BookingService implements BookingServiceInterface
     {
         // TODO: Implement UpdateBooking() method.
         return $this->updateBookingUseCase->Execute($bookingDTO,$id);
+    }
+
+    /**
+     * Tìm kiếm chính xác một booking theo code
+     * Trả về array chứa thông tin booking hoặc null nếu không tìm thấy
+     *
+     * @param string $code
+     * @return array|null
+     */
+    public function GetBookingByCode(string $code): ?array
+    {
+        return $this->findBookingByCodeUseCase->execute($code);
     }
 }

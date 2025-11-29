@@ -135,21 +135,20 @@ class BookingRepository implements BookingRepositoryInterface
         return $bookings;
     }
 
-    public function findByCode(string $code): array
+    public function findByCode(string $code): ?Booking
     {
-        // TODO: Implement findByCode() method.
         $stmt = $this->database->query(
-            "SELECT * FROM bookings WHERE booking_code = ?",
+            "SELECT * FROM bookings WHERE booking_code = ? LIMIT 1",
             [$code]
         );
 
-        $bookings = [];
+        $data = $stmt->fetch();
 
-        while ($data = $stmt->fetch()) {
-            $bookings[] = $this->mapToEntity($data);
+        if (!$data) {
+            return null;
         }
 
-        return $bookings;
+        return $this->mapToEntity($data);
     }
 
     public function exists(int $id): bool

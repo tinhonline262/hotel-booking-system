@@ -310,12 +310,7 @@
     </div>
 
     <script>
-        // Dữ liệu giả lập
-        const bookings = [
-            { id: "BK-123", status: "pending", customer: "Nguyễn Văn An", email: "an.nguyen@gmail.com", phone: "0909 *** 123", room: "Deluxe Double Ocean View", roomNumber: "301", checkIn: "20/12/2024", checkOut: "22/12/2024", total: 2500000, created: "15/12/2024" },
-            { id: "BK-456", status: "confirmed", customer: "Trần Thị Bích", email: "bich.tran@yahoo.com", phone: "0912 *** 789", room: "Luxury Suite King", roomNumber: "505", checkIn: "25/12/2024", checkOut: "28/12/2024", total: 8400000, created: "10/12/2024" },
-            { id: "BK-999", status: "cancelled", customer: "Vũ Thị Hoa", email: "hoa.vu@outlook.com", phone: "0966 *** 222", room: "Standard Twin", roomNumber: "402", checkIn: "30/12/2024", checkOut: "01/01/2025", total: 3000000, created: "05/12/2024" }
-        ];
+        const API_BASE_URL = '/api';
 
         const statusConfig = {
             'pending':      { label: 'Chờ xác nhận', class: 'status-pending', icon: 'fa-clock' },
@@ -329,13 +324,18 @@
             return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
         };
 
+        const formatDate = (dateString) => {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        };
+
         document.addEventListener('DOMContentLoaded', () => {
             const btnSearch = document.getElementById('btnSearch');
             const inputCode = document.getElementById('inputCode');
             const errorBox = document.getElementById('errorBox');
             const resultArea = document.getElementById('resultArea');
 
-            const handleSearch = () => {
+            const handleSearch = async () => {
                 const code = inputCode.value.trim().toUpperCase();
                 errorBox.style.display = 'none';
                 resultArea.style.display = 'none';
@@ -349,33 +349,70 @@
                 btnSearch.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
                 btnSearch.disabled = true;
 
-                setTimeout(() => {
-                    const booking = bookings.find(b => b.id === code);
+                try {
+                    // Gọi API mới: GET /api/bookings/search/code/{code}
+                    const response = await fetch(`${API_BASE_URL}/bookings/search/code/${encodeURIComponent(code)}`);
+                    const result = await response.json();
 
-                    if (booking) {
-                        const status = statusConfig[booking.status];
-                        
+                    if (result.success && result.data) {
+                        const booking = result.data;
+                        const status = statusConfig[booking.status] || statusConfig['pending'];
+
                         resultArea.innerHTML = `
                             <div class="ticket-header">
-                                <div><div class="code-label">Mã xác nhận</div><div class="code-value">#${booking.id}</div></div>
-                                <div class="badge ${status.class}"><i class="fa-solid ${status.icon}"></i> ${status.label}</div>
+                                <div>
+                                    <div class="code-label">Mã xác nhận</div>
+                                    <div class="code-value">#${booking.booking_code}</div>
+                                </div>
+                                <div class="badge ${status.class}">
+                                    <i class="fa-solid ${status.icon}"></i> ${status.label}
+                                </div>
                             </div>
                             <div class="ticket-body">
                                 <div class="info-section">
                                     <h3><i class="fa-solid fa-user-shield"></i> Thông tin khách hàng</h3>
-                                    <div class="info-row"><span class="label">Họ tên khách</span><span class="value">${booking.customer}</span></div>
-                                    <div class="info-row"><span class="label">Email</span><span class="value">${booking.email}</span></div>
-                                    <div class="info-row"><span class="label">Số điện thoại</span><span class="value">${booking.phone}</span></div>
+                                    <div class="info-row">
+                                        <span class="label">Họ tên khách</span>
+                                        <span class="value">${booking.customer_name}</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="label">Email</span>
+                                        <span class="value">${booking.customer_email}</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="label">Số điện thoại</span>
+                                        <span class="value">${booking.customer_phone}</span>
+                                    </div>
                                     <h3 style="margin-top: 30px;"><i class="fa-solid fa-bed"></i> Chi tiết phòng</h3>
-                                    <div class="info-row"><span class="label">Loại phòng</span><span class="value" style="color: #4e54c8;">${booking.room}</span></div>
-                                    <div class="info-row"><span class="label">Số phòng</span><span class="value">P.${booking.roomNumber}</span></div>
+                                    <div class="info-row">
+                                        <span class="label">Mã phòng</span>
+                                        <span class="value" style="color: #4e54c8;">Phòng #${booking.room_id}</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="label">Số khách</span>
+                                        <span class="value">${booking.num_guests} người</span>
+                                    </div>
+                                    ${booking.special_requests ? `
+                                    <div class="info-row">
+                                        <span class="label">Yêu cầu đặc biệt</span>
+                                        <span class="value" style="font-style: italic;">${booking.special_requests}</span>
+                                    </div>
+                                    ` : ''}
                                 </div>
                                 <div class="info-section">
                                     <h3><i class="fa-solid fa-calendar-check"></i> Lịch trình</h3>
-                                    <div class="info-row"><span class="label">Ngày nhận phòng</span><span class="value">${booking.checkIn}</span></div>
-                                    <div class="info-row"><span class="label">Ngày trả phòng</span><span class="value">${booking.checkOut}</span></div>
-                                    <div class="info-row"><span class="label">Ngày đặt</span><span class="value" style="font-style: italic;">${booking.created}</span></div>
-                                    <div class="total-box"><div class="total-label">TỔNG THANH TOÁN</div><div class="total-value">${formatMoney(booking.total)}</div></div>
+                                    <div class="info-row">
+                                        <span class="label">Ngày nhận phòng</span>
+                                        <span class="value">${formatDate(booking.check_in_date)}</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="label">Ngày trả phòng</span>
+                                        <span class="value">${formatDate(booking.check_out_date)}</span>
+                                    </div>
+                                    <div class="total-box">
+                                        <div class="total-label">TỔNG THANH TOÁN</div>
+                                        <div class="total-value">${formatMoney(booking.total_price)}</div>
+                                    </div>
                                 </div>
                             </div>
                         `;
@@ -384,10 +421,14 @@
                         errorBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Không tìm thấy đơn đặt phòng <b>${code}</b>.`;
                         errorBox.style.display = 'block';
                     }
-
+                } catch (error) {
+                    console.error('Error searching booking:', error);
+                    errorBox.innerHTML = `<i class="fa-solid fa-exclamation-triangle"></i> Có lỗi xảy ra khi tra cứu. Vui lòng thử lại!`;
+                    errorBox.style.display = 'block';
+                } finally {
                     btnSearch.innerHTML = 'Tra cứu ngay <i class="fa-solid fa-arrow-right"></i>';
                     btnSearch.disabled = false;
-                }, 800);
+                }
             };
 
             btnSearch.addEventListener('click', handleSearch);
