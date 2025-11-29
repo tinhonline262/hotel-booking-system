@@ -38,7 +38,7 @@ class BookingController extends BaseRestController
                 //Content
                 $mail->isHTML(false);
                 $mail->Subject = 'Booking Successful';
-                $mail->Body    = "Mã: {$dto->bookingCode}";
+                $mail->Body    = "Chúc Mừng Quý Khách Đặt Phòng Thành Công\r\nMã: {$dto->bookingCode}";
 
                 $mail->send();
             }
