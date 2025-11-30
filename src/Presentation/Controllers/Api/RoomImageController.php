@@ -38,11 +38,26 @@ class RoomImageController extends BaseRestController
             }
 
             // Check if files were uploaded
-            if (empty($_FILES['images'])) {
+            if (empty($_FILES)) {
+                error_log('No FILES received');
                 http_response_code(400);
                 echo json_encode([
                     'success' => false,
                     'message' => 'No images provided',
+                ]);
+                return;
+            }
+
+            // Check for 'images' key (from images[])
+            if (!isset($_FILES['images'])) {
+                error_log('FILES data: ' . print_r($_FILES, true));
+                http_response_code(400);
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'No images provided',
+                    'debug' => [
+                        'files_keys' => array_keys($_FILES),
+                    ]
                 ]);
                 return;
             }
@@ -55,18 +70,32 @@ class RoomImageController extends BaseRestController
             $uploadedFiles = $_FILES['images'];
 
             // Handle multiple file upload
-            if (is_array($uploadedFiles['name'])) {
+            if (isset($uploadedFiles['name']) && is_array($uploadedFiles['name'])) {
                 for ($i = 0; $i < count($uploadedFiles['name']); $i++) {
-                    $files[] = UploadedFile::fromArray([
-                        'name' => $uploadedFiles['name'][$i],
-                        'tmp_name' => $uploadedFiles['tmp_name'][$i],
-                        'size' => $uploadedFiles['size'][$i] ?? 0,
-                        'type' => $uploadedFiles['type'][$i] ?? 'application/octet-stream',
-                        'error' => $uploadedFiles['error'][$i],
-                    ]);
+                    if ($uploadedFiles['error'][$i] === UPLOAD_ERR_OK) {
+                        $files[] = UploadedFile::fromArray([
+                            'name' => $uploadedFiles['name'][$i],
+                            'tmp_name' => $uploadedFiles['tmp_name'][$i],
+                            'size' => $uploadedFiles['size'][$i] ?? 0,
+                            'type' => $uploadedFiles['type'][$i] ?? 'application/octet-stream',
+                            'error' => $uploadedFiles['error'][$i],
+                        ]);
+                    }
                 }
             } else {
-                $files[] = UploadedFile::fromArray($uploadedFiles);
+                // Single file upload
+                if (isset($uploadedFiles['error']) && $uploadedFiles['error'] === UPLOAD_ERR_OK) {
+                    $files[] = UploadedFile::fromArray($uploadedFiles);
+                }
+            }
+
+            if (empty($files)) {
+                http_response_code(400);
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'No valid images to upload',
+                ]);
+                return;
             }
 
             // Upload images via service

@@ -25,7 +25,7 @@ class RoomDetailsManager {
 
         // Drag and drop for file upload area
         const $uploadArea = $('#fileUploadArea');
-        
+
         $uploadArea.on('dragover', (e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -42,7 +42,7 @@ class RoomDetailsManager {
             e.preventDefault();
             e.stopPropagation();
             $uploadArea.removeClass('drag-over');
-            
+
             const files = e.originalEvent.dataTransfer.files;
             $('#imageFiles')[0].files = files;
             this.handleFileSelect({ target: { files } });
@@ -88,23 +88,29 @@ class RoomDetailsManager {
     removeFileFromInput(indexToRemove) {
         const $input = $('#imageFiles')[0];
         const dt = new DataTransfer();
-        
+
         Array.from($input.files).forEach((file, index) => {
             if (index !== indexToRemove) {
                 dt.items.add(file);
             }
         });
-        
+
         $input.files = dt.files;
         this.handleFileSelect({ target: { files: dt.files } });
     }
 
     async handleImageUpload(e) {
         e.preventDefault();
-        
+
         const roomId = $('#upload_room_id').val();
         const files = $('#imageFiles')[0].files;
         const storageType = $('#storage_type').val();
+
+        console.log('=== Upload Debug ===');
+        console.log('Room ID:', roomId);
+        console.log('Files object:', files);
+        console.log('Files length:', files.length);
+        console.log('Storage type:', storageType);
 
         if (!files || files.length === 0) {
             this.showNotification('Vui lòng chọn ít nhất một hình ảnh', 'warning');
@@ -112,24 +118,31 @@ class RoomDetailsManager {
         }
 
         const formData = new FormData();
-        Array.from(files).forEach(file => {
+        Array.from(files).forEach((file, index) => {
+            console.log(`Adding file ${index}:`, file.name, file.size, file.type);
             formData.append('images[]', file);
         });
         formData.append('storage_type', storageType);
 
+        console.log('FormData entries:');
+        for (let pair of formData.entries()) {
+            console.log(pair[0], pair[1]);
+        }
+
         try {
             const result = await this.api.upload(`/rooms/${roomId}/images`, formData);
-            
+
             if (result.success) {
                 this.showNotification(result.message || 'Tải lên hình ảnh thành công!', 'success');
                 $('#uploadImagesForm')[0].reset();
                 $('.file-upload-placeholder').show();
                 $('#filePreview').hide().empty();
-                
+
                 // Reload images
                 await this.loadRoomImages(roomId);
             } else {
                 this.showNotification(result.message || 'Tải lên thất bại!', 'error');
+                console.error('Upload failed:', result);
             }
         } catch (error) {
             this.showNotification('Lỗi: ' + error.message, 'error');
@@ -140,9 +153,9 @@ class RoomDetailsManager {
     async openImageManager(roomId) {
         this.currentRoomId = roomId;
         $('#upload_room_id').val(roomId);
-        
+
         await this.loadRoomImages(roomId);
-        
+
         $('#upload_images').fadeIn(200);
         $('body').css('overflow', 'hidden');
     }
@@ -150,7 +163,7 @@ class RoomDetailsManager {
     async loadRoomImages(roomId) {
         try {
             const result = await this.api.get(`/rooms/${roomId}/details`);
-            
+
             if (result.success && result.data) {
                 this.currentImages = result.data.images || [];
                 this.renderImagesGrid();
@@ -164,7 +177,7 @@ class RoomDetailsManager {
 
     renderImagesGrid() {
         const $grid = $('#imagesGrid');
-        
+
         if (this.currentImages.length === 0) {
             $grid.html('<p class="no-images">Chưa có hình ảnh nào</p>');
             return;
@@ -241,7 +254,7 @@ class RoomDetailsManager {
             e.preventDefault();
             const afterElement = this.getDragAfterElement($('#imagesGrid')[0], e.clientY);
             const dragging = $('.dragging')[0];
-            
+
             if (afterElement == null) {
                 $('#imagesGrid').append(dragging);
             } else {
@@ -282,7 +295,7 @@ class RoomDetailsManager {
 
         try {
             const result = await this.api.put('/rooms/images/order', { orders });
-            
+
             if (result.success) {
                 this.showNotification('Đã cập nhật thứ tự hiển thị', 'success');
                 await this.loadRoomImages(this.currentRoomId);
@@ -295,7 +308,7 @@ class RoomDetailsManager {
     async setPrimaryImage(imageId) {
         try {
             const result = await this.api.put(`/rooms/${this.currentRoomId}/images/${imageId}/primary`, {});
-            
+
             if (result.success) {
                 this.showNotification('Đã đặt làm hình ảnh chính', 'success');
                 await this.loadRoomImages(this.currentRoomId);
@@ -310,7 +323,7 @@ class RoomDetailsManager {
     async deleteImage(imageId) {
         try {
             const result = await this.api.delete(`/rooms/images/${imageId}`);
-            
+
             if (result.success) {
                 this.showNotification('Đã xóa hình ảnh', 'success');
                 await this.loadRoomImages(this.currentRoomId);
@@ -342,4 +355,3 @@ class RoomDetailsManager {
         }
     }
 }
-

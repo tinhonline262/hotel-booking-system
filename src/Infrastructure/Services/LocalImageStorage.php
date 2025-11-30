@@ -32,7 +32,7 @@ class LocalImageStorage implements ImageStorageInterface
     public function store(UploadedFile $file, string $directory): array
     {
         $targetDir = $this->baseUrl . DIRECTORY_SEPARATOR . trim($directory, '/\\');
-        
+
         // Create subdirectory if not exists
         if (!is_dir($targetDir)) {
             if (!mkdir($targetDir, 0755, true)) {
@@ -72,11 +72,11 @@ class LocalImageStorage implements ImageStorageInterface
     public function delete(string $path, ?string $publicId = null): bool
     {
         $fullPath = $this->basePath . DIRECTORY_SEPARATOR . ltrim($path, '/\\');
-        
+
         if (file_exists($fullPath)) {
             return unlink($fullPath);
         }
-        
+
         return false;
     }
 
@@ -100,7 +100,7 @@ class LocalImageStorage implements ImageStorageInterface
     {
         $isWritable = is_writable($this->basePath);
         $diskSpace = disk_free_space($this->basePath);
-        
+
         return [
             'storage_type' => 'local',
             'status' => $isWritable ? 'healthy' : 'error',
@@ -114,7 +114,7 @@ class LocalImageStorage implements ImageStorageInterface
     {
         $currentUsage = $this->getCurrentUsage();
         $freeSpace = disk_free_space($this->basePath);
-        
+
         return [
             'storage_type' => 'local',
             'current_usage' => $currentUsage,
@@ -145,4 +145,3 @@ class LocalImageStorage implements ImageStorageInterface
         return $usage;
     }
 }
-
